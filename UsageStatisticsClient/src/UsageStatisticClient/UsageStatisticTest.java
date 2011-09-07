@@ -26,8 +26,11 @@ restTemplate.postForObject(uri, log, String.class);
 	@Test
 	public void TestLogsAmount()
 	{
+		String functionality="klikniecie";
+		String parameters="x=10,y=10";
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		instance.dao.getLogsAmount();
+		instance.used(functionality, parameters);
+		instance.commit();
 	}
 }
 	
