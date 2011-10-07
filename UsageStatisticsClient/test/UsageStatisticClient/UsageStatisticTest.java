@@ -1,5 +1,8 @@
 package UsageStatisticClient;
 
+import java.sql.SQLException;
+import java.util.Calendar;
+
 import org.junit.Test;
 
 public class UsageStatisticTest {
@@ -14,7 +17,7 @@ restTemplate.postForObject(uri, log, String.class);
 	}*/
 	
 	@Test
-	public void TestUsedCLear()
+	public void TestUsedCLear() throws SQLException
 	{
 		String functionality="klikniecie";
 		String parameters="x=10,y=10";
@@ -32,6 +35,28 @@ restTemplate.postForObject(uri, log, String.class);
 		instance.used(functionality, parameters);
 		instance.commit();
 	}
+	
+	@Test
+	public void TestDatabase()
+	{
+		DaoTemporaryDatabaseH2 dao=new DaoTemporaryDatabaseH2();
+		dao.openDatabase();
+		try {
+			
+		//	dao.saveLog(new LogInformation(Calendar.getInstance().getTime(),"test","testujacy","testowe narzedzie","test_number=1"));
+			System.out.println(dao.getLogsAmount());
+			dao.clearFirstLog();
+			System.out.println(dao.getLogsAmount());			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		dao.closeDatabase();
+		
+		
+	}	
+	
+	
 }
 	
 	

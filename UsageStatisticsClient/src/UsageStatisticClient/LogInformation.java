@@ -54,7 +54,18 @@ public String toString() {
 			+ ", tool=" + tool + "]";
 }
 
+public LogInformation()
+{}
 
+
+public LogInformation(Date date,String functionality,String user,String tool, String parameters)
+{
+	this.dateTime=date;
+	this.functionality=functionality;
+	this.user=user;
+	this.tool=tool;
+	this.parameters=parameters;
+}
 
 
 
