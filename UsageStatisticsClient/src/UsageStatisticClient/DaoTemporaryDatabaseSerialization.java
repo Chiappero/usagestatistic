@@ -154,4 +154,18 @@ class DaoTemporaryDatabaseSerialization implements
 		return lista.getFirst();
 	}
 
+	@Override
+	public void openDatabase()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeDatabase()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

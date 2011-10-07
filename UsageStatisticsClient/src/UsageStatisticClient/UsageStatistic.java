@@ -6,12 +6,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.util.Calendar;
 
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 final public class UsageStatistic {
-	private URI serverURI = new URI("http://localhost:8080/UsageStatisticsServer/post");
+	private URI serverURI = new URI(
+			"http://localhost:8080/UsageStatisticsServer/post");
 	private String user;
 	private String password;
 	private String tool;
@@ -46,7 +49,12 @@ final public class UsageStatistic {
 		init();
 	}
 
-	public boolean used(String functionality, String parameters) { //TODO dao (plik) sie moze wysypac podczas zapisywania
+	public boolean used(String functionality, String parameters) { // TODO dao
+																	// (plik)
+																	// sie moze
+																	// wysypac
+																	// podczas
+																	// zapisywania
 		LogInformation log = new LogInformation();
 		log.setDate(Calendar.getInstance().getTime());
 		log.setFunctionality(functionality);
@@ -54,34 +62,44 @@ final public class UsageStatistic {
 		log.setTool(tool);
 		log.setUser(user);
 		return dao.saveLog(log);
+
 	}
 
-	public void commit() {
-		int logsAmount = dao.getLogsAmount();
-		committingDetails.commitingStart();
-		committingDetails.setLogsAmount(logsAmount);
-		committingDetails.setInfo("Begin commiting");
-		int i = 0;
-		boolean connectionActive = true;
-		while (!dao.isEmpty() && connectionActive && i < logsAmount) {
-			LogInformation log = dao.getFirstLog();
-			try {
+	public void commit()
+	{
+		try
+		{
+			int logsAmount = dao.getLogsAmount();
+			committingDetails.commitingStart();
+			committingDetails.setLogsAmount(logsAmount);
+			committingDetails.setInfo("Begin commiting");
+			int i = 0;
+
+			while (!dao.isEmpty() &&  i < logsAmount)
+			{
+				LogInformation log = dao.getFirstLog();
+
 				restTemplate.postForObject(serverURI, log, String.class);
 				committingDetails.step();
 				i++;
 				dao.clearFirstLog();
-			} catch (org.springframework.web.client.ResourceAccessException e) {
-				committingDetails
-						.commitingFailureWithError("Error with connection to server");
-				connectionActive = false;
-			}
-		}
-		if (connectionActive == true && i == logsAmount) {
-			committingDetails.setInfo("Commiting finised succesful");
-			committingDetails.commitingFinishedSuccesful();
-		}
 
+			}
+				committingDetails.setInfo("Commiting finised succesful");
+				committingDetails.commitingFinishedSuccesful();
+		} catch (org.springframework.web.client.ResourceAccessException e)
+		{
+			committingDetails
+			.commitingFailureWithError("Error with connection to server");
+				
+		} catch (SQLException e)
+		{
+			committingDetails
+			.commitingFailureWithError("Error with connection to local database");
+		}
 	}
+
+	
 
 	public static UsageStatistic getInstance(String tool,
 			CommitingDetailsInterface committingDetails) {
