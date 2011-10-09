@@ -57,10 +57,11 @@
 	            </list>
 	        </property>
 	    </bean>
+	    
 	
 
 	
-	<context:component-scan base-package="kontrolery" />
+	<context:component-scan base-package="server" />
 
 	
 

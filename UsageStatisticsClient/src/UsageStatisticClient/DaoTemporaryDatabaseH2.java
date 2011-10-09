@@ -10,6 +10,11 @@ public class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 
 	Connection conn=null;
 	
+	public DaoTemporaryDatabaseH2()
+	{
+		openDatabase();
+	}
+	
 	@Override
 	public boolean saveLog(LogInformation log) 
 	{

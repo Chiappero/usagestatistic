@@ -1,5 +1,5 @@
 package UsageStatisticClient;
-import java.io.Serializable;
+
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 
-final class LogInformation implements Serializable { //TODO problem jezeli dodajesz/usuwasz/zmienasz pola przy deserializacji
+final class LogInformation{
 /**
 	 * 
 	 */

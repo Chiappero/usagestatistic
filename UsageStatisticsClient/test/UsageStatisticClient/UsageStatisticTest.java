@@ -27,7 +27,7 @@ restTemplate.postForObject(uri, log, String.class);
 	}
 	
 	@Test
-	public void TestLogsAmount()
+	public void testCommit()
 	{
 		String functionality="klikniecie";
 		String parameters="x=10,y=10";
