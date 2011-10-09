@@ -20,7 +20,7 @@ final public class UsageStatistic {
 	private String tool;
 	private static UsageStatistic instance;
 	RestTemplate restTemplate;
-	DaoTemporaryDatabaseInterface dao = new DaoTemporaryDatabaseSerialization(); // TODO
+	DaoTemporaryDatabaseInterface dao = new DaoTemporaryDatabaseH2(); // TODO
 																					// create
 																					// DAO
 	CommitingDetailsInterface committingDetails;
@@ -94,7 +94,16 @@ final public class UsageStatistic {
 			}
 				committingDetails.setInfo("Commiting finised succesful");
 				committingDetails.commitingFinishedSuccesful();
-		} catch (org.springframework.web.client.ResourceAccessException e)
+		} 
+		
+		catch (org.springframework.web.client.HttpClientErrorException e)
+		{
+			committingDetails
+			.commitingFailureWithError("Error with server - server turned off");
+		} 
+		
+		
+		catch (org.springframework.web.client.ResourceAccessException e)
 		{
 			committingDetails
 			.commitingFailureWithError("Error with connection to server");
