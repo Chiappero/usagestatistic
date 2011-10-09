@@ -13,6 +13,19 @@ public class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	@Override
 	public boolean saveLog(LogInformation log) 
 	{
+		if (log==null)
+		{
+			return false;
+		}
+		
+		if (log.getParameters()==null)
+		{
+			log.setParameters(""); //Baza H2 zapisuje nulla jako String "null"
+		}
+		if (!LogInformation.validateLog(log))
+		{
+			return false;
+		}
 		java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(log.getDate().getTime());
 		String sql="INSERT INTO Log " +
 				"(timestamp, functionality , user , tool ,parameters) " +
@@ -29,7 +42,7 @@ public class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	}
 
 	@Override
-	public boolean clearFirstLog() throws SQLException 
+	public synchronized boolean clearFirstLog() throws SQLException 
 	{
 		if (isEmpty())return false;
 		String sql="SELECT TOP 1 * FROM Log";
@@ -48,7 +61,10 @@ public class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		ResultSet rs=conn.createStatement().executeQuery(sql);
 		if (isEmpty())return null;
 		rs.first();
-		return new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
+		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
+		if (!LogInformation.validateLog(logInformation))
+			return null;
+		return logInformation;
 
 	}
 
@@ -95,7 +111,10 @@ public class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	{
 
 			try {
-				if (conn!=null)conn.close();
+				if (conn!=null)
+				{
+					conn.close();
+				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
