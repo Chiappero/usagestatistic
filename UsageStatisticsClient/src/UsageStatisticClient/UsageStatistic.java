@@ -79,8 +79,15 @@ final public class UsageStatistic {
 			{
 				LogInformation log = dao.getFirstLog();
 
-				restTemplate.postForObject(serverURI, log, String.class);
-				committingDetails.step();
+				if (log!=null)
+				{
+					restTemplate.postForObject(serverURI, log, String.class);
+					committingDetails.step();
+				} else
+				{
+					committingDetails.stepInvalid();
+				}
+				
 				i++;
 				dao.clearFirstLog();
 

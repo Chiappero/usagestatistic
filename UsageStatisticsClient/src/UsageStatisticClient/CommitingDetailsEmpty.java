@@ -26,4 +26,11 @@ class CommitingDetailsEmpty implements CommitingDetailsInterface {
 	public void setLogsAmount(int amount) {
 	}
 
+	@Override
+	public void stepInvalid()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }
