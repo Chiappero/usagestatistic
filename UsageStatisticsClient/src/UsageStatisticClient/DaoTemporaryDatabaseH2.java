@@ -5,12 +5,12 @@ import java.sql.*;
 
 
 
-public class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
+class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 {
 
 	Connection conn=null;
 	
-	public DaoTemporaryDatabaseH2()
+	DaoTemporaryDatabaseH2()
 	{
 		openDatabase();
 	}
@@ -40,9 +40,13 @@ public class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			conn.createStatement().execute(sql);
 		} catch (SQLException e)
 		{
-			System.out.println(e.getMessage());
 			return false;
 		}
+		catch (Exception e)
+		{
+			return false;
+		}
+			
 		return true;
 	}
 
@@ -105,14 +109,16 @@ public class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			e.printStackTrace();
 		}
         catch (SQLException e) {
-        //	closeDatabase();
-			
 		}
+        
+        catch (Exception e)
+        {
+        }
 
 	}
 	
 	@Override
-	public void closeDatabase()
+	public void closeDatabase() //TODO jak zamknac baze?
 	{
 
 			try {
@@ -133,8 +139,6 @@ public class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			String query="CREATE TABLE IF NOT EXISTS Log (id int NOT NULL AUTO_INCREMENT, timestamp timestamp, functionality varchar(50), user varchar(50), tool varchar(50),parameters varchar(200))";
 			conn.createStatement().execute(query);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		

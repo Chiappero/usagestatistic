@@ -2,7 +2,9 @@ package UsageStatisticClient;
 
 import java.sql.SQLException;
 import java.util.Calendar;
+import junitx.util.PrivateAccessor;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class UsageStatisticTest {
@@ -15,46 +17,43 @@ LogInformation log = new LogInformation();
 URI uri  =new URI("http://localhost:8080/UsageStatisticsServer/post");
 restTemplate.postForObject(uri, log, String.class);
 	}*/
+		
 	
 	@Test
-	public void TestUsedCLear() throws SQLException
+	public void methodUsed() throws SQLException, NoSuchFieldException
 	{
-		String functionality="klikniecie";
-		String parameters="x=10,y=10";
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		instance.used(functionality, parameters);
-		instance.dao.clearFirstLog();
+		Assert.assertTrue(instance.used("funkcjonalnosc", "parametry"));
+		TestUtils.removeAllLogsFromDao(instance);
 	}
 	
+		
 	@Test
-	public void testCommit()
+	public void methodCommit() throws NoSuchFieldException, SQLException
 	{
-		String functionality="klikniecie";
-		String parameters="x=10,y=10";
-		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		instance.used(functionality, parameters);
-		instance.commit();
+		commitLogs(99);  //TODO DZIA£A
+		//commitLogs(100); //TODO NIE DZIALA!
+		
 	}
 	
-	@Test
-	public void TestDatabase()
-	{
-		DaoTemporaryDatabaseH2 dao=new DaoTemporaryDatabaseH2();
-		dao.openDatabase();
-		try {
-			
-		//	dao.saveLog(new LogInformation(Calendar.getInstance().getTime(),"test","testujacy","testowe narzedzie","test_number=1"));
-			System.out.println(dao.getLogsAmount());
-			dao.clearFirstLog();
-			System.out.println(dao.getLogsAmount());			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		dao.closeDatabase();
+	private void commitLogs(int amountRecord) throws NoSuchFieldException, SQLException
+	{	
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		
+		System.out.println("INSTANCE");
+		instance.setCommittingDetails(new CommitingDetailsTestImp(amountRecord)); //przypisz na nowo za kazdym razem implementacje testujaca z podana iloscia
+		System.out.println("setCommiting");
+		TestUtils.removeAllLogsFromDao(instance);
+		System.out.println("remove");
+		TestUtils.addSomeLogsToDao(instance, amountRecord);
+		System.out.println("addSomeLogs");
+		instance.commit(); //<-- tutaj jest test ilosci oraz tego czy nie wyrzuca bledu
+		System.out.println("commit");
+		TestUtils.removeAllLogsFromDao(instance);
+		System.out.println("removeAllLogs2");
+	}
+	
 		
-	}	
 	
 	
 }

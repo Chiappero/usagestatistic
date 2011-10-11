@@ -1,7 +1,11 @@
 package UsageStatisticClient;
 
 class CommitingDetailsEmpty implements CommitingDetailsInterface {
-
+	
+	CommitingDetailsEmpty()
+	{
+	}
+	
 	@Override
 	public void commitingStart() {
 	}
@@ -27,10 +31,10 @@ class CommitingDetailsEmpty implements CommitingDetailsInterface {
 	}
 
 	@Override
-	public void stepInvalid()
+	public void stepInvalid(String reason)
 	{
-		// TODO Auto-generated method stub
-		
 	}
+
+	
 
 }

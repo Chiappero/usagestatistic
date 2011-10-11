@@ -7,10 +7,15 @@ import java.sql.*;
 
 public class DaoServerDatabaseH2
 {
-
+	
+	public DaoServerDatabaseH2()
+	{
+		openDatabase();
+	}
+	
 	Connection conn=null;
 	
-	public void saveLog(LogInformation log) 
+	public boolean saveLog(LogInformation log) 
 	{
 		
 		if (log!=null&&LogInformation.validateLog(log))
@@ -24,9 +29,13 @@ public class DaoServerDatabaseH2
 				conn.createStatement().execute(sql);
 			} catch (SQLException e)
 			{
-				e.printStackTrace();
+				return false;
 			}
+			return true;
 		}
+		
+		return false;
+		
 	}
 
 
@@ -41,13 +50,13 @@ public class DaoServerDatabaseH2
 			e.printStackTrace();
 		}
         catch (SQLException e) {
-        //	closeDatabase();
+        	// TODO CO JAK SIE NIE UDA
 			
 		}
 
 	}
 	
-	public void closeDatabase()
+	public void closeDatabase() //TODO JAK ZAMKNAC baze?
 	{
 
 			try {
@@ -56,7 +65,6 @@ public class DaoServerDatabaseH2
 					conn.close();
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
 			}
 	}	
 	
@@ -68,8 +76,7 @@ public class DaoServerDatabaseH2
 			String query="CREATE TABLE IF NOT EXISTS Log (id int NOT NULL AUTO_INCREMENT, timestamp timestamp, functionality varchar(50), user varchar(50), tool varchar(50),parameters varchar(200))";
 			conn.createStatement().execute(query);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// TODO CO JAK SIE NIE UDA
 		}
 		
 		
