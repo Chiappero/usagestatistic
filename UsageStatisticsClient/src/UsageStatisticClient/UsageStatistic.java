@@ -13,17 +13,14 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 final public class UsageStatistic {
-	private URI serverURI = new URI(
-			"http://localhost:8080/UsageStatisticsServer/post");
+	private URI serverURI = new URI("http://localhost:8080/UsageStatisticsServer/post");
 	private String user;
 	private String password;
 	private String tool;
 	private static UsageStatistic instance;
-	RestTemplate restTemplate;
-	DaoTemporaryDatabaseInterface dao = new DaoTemporaryDatabaseH2(); // TODO
-																					// create
-																					// DAO
-	CommitingDetailsInterface committingDetails;
+	private RestTemplate restTemplate;
+	private DaoTemporaryDatabaseInterface dao = new DaoTemporaryDatabaseH2(); 
+	private CommitingDetailsInterface committingDetails;
 
 	private void init() throws IOException, URISyntaxException { // TODO zeby
 																	// init i
@@ -44,17 +41,28 @@ final public class UsageStatistic {
 	private UsageStatistic(String tool,
 			CommitingDetailsInterface committingDetails) throws IOException,
 			URISyntaxException {
-		this.tool = tool;
-		this.committingDetails = committingDetails;
+		if (committingDetails == null) 
+		{
+			this.committingDetails = new CommitingDetailsEmpty();
+		} 
+		else
+		{
+			this.committingDetails=committingDetails;
+		}
+		
+		
+		if (tool == null)
+		{
+			tool = "Default Application";
+		} 
+		else
+		{
+			this.tool = tool;
+		}
 		init();
 	}
 
-	public boolean used(String functionality, String parameters) { // TODO dao
-																	// (plik)
-																	// sie moze
-																	// wysypac
-																	// podczas
-																	// zapisywania
+	public boolean used(String functionality, String parameters) { 
 		LogInformation log = new LogInformation();
 		log.setDate(Calendar.getInstance().getTime());
 		log.setFunctionality(functionality);
@@ -64,8 +72,21 @@ final public class UsageStatistic {
 		return dao.saveLog(log);
 
 	}
+	
+	
+	public void setCommittingDetails(CommitingDetailsInterface committingDetails)
+	{
+		if (committingDetails==null)
+		{
+		committingDetails = new CommitingDetailsEmpty();
+		}
+		else
+		{
+		this.committingDetails=committingDetails;
+		}
+	}
 
-	public void commit()
+	public synchronized void commit()
 	{
 		try
 		{
@@ -81,11 +102,20 @@ final public class UsageStatistic {
 
 				if (log!=null)
 				{
-					restTemplate.postForObject(serverURI, log, String.class);
-					committingDetails.step();
+					String postForObject = restTemplate.postForObject(serverURI, log, String.class); //TODO Walidacja wyslania
+					if ("OK".equals(postForObject)) //TODO ??!!!!!!
+					{
+						committingDetails.step();
+					}
+					else
+					{
+						committingDetails.stepInvalid("Wrong response");	
+					}
+					
+					
 				} else
 				{
-					committingDetails.stepInvalid();
+					committingDetails.stepInvalid("Log was null");
 				}
 				
 				i++;
@@ -112,26 +142,18 @@ final public class UsageStatistic {
 		{
 			committingDetails
 			.commitingFailureWithError("Error with connection to local database");
-		}
+		} 
 	}
 
 	
 
-	public static UsageStatistic getInstance(String tool,
-			CommitingDetailsInterface committingDetails) {
+	public static UsageStatistic getInstance(String tool, CommitingDetailsInterface committingDetails) {
 		if (instance == null) {
 			try {
-				if (committingDetails == null) {
-					committingDetails = new CommitingDetailsEmpty();
-				}
-				if (tool == null) {
-					tool = "Domyslna Aplikacja";
-				}
 				instance = new UsageStatistic(tool, committingDetails);
 			} catch (IOException e) {
-				e.printStackTrace();
+				//TODO co z tym i drugim catchem
 			} catch (URISyntaxException e) {
-				e.printStackTrace();
 			}
 			return instance;
 		} else

@@ -9,6 +9,7 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 import org.junit.internal.runners.statements.Fail;
 
 public class DaoTemporaryDatabaseH2Test

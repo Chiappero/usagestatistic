@@ -12,12 +12,12 @@ final class LogInformation{
 	 * 
 	 */
 	private static final long serialVersionUID = -5844130058939487072L;
-Date dateTime; //data tworzona przez nas ma format Sun Oct 09 12:19:06 CEST 2011
+private Date dateTime; //data tworzona przez nas ma format Sun Oct 09 12:19:06 CEST 2011
 			   //data odczytana przez lokalna baze danych ma format 2011-10-09 12:19:06.39
-String functionality;
-String parameters;
-String user;
-String tool;
+private String functionality;
+private String parameters;
+private String user;
+private String tool;
 public String getUser() {
 	return user;
 }
@@ -55,11 +55,11 @@ public String toString() {
 			+ ", tool=" + tool + "]";
 }
 
-public LogInformation()
+LogInformation()
 {}
 
 
-public LogInformation(Date date,String functionality,String user,String tool, String parameters)
+LogInformation(Date date,String functionality,String user,String tool, String parameters)
 {
 	this.dateTime=date;
 	this.functionality=functionality;
@@ -68,7 +68,7 @@ public LogInformation(Date date,String functionality,String user,String tool, St
 	this.parameters=parameters;
 }
 
-public static boolean validateLog(LogInformation log)
+static boolean validateLog(LogInformation log)
 {
 	Date date = log.getDate();
 	String functionality = log.getFunctionality();

@@ -9,14 +9,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 
-class DaoTemporaryDatabaseSerialization implements
+class DaoTemporaryDatabaseSerializationDEPRECATED implements
 		DaoTemporaryDatabaseInterface {
 
 	private LinkedList<LogInformation> lista;
 	private boolean databaseActive;
 	private File file = new File("dane");
 
-	DaoTemporaryDatabaseSerialization() {
+	DaoTemporaryDatabaseSerializationDEPRECATED() {
 	}
 
 	@Override
