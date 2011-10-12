@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 final public class UsageStatistic {
-	private URI serverURI = new URI("http://localhost:8080/UsageStatisticsServer/post");
+	private URI serverURI;
 	private String user;
 	private String password;
 	private String tool;
@@ -105,19 +105,19 @@ final public class UsageStatistic {
 					String postForObject = restTemplate.postForObject(serverURI, log, String.class);
 					if ("OK".equals(postForObject)) 
 					{
+						dao.clearFirstLog();
 						committingDetails.step();
+						
 					}
+					else if ("ERROR".equals(postForObject))
+					{
+						committingDetails.stepInvalid("Cannot save log on database server");
+					} 
 					else
 					{
-						if ("ERROR".equals(postForObject))
-						{
-						committingDetails.stepInvalid("Cannot save log on database server");
-						} else
-						{
 							committingDetails.stepInvalid("Wrong Response");
-						}
+							throw new ServerDoesntReceiveDataException();
 					}
-					
 					
 				} else
 				{
@@ -125,12 +125,17 @@ final public class UsageStatistic {
 				}
 				
 				i++;
-				dao.clearFirstLog();
-
+				
 			}
 				committingDetails.setInfo("Commiting finised succesful");
 				committingDetails.commitingFinishedSuccesful();
 		} 
+		catch (ServerDoesntReceiveDataException e)
+		{
+			committingDetails
+			.commitingFailureWithError("Error with server - server doesn't receive data");			
+		}
+		
 		
 		catch (org.springframework.web.client.HttpClientErrorException e)
 		{

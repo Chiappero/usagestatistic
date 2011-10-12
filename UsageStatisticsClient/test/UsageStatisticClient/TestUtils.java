@@ -16,6 +16,13 @@ public static void removeAllLogsFromDao(UsageStatistic instance) throws NoSuchFi
 	}
 }
 
+public static int getLogsAmmount(UsageStatistic instance) throws NoSuchFieldException, SQLException
+{
+	
+	DaoTemporaryDatabaseH2 dao = (DaoTemporaryDatabaseH2) PrivateAccessor.getField(instance, "dao");
+	return dao.getLogsAmount();
+}
+
 public static void addSomeLogsToDao(UsageStatistic instance, int amountRecord)
 {	
 	for (int i=0;i<amountRecord;i++)
@@ -23,4 +30,10 @@ public static void addSomeLogsToDao(UsageStatistic instance, int amountRecord)
 	instance.used("funkcjonalnosc", "parametry"); 
 	}
 }
+
+public static DaoTemporaryDatabaseH2 getLocalDao(UsageStatistic instance) throws NoSuchFieldException
+{
+	return (DaoTemporaryDatabaseH2) PrivateAccessor.getField(instance, "dao");
+}
+
 }
