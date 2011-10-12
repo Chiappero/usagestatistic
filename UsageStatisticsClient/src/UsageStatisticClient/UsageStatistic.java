@@ -105,19 +105,19 @@ final public class UsageStatistic {
 					String postForObject = restTemplate.postForObject(serverURI, log, String.class);
 					if ("OK".equals(postForObject)) 
 					{
+						dao.clearFirstLog();
 						committingDetails.step();
+						
 					}
+					else if ("ERROR".equals(postForObject))
+					{
+						committingDetails.stepInvalid("Cannot save log on database server");
+					} 
 					else
 					{
-						if ("ERROR".equals(postForObject))
-						{
-						committingDetails.stepInvalid("Cannot save log on database server");
-						} else
-						{
 							committingDetails.stepInvalid("Wrong Response");
-						}
+							throw new ServerDoesntReceiveDataException();
 					}
-					
 					
 				} else
 				{
@@ -125,12 +125,17 @@ final public class UsageStatistic {
 				}
 				
 				i++;
-				dao.clearFirstLog();
-
+				
 			}
 				committingDetails.setInfo("Commiting finised succesful");
 				committingDetails.commitingFinishedSuccesful();
 		} 
+		catch (ServerDoesntReceiveDataException e)
+		{
+			committingDetails
+			.commitingFailureWithError("Error with server - server doesn't receive data");			
+		}
+		
 		
 		catch (org.springframework.web.client.HttpClientErrorException e)
 		{

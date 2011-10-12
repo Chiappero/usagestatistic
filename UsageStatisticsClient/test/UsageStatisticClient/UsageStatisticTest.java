@@ -1,5 +1,7 @@
 package UsageStatisticClient;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import junitx.util.PrivateAccessor;
@@ -7,8 +9,10 @@ import junitx.util.PrivateAccessor;
 import org.junit.Assert;
 import org.junit.Test;
 
+import UsageStatisticClient.UsageStatistic;
+
 public class UsageStatisticTest {
-	
+
 	/*@Test
 	public void TestPost() throws URISyntaxException
 	{
@@ -46,7 +50,7 @@ restTemplate.postForObject(uri, log, String.class);
 		
 	}*/
 		
-	@Test
+//	@Test
 	public void methodCommit() throws NoSuchFieldException, SQLException
 	{
 		commitLogs(99);  //TODO DZIA£A
@@ -70,6 +74,30 @@ restTemplate.postForObject(uri, log, String.class);
 		TestUtils.removeAllLogsFromDao(instance);
 		System.out.println("removeAllLogs2");
 	}
+	
+	@Test
+	public void AT22_Server_doesnt_receive_data() throws NoSuchFieldException, SQLException, URISyntaxException
+	{
+		
+
+		CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
+	
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 46);
+		PrivateAccessor.setField(instance, "serverURI", new URI("localhost:8123"));
+		instance.commit();
+		Assert.assertEquals(inter.msg,"Error with connection to server");
+		
+		PrivateAccessor.setField(instance, "serverURI", new URI("http://fakeaddress.pl"));
+		instance.commit();
+		Assert.assertEquals(inter.msg,"Error with server - server doesn't receive data");
+		TestUtils.addSomeLogsToDao(instance, 70);
+		Assert.assertEquals(TestUtils.getLogsAmmount(instance), 46+70);
+		
+	}
+	
+	
 	
 		
 	
