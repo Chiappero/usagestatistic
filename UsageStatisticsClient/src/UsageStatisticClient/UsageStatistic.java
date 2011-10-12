@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 final public class UsageStatistic {
-	private URI serverURI = new URI("http://localhost:8080/UsageStatisticsServer/post");
+	private URI serverURI;
 	private String user;
 	private String password;
 	private String tool;
