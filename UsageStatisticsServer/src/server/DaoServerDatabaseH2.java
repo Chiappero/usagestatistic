@@ -31,6 +31,12 @@ public class DaoServerDatabaseH2
 			{
 				return false;
 			}
+			
+			catch (Exception e)
+			{
+				return false;
+			}
+			
 			return true;
 		}
 		
@@ -47,7 +53,6 @@ public class DaoServerDatabaseH2
 	        createTables();
 		} catch (ClassNotFoundException e) 
 		{
-			e.printStackTrace();
 		}
         catch (SQLException e) {
         	// TODO CO JAK SIE NIE UDA
