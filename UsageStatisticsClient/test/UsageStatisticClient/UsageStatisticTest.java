@@ -13,43 +13,21 @@ import UsageStatisticClient.UsageStatistic;
 
 public class UsageStatisticTest {
 
-	/*@Test
-	public void TestPost() throws URISyntaxException
-	{
-RestTemplate restTemplate = new RestTemplate();
-LogInformation log = new LogInformation();
-URI uri  =new URI("http://localhost:8080/UsageStatisticsServer/post");
-restTemplate.postForObject(uri, log, String.class);
-	}*/
-		
 	
-	/*@Test
-	public void methodUsed() throws SQLException, NoSuchFieldException
+	
+	@Test
+	public void AT21_Proper_commit() throws NoSuchFieldException, SQLException
 	{
-		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		Assert.assertTrue(instance.used("funkcjonalnosc", "parametry"));
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", new CommitingDetailsTestImp(1));
 		TestUtils.removeAllLogsFromDao(instance);
-	}*/
-	
-	/*@Test
-	public void methodCommit() throws NoSuchFieldException, SQLException, InterruptedException
-	{
-		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		for (int i=0;i<100;i++)
-		{
-			//System.out.println("ITERACJA BEFORE"+i);
-			instance.used("funkcjonalnosc", "parametry");
-			//System.out.println("ITERACJA AFTER"+i);
-		}
-		//System.out.println("COMMIT BEFORE");
-		
-		instance.setCommittingDetails(new CommitingDetailsTestImp(1));
+		instance.used("funkcjonalnosc", "parametry");
+		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
+		Assert.assertEquals(localDao.getLogsAmount(),1);
 		instance.commit();
-		//System.out.println("COMMIT AFTER");
-		
-		
-	}*/
-		
+		Assert.assertTrue(localDao.isEmpty());
+	}
+			
+	
 //	@Test
 	public void methodCommit() throws NoSuchFieldException, SQLException
 	{
