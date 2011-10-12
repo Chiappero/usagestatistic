@@ -23,4 +23,10 @@ public static void addSomeLogsToDao(UsageStatistic instance, int amountRecord)
 	instance.used("funkcjonalnosc", "parametry"); 
 	}
 }
+
+public static DaoTemporaryDatabaseH2 getLocalDao(UsageStatistic instance) throws NoSuchFieldException
+{
+	return (DaoTemporaryDatabaseH2) PrivateAccessor.getField(instance, "dao");
+}
+
 }
