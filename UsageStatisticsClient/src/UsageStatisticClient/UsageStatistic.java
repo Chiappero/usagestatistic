@@ -95,21 +95,27 @@ final public class UsageStatistic {
 			committingDetails.setLogsAmount(logsAmount);
 			committingDetails.setInfo("Begin commiting");
 			int i = 0;
-
+			
 			while (!dao.isEmpty() &&  i < logsAmount)
 			{
 				LogInformation log = dao.getFirstLog();
 
 				if (log!=null)
 				{
-					String postForObject = restTemplate.postForObject(serverURI, log, String.class); //TODO Walidacja wyslania
-					if ("OK".equals(postForObject)) //TODO ??!!!!!!
+					String postForObject = restTemplate.postForObject(serverURI, log, String.class);
+					if ("OK".equals(postForObject)) 
 					{
 						committingDetails.step();
 					}
 					else
 					{
-						committingDetails.stepInvalid("Wrong response");	
+						if ("ERROR".equals(postForObject))
+						{
+						committingDetails.stepInvalid("Cannot save log on database server");
+						} else
+						{
+							committingDetails.stepInvalid("Wrong Response");
+						}
 					}
 					
 					

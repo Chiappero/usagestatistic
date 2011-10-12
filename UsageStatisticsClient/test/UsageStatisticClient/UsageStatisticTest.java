@@ -19,14 +19,32 @@ restTemplate.postForObject(uri, log, String.class);
 	}*/
 		
 	
-	@Test
+	/*@Test
 	public void methodUsed() throws SQLException, NoSuchFieldException
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		Assert.assertTrue(instance.used("funkcjonalnosc", "parametry"));
 		TestUtils.removeAllLogsFromDao(instance);
-	}
+	}*/
 	
+	/*@Test
+	public void methodCommit() throws NoSuchFieldException, SQLException, InterruptedException
+	{
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		for (int i=0;i<100;i++)
+		{
+			//System.out.println("ITERACJA BEFORE"+i);
+			instance.used("funkcjonalnosc", "parametry");
+			//System.out.println("ITERACJA AFTER"+i);
+		}
+		//System.out.println("COMMIT BEFORE");
+		
+		instance.setCommittingDetails(new CommitingDetailsTestImp(1));
+		instance.commit();
+		//System.out.println("COMMIT AFTER");
+		
+		
+	}*/
 		
 	@Test
 	public void methodCommit() throws NoSuchFieldException, SQLException

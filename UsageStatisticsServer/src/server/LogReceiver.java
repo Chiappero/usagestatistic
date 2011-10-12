@@ -19,10 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 		
 	    @RequestMapping(value = "/post", method = RequestMethod.POST)
 	    	public ModelAndView addPerson(@RequestBody LogInformation log) {
-	    	//System.out.println("post="+log);
-	    	//System.out.println(
-	    			dao.saveLog(log);
-	    			//);
-	    	return new ModelAndView("postowanie");
+	    	return dao.saveLog(log)?new ModelAndView("OK"):new ModelAndView("ERROR");
 	    }
 	}
