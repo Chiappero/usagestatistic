@@ -60,7 +60,6 @@ public class UsageStatisticTest {
 
 		CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
-	
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 46);
 		PrivateAccessor.setField(instance, "serverURI", new URI("localhost:8123"));
@@ -69,7 +68,7 @@ public class UsageStatisticTest {
 		
 		PrivateAccessor.setField(instance, "serverURI", new URI("http://fakeaddress.pl"));
 		instance.commit();
-		Assert.assertEquals(inter.msg,"Error with server - server doesn't receive data");
+		Assert.assertTrue(inter.msg.equals("Error with server - server doesn't receive data")||inter.msg.equals("Error with connection to server"));
 		TestUtils.addSomeLogsToDao(instance, 70);
 		Assert.assertEquals(TestUtils.getLogsAmmount(instance), 46+70);
 		

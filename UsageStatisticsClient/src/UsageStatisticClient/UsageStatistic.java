@@ -41,15 +41,7 @@ final public class UsageStatistic {
 	private UsageStatistic(String tool,
 			CommitingDetailsInterface committingDetails) throws IOException,
 			URISyntaxException {
-		if (committingDetails == null) 
-		{
-			this.committingDetails = new CommitingDetailsEmpty();
-		} 
-		else
-		{
-			this.committingDetails=committingDetails;
-		}
-		
+			
 		
 		if (tool == null)
 		{
@@ -59,6 +51,7 @@ final public class UsageStatistic {
 		{
 			this.tool = tool;
 		}
+		setCommittingDetails(committingDetails);
 		init();
 	}
 
@@ -168,6 +161,7 @@ final public class UsageStatistic {
 			}
 			return instance;
 		} else
+			instance.setCommittingDetails(committingDetails);
 			return instance;
 	}
 }
