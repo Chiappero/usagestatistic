@@ -28,7 +28,7 @@ public static void addSomeLogsToDao(UsageStatistic instance, int amountRecord)
 {	
 	for (int i=0;i<amountRecord;i++)
 	{
-	instance.used("funkcjonalnosc", "parametry"); 
+	instance.used("funkcjonalnosc", "i="+i); 
 	}
 }
 

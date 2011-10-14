@@ -15,7 +15,7 @@ public class UsageStatisticTest {
 
 	
 	
-//	@Test
+	@Test
 	public void AT21_Proper_commit() throws NoSuchFieldException, SQLException
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", new CommitingDetailsTestImp(1));
@@ -53,7 +53,7 @@ public class UsageStatisticTest {
 		System.out.println("removeAllLogs2");
 	}
 	
-//	@Test
+	@Test
 	public void AT22_Server_doesnt_receive_data() throws NoSuchFieldException, SQLException, URISyntaxException
 	{
 		
@@ -124,7 +124,7 @@ public class UsageStatisticTest {
 		
 	}	
 	
-//	@Test 
+	@Test 
 	public void AT26_Empty_Local_Database() throws NoSuchFieldException, SQLException
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
@@ -137,15 +137,50 @@ public class UsageStatisticTest {
 		
 	}
 	
-//	@Test
-	public void AT29_Large_Data() throws NoSuchFieldException, SQLException //what if we use commit when other commit is in progress
+	@Test
+	public void AT29_Large_Data() throws NoSuchFieldException, SQLException
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		TestUtils.removeAllLogsFromDao(instance);
-		TestUtils.addSomeLogsToDao(instance, 100000);
+		TestUtils.addSomeLogsToDao(instance, 10000);
 		instance.commit();
+		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 	}
 	
+	@Test
+	public void AT210_Paralell_Commits() throws NoSuchFieldException, SQLException
+	{
+		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 1000);
+		Thread[] tg=new Thread[10];
+		
+		for (int i=0;i<10;i++)
+		{
+			
+			tg[i]=new Thread()
+			{
+			@Override
+			public void run()
+			{
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				instance.commit();
+				
+			}
+		};
+		}
+		for (int i=0;i<10;i++)
+			tg[i].start();
+		instance.commit();
+		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
+		
+		
+	}
 
 	
 	
