@@ -17,7 +17,7 @@ public class DaoServerDatabaseH2
 	
 	public boolean saveLog(LogInformation log) 
 	{
-		
+		checkIfBaseIsOpen();
 		if (log!=null&&LogInformation.validateLog(log))
 		{
 		java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(log.getDate().getTime());
@@ -29,6 +29,19 @@ public class DaoServerDatabaseH2
 				conn.createStatement().execute(sql);
 			} catch (SQLException e)
 			{
+				if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+				{
+					createTables();
+					try {
+						conn.createStatement().execute(sql);
+						return true;
+					} catch (SQLException e1) 
+					{
+						return false;
+					}
+				}	
+				
+				
 				return false;
 			}
 			
@@ -54,8 +67,8 @@ public class DaoServerDatabaseH2
 		} catch (ClassNotFoundException e) 
 		{
 		}
-        catch (SQLException e) {
-        	// TODO CO JAK SIE NIE UDA
+        catch (SQLException e) 
+        {
 			
 		}
 
@@ -84,8 +97,20 @@ public class DaoServerDatabaseH2
 			// TODO CO JAK SIE NIE UDA
 		}
 		
-		
-		
+	}
+	
+	private void checkIfBaseIsOpen()
+	{
+		try
+		{
+			if (conn==null || conn.isClosed())
+			{
+				openDatabase();
+			}
+		} catch (SQLException e)
+		{
+			
+		}
 	}
 
 }
