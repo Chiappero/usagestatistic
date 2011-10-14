@@ -16,7 +16,7 @@ public class UsageStatisticTest {
 	
 	
 	@Test
-	public void AT21_Proper_commit() throws NoSuchFieldException, SQLException
+	public void AT21_Proper_commit() throws NoSuchFieldException, SQLException, UsageStatisticException
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", new CommitingDetailsTestImp(1));
 		TestUtils.removeAllLogsFromDao(instance);
@@ -29,14 +29,14 @@ public class UsageStatisticTest {
 			
 	
 //	@Test
-	public void methodCommit() throws NoSuchFieldException, SQLException
+	public void methodCommit() throws NoSuchFieldException, SQLException, UsageStatisticException
 	{
 		commitLogs(99);  //TODO DZIA£A
 		//commitLogs(100); //TODO NIE DZIALA!
 		
 	}
 	
-	private void commitLogs(int amountRecord) throws NoSuchFieldException, SQLException
+	private void commitLogs(int amountRecord) throws NoSuchFieldException, SQLException, UsageStatisticException
 	{	
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		
@@ -54,7 +54,7 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT22_Server_doesnt_receive_data() throws NoSuchFieldException, SQLException, URISyntaxException
+	public void AT22_Server_doesnt_receive_data() throws NoSuchFieldException, SQLException, URISyntaxException, UsageStatisticException
 	{
 		
 
@@ -75,7 +75,7 @@ public class UsageStatisticTest {
 	}
 
 	@Test 
-	public void AT24_Connection_Lost() throws NoSuchFieldException, SQLException, URISyntaxException
+	public void AT24_Connection_Lost() throws NoSuchFieldException, SQLException, URISyntaxException, UsageStatisticException
 	{
 
 		final CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
@@ -95,27 +95,19 @@ public class UsageStatisticTest {
 							PrivateAccessor.setField(instance, "serverURI", new URI("localhost:8123"));
 
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Assert.fail();
 					}
 					 catch (NoSuchFieldException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						 Assert.fail();
 					 }
 					 catch (URISyntaxException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						 Assert.fail();
 					} 
-//					catch (SQLException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
 				}
 			};
 		t.start();
 		instance.commit();
 		Assert.assertEquals(Errors.ERROR_WITH_CONNECTION_TO_SERVER,inter.msg);
-	//	System.out.println(TestUtils.getLogsAmmount(instance));
 		Assert.assertTrue(TestUtils.getLogsAmmount(instance)<500&&TestUtils.getLogsAmmount(instance)>0);
 			PrivateAccessor.setField(instance, "serverURI", original);
 			instance.commit();
@@ -125,9 +117,9 @@ public class UsageStatisticTest {
 	}	
 	
 	@Test 
-	public void AT26_Empty_Local_Database() throws NoSuchFieldException, SQLException
+	public void AT26_Empty_Local_Database() throws NoSuchFieldException, SQLException, UsageStatisticException
 	{
-		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", new CommitingDetailsTestImp(0));
 		TestUtils.removeAllLogsFromDao(instance);
 		instance.commit();
 		TestUtils.addSomeLogsToDao(instance, 50);
@@ -138,7 +130,19 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT29_Large_Data() throws NoSuchFieldException, SQLException
+	public void AT28_Cannot_delete_log_from_local_database() throws UsageStatisticException, NoSuchFieldException
+	{
+		CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
+		DaoTemporaryDatabaseInterface daoMock = new DaoTemporaryDatabaseH2TestImp();
+		PrivateAccessor.setField(instance, "dao", daoMock);
+		instance.commit();
+		Assert.assertEquals(inter.msg,Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
+	}
+
+	
+	@Test
+	public void AT29_Large_Data() throws NoSuchFieldException, SQLException, UsageStatisticException
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		TestUtils.removeAllLogsFromDao(instance);
@@ -148,7 +152,7 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT210_Paralell_Commits() throws NoSuchFieldException, SQLException
+	public void AT210_Paralell_Commits() throws NoSuchFieldException, SQLException, UsageStatisticException
 	{
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		TestUtils.removeAllLogsFromDao(instance);
@@ -166,8 +170,6 @@ public class UsageStatisticTest {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 				instance.commit();
 				
@@ -181,7 +183,8 @@ public class UsageStatisticTest {
 		
 		
 	}
-
+	
+	
 	
 	
 	

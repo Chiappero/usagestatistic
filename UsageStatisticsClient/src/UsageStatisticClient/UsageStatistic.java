@@ -2,6 +2,7 @@ package UsageStatisticClient;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
@@ -19,28 +20,38 @@ final public class UsageStatistic {
 	private String tool;
 	private static UsageStatistic instance;
 	private RestTemplate restTemplate;
-	private DaoTemporaryDatabaseInterface dao = new DaoTemporaryDatabaseH2(); 
+	private DaoTemporaryDatabaseInterface dao;
 	private CommitingDetailsInterface committingDetails;
 
-	private void init() throws IOException, URISyntaxException { // TODO zeby
-																	// init i
-																	// getInstance
-																	// nie mieli
-																	// throwsa
+	private void init() throws UsageStatisticException {
+		dao = new DaoTemporaryDatabaseH2(); 													// throwsa
 		restTemplate = new RestTemplate();
 		File file = new File("client-config.cfg"); // TODO2 - zakoduj to i dodaj
 													// obsluge wyjatkow
-		BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+		BufferedReader bufferedReader;
+		try
+		{
+			bufferedReader = new BufferedReader(new FileReader(file));
+			serverURI = new URI(bufferedReader.readLine());
+			user = bufferedReader.readLine();
+			password = bufferedReader.readLine();
+			bufferedReader.close();
+		}
+			catch (URISyntaxException e)
+			{
+				throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URI);
+			}
+		 catch (IOException e)
+		 	{
+			 throw new UsageStatisticException(UsageStatisticException.CANNOT_READ_CONFIGURATION_FILE);
+		 	}
 
-		serverURI = new URI(bufferedReader.readLine());
-		user = bufferedReader.readLine();
-		password = bufferedReader.readLine();
+		
 
 	}
 
 	private UsageStatistic(String tool,
-			CommitingDetailsInterface committingDetails) throws IOException,
-			URISyntaxException {
+			CommitingDetailsInterface committingDetails) throws UsageStatisticException {
 			
 		
 		if (tool == null)
@@ -56,6 +67,8 @@ final public class UsageStatistic {
 	}
 
 	public boolean used(String functionality, String parameters) { 
+		try
+		{
 		LogInformation log = new LogInformation();
 		log.setDate(Calendar.getInstance().getTime());
 		log.setFunctionality(functionality);
@@ -63,7 +76,11 @@ final public class UsageStatistic {
 		log.setTool(tool);
 		log.setUser(user);
 		return dao.saveLog(log);
-
+		}
+		catch (Exception e)
+		{
+		return false;	
+		}
 	}
 	
 	
@@ -144,7 +161,8 @@ final public class UsageStatistic {
 			.commitingFailureWithError(Errors.ERROR_WITH_CONNECTION_TO_SERVER);
 				
 		} catch (SQLException e)
-		{
+		{	
+			dao.resetDatabase();
 			committingDetails
 			.commitingFailureWithError(Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
 		} 
@@ -154,6 +172,16 @@ final public class UsageStatistic {
 			committingDetails
 			.commitingFailureWithError(Errors.CANNOT_EXTRACT_RESPONSE);
 		}
+		
+		catch (Exception e)
+		{
+			try
+			{
+			committingDetails.commitingFailureWithError(Errors.FATAL_EXCEPTION);
+			}
+			catch (Exception e2)
+			{}
+		}
 
 
 
@@ -161,26 +189,36 @@ final public class UsageStatistic {
 
 	
 
-	public static UsageStatistic getInstance(String tool, CommitingDetailsInterface committingDetails) {
-		if (instance == null) {
-			try {
+	public static UsageStatistic getInstance(String tool, CommitingDetailsInterface committingDetails) throws UsageStatisticException 
+	{
+		
+		try
+		{
+			if (instance == null) 
+			{
 				instance = new UsageStatistic(tool, committingDetails);
-			} catch (IOException e) {
-				//TODO co z tym i drugim catchem
-			} catch (URISyntaxException e) {
-			}
-			return instance;
-		} else
-			try {
-				instance.init();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				return instance;
+			} 
+			else
+			{
+			instance.init();
 			instance.setCommittingDetails(committingDetails);
 			return instance;
+			}
+		} 
+		catch (UsageStatisticException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new UsageStatisticException(UsageStatisticException.CANNOT_GET_INSTANCE);
+		}
+		
+	}
+	
+	public static UsageStatistic getInstance(String tool) throws UsageStatisticException
+	{
+		return getInstance(tool,null);
 	}
 }

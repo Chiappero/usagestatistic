@@ -17,7 +17,8 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	
 	@Override
 	public boolean saveLog(LogInformation log) 
-	{
+	{	
+		checkIfBaseIsOpen();
 		if (log==null)
 		{
 			return false;
@@ -40,18 +41,13 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			conn.createStatement().execute(sql);
 		} catch (SQLException e)
 		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			resetDatabase();
+			try
 			{
-				createTables();
-				try {
-					conn.createStatement().execute(sql);
-				} catch (SQLException e1) {
-					return false;
-				}
-			}	
-			else
+				conn.createStatement().execute(sql);
+			} catch (SQLException e1)
 			{
-			return false;
+				return false;
 			}
 		}
 		catch (Exception e)
@@ -63,21 +59,38 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	}
 
 	@Override
-	public synchronized boolean clearFirstLog() throws SQLException 
-	{
-		if (isEmpty())return false;
+	public synchronized void clearFirstLog() throws SQLException 
+	{	
+		checkIfBaseIsOpen();
+		try
+		{
+		if (isEmpty())
+		{
+			throw new SQLException();
+		}
 		String sql="SELECT TOP 1 * FROM Log";
 		ResultSet rs=conn.createStatement().executeQuery(sql);
 		rs.first();
 		int index=rs.getInt("id");
 		sql="DELETE FROM Log WHERE id="+index;
 		conn.createStatement().executeUpdate(sql);
-		return true;
+		}
+		catch (SQLException e)
+		{
+			throw e;
+		}
+		
+		catch (Exception e)
+		{
+			throw new SQLException();
+		}
+		
 	}
 
 	@Override
 	public LogInformation getFirstLog() throws SQLException 
 	{	
+		checkIfBaseIsOpen();
 		if (isEmpty())return null;
 		String sql="SELECT TOP 1 * FROM Log";
 		ResultSet rs = null;
@@ -103,8 +116,8 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 
 	@Override
 	public boolean isEmpty() throws SQLException 
-	{
-
+	{	
+			checkIfBaseIsOpen();
 			String sql="SELECT COUNT(*) FROM Log";
 			try
 			{
@@ -126,7 +139,8 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 
 	@Override
 	public int getLogsAmount() throws SQLException 
-	{
+	{	
+		checkIfBaseIsOpen();
 		String sql="SELECT COUNT(*) FROM Log";
 		try
 		{
@@ -167,7 +181,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	}
 	
 	@Override
-	public void closeDatabase() //TODO jak zamknac baze?
+	public void closeDatabase() //TODO nie uzywane nigdy
 	{
 
 			try {
@@ -189,9 +203,57 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			conn.createStatement().execute(query);
 		} catch (SQLException e) {
 		}
-		
-		
-		
 	}
+	
+	
+	
+	private void recreateTable() throws SQLException
+	{
+		try
+		{
+			Class.forName("org.h2.Driver");
+		} catch (ClassNotFoundException e)
+		{
+		}
+        conn= DriverManager.getConnection("jdbc:h2:~/db", "user", "");
+        String query="DROP TABLE IF EXISTS Log"; 
+        conn.createStatement().execute(query);
+        createTables();
+	}
+
+	@Override
+	public void resetDatabase()
+	{
+			try
+			{
+				if (conn==null || conn.isClosed())
+				{
+					recreateTable();
+				} 
+				else
+				{
+						String query="DROP TABLE IF EXISTS Log"; 
+				        conn.createStatement().execute(query);
+				        createTables();
+				}
+			} catch (SQLException e)
+			{
+			}
+	}
+	
+	private void checkIfBaseIsOpen()
+	{
+		try
+		{
+			if (conn==null || conn.isClosed())
+			{
+				openDatabase();
+			}
+		} catch (SQLException e)
+		{
+			resetDatabase();
+		}
+	}
+		
 
 }
