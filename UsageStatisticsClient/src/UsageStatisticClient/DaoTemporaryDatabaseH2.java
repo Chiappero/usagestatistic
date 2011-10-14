@@ -40,6 +40,16 @@ class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			conn.createStatement().execute(sql);
 		} catch (SQLException e)
 		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				createTables();
+				try {
+					conn.createStatement().execute(sql);
+				} catch (SQLException e1) {
+					return false;
+				}
+			}	
+			else
 			return false;
 		}
 		catch (Exception e)
@@ -67,7 +77,18 @@ class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	public LogInformation getFirstLog() throws SQLException 
 	{
 		String sql="SELECT TOP 1 * FROM Log";
-		ResultSet rs=conn.createStatement().executeQuery(sql);
+		ResultSet rs = null;
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				createTables();
+			}			
+		}
 		if (isEmpty())return null;
 		rs.first();
 		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
@@ -82,19 +103,46 @@ class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	{
 
 			String sql="SELECT COUNT(*) FROM Log";
-			
+			try
+			{
 			ResultSet rs=conn.createStatement().executeQuery(sql);
 			rs.first();
 			return rs.getString(1).equals("0");
+			}
+			catch (SQLException e)
+			{
+				if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+				{
+					createTables();
+					return true;
+				}
+				else throw e;
+				
+			}			
 	}
 
 	@Override
 	public int getLogsAmount() throws SQLException 
 	{
 		String sql="SELECT COUNT(*) FROM Log";
+		try
+		{
 		ResultSet rs=conn.createStatement().executeQuery(sql);
 		rs.first();
 		return Integer.parseInt(rs.getString(1));
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				createTables();
+				ResultSet rs=conn.createStatement().executeQuery(sql);
+				rs.first();
+				return Integer.parseInt(rs.getString(1));				
+			}
+			else throw e;
+			
+		}
 	}
 	
 	@Override

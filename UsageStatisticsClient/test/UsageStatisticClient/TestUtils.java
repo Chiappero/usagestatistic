@@ -1,5 +1,6 @@
 package UsageStatisticClient;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import junitx.util.PrivateAccessor;
@@ -34,6 +35,17 @@ public static void addSomeLogsToDao(UsageStatistic instance, int amountRecord)
 public static DaoTemporaryDatabaseH2 getLocalDao(UsageStatistic instance) throws NoSuchFieldException
 {
 	return (DaoTemporaryDatabaseH2) PrivateAccessor.getField(instance, "dao");
+}
+
+
+
+public static void corruptFile(UsageStatistic instance) throws NoSuchFieldException, SQLException
+{
+	DaoTemporaryDatabaseH2 dao = (DaoTemporaryDatabaseH2) PrivateAccessor.getField(instance, "dao");
+	String sql="DROP TABLE Log";
+	Connection conn=(Connection) PrivateAccessor.getField(dao, "conn");
+	conn.createStatement().execute(sql);
+	
 }
 
 }

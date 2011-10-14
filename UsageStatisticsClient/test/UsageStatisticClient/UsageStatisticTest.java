@@ -15,7 +15,7 @@ public class UsageStatisticTest {
 
 	
 	
-	@Test
+//	@Test
 	public void AT21_Proper_commit() throws NoSuchFieldException, SQLException
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", new CommitingDetailsTestImp(1));
@@ -53,7 +53,7 @@ public class UsageStatisticTest {
 		System.out.println("removeAllLogs2");
 	}
 	
-	@Test
+//	@Test
 	public void AT22_Server_doesnt_receive_data() throws NoSuchFieldException, SQLException, URISyntaxException
 	{
 		
@@ -71,6 +71,19 @@ public class UsageStatisticTest {
 		Assert.assertTrue(inter.msg.equals("Error with server - server doesn't receive data")||inter.msg.equals("Error with connection to server"));
 		TestUtils.addSomeLogsToDao(instance, 70);
 		Assert.assertEquals(TestUtils.getLogsAmmount(instance), 46+70);
+		
+	}
+	
+	@Test 
+	public void AT26_Empty_Local_Database() throws NoSuchFieldException, SQLException
+	{
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		TestUtils.removeAllLogsFromDao(instance);
+		instance.commit();
+		TestUtils.addSomeLogsToDao(instance, 50);
+		TestUtils.corruptFile(instance);
+		TestUtils.addSomeLogsToDao(instance, 50);
+		Assert.assertEquals(50,TestUtils.getLogsAmmount(instance));
 		
 	}
 	
