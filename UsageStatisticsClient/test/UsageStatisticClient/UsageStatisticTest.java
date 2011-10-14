@@ -73,20 +73,7 @@ public class UsageStatisticTest {
 		Assert.assertEquals(TestUtils.getLogsAmmount(instance), 46+70);
 		
 	}
-	
-//	@Test 
-	public void AT26_Empty_Local_Database() throws NoSuchFieldException, SQLException
-	{
-		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		TestUtils.removeAllLogsFromDao(instance);
-		instance.commit();
-		TestUtils.addSomeLogsToDao(instance, 50);
-		TestUtils.corruptFile(instance);
-		TestUtils.addSomeLogsToDao(instance, 50);
-		Assert.assertEquals(50,TestUtils.getLogsAmmount(instance));
-		
-	}
-	
+
 	@Test 
 	public void AT24_Connection_Lost() throws NoSuchFieldException, SQLException, URISyntaxException
 	{
@@ -103,15 +90,10 @@ public class UsageStatisticTest {
 				public void run()
 				{
 					try {
-						Thread.sleep(100);
+						Thread.sleep(500);
 
 							PrivateAccessor.setField(instance, "serverURI", new URI("localhost:8123"));
-							Thread.sleep(1000);
-							Assert.assertEquals("Error with connection to server",inter.msg);
-							Assert.assertTrue(TestUtils.getLogsAmmount(instance)<500&&TestUtils.getLogsAmmount(instance)>0);
-								PrivateAccessor.setField(instance, "serverURI", original);
-								instance.commit();
-								Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
+
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -123,18 +105,50 @@ public class UsageStatisticTest {
 					 catch (URISyntaxException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					} 
+//					catch (SQLException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 				}
 			};
 		t.start();
 		instance.commit();
-
+		Assert.assertEquals("Error with connection to server",inter.msg);
+	//	System.out.println(TestUtils.getLogsAmmount(instance));
+		Assert.assertTrue(TestUtils.getLogsAmmount(instance)<500&&TestUtils.getLogsAmmount(instance)>0);
+			PrivateAccessor.setField(instance, "serverURI", original);
+			instance.commit();
+			Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 		
 		
 	}	
+	
+//	@Test 
+	public void AT26_Empty_Local_Database() throws NoSuchFieldException, SQLException
+	{
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		TestUtils.removeAllLogsFromDao(instance);
+		instance.commit();
+		TestUtils.addSomeLogsToDao(instance, 50);
+		TestUtils.corruptFile(instance);
+		TestUtils.addSomeLogsToDao(instance, 50);
+		Assert.assertEquals(50,TestUtils.getLogsAmmount(instance));
+		
+	}
+	
+//	@Test
+	public void AT29_Large_Data() throws NoSuchFieldException, SQLException //what if we use commit when other commit is in progress
+	{
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 100000);
+		instance.commit();
+	}
+	
+
+	
+	
 	
 		
 	
