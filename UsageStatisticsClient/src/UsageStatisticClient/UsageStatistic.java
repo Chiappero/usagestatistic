@@ -104,17 +104,16 @@ final public class UsageStatistic {
 					}
 					else if ("ERROR".equals(postForObject))
 					{
-						committingDetails.stepInvalid("Cannot save log on database server");
+						committingDetails.stepInvalid(Errors.CANNOT_SAVE_LOG);
 					} 
 					else
 					{
-							committingDetails.stepInvalid("Wrong Response");
 							throw new ServerDoesntReceiveDataException();
 					}
 					
 				} else
 				{
-					committingDetails.stepInvalid("Log was null");
+					committingDetails.stepInvalid(Errors.LOG_WAS_NULL);
 				}
 				
 				i++;
@@ -123,30 +122,41 @@ final public class UsageStatistic {
 				committingDetails.setInfo("Commiting finised succesful");
 				committingDetails.commitingFinishedSuccesful();
 		} 
+		
+		
 		catch (ServerDoesntReceiveDataException e)
 		{
 			committingDetails
-			.commitingFailureWithError("Error with server - server doesn't receive data");			
+			.commitingFailureWithError(Errors.SERVER_DOESNT_RECEIVE_DATA);			
 		}
 		
 		
 		catch (org.springframework.web.client.HttpClientErrorException e)
 		{
 			committingDetails
-			.commitingFailureWithError("Error with server - server turned off");
+			.commitingFailureWithError(Errors.SERVER_TURNED_OFF);
 		} 
 		
 		
 		catch (org.springframework.web.client.ResourceAccessException e)
 		{
 			committingDetails
-			.commitingFailureWithError("Error with connection to server");
+			.commitingFailureWithError(Errors.ERROR_WITH_CONNECTION_TO_SERVER);
 				
 		} catch (SQLException e)
 		{
 			committingDetails
-			.commitingFailureWithError("Error with connection to local database");
+			.commitingFailureWithError(Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
 		} 
+		
+		catch (org.springframework.web.client.RestClientException e)
+		{
+			committingDetails
+			.commitingFailureWithError(Errors.CANNOT_EXTRACT_RESPONSE);
+		}
+
+
+
 	}
 
 	

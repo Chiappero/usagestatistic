@@ -5,7 +5,7 @@ import java.sql.*;
 
 
 
-class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
+final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 {
 
 	Connection conn=null;
@@ -50,7 +50,9 @@ class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				}
 			}	
 			else
+			{
 			return false;
+			}
 		}
 		catch (Exception e)
 		{
@@ -75,7 +77,8 @@ class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 
 	@Override
 	public LogInformation getFirstLog() throws SQLException 
-	{
+	{	
+		if (isEmpty())return null;
 		String sql="SELECT TOP 1 * FROM Log";
 		ResultSet rs = null;
 		try
@@ -87,9 +90,9 @@ class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				createTables();
+				return null; //dopiero co utworzono tabele, loga nie ma
 			}			
 		}
-		if (isEmpty())return null;
 		rs.first();
 		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
 		if (!LogInformation.validateLog(logInformation))
@@ -136,9 +139,7 @@ class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				createTables();
-				ResultSet rs=conn.createStatement().executeQuery(sql);
-				rs.first();
-				return Integer.parseInt(rs.getString(1));				
+				return 0; //utworzono tabele, liczba logow = 0				
 			}
 			else throw e;
 			

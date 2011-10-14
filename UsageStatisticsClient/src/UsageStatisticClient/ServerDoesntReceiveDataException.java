@@ -1,6 +1,6 @@
 package UsageStatisticClient;
 
-public class ServerDoesntReceiveDataException extends Exception 
+final class ServerDoesntReceiveDataException extends Exception 
 {
 	
 	
