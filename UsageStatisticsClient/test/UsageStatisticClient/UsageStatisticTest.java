@@ -74,7 +74,7 @@ public class UsageStatisticTest {
 		
 	}
 	
-	@Test 
+//	@Test 
 	public void AT26_Empty_Local_Database() throws NoSuchFieldException, SQLException
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
@@ -87,7 +87,54 @@ public class UsageStatisticTest {
 		
 	}
 	
-	
+	@Test 
+	public void AT24_Connection_Lost() throws NoSuchFieldException, SQLException, URISyntaxException
+	{
+
+		final CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
+		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
+		final URI original=(URI) PrivateAccessor.getField(instance, "serverURI");
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 500);		
+		Assert.assertEquals(500,TestUtils.getLogsAmmount(instance));	
+		Thread t=new Thread()
+			{
+				@Override
+				public void run()
+				{
+					try {
+						Thread.sleep(100);
+
+							PrivateAccessor.setField(instance, "serverURI", new URI("localhost:8123"));
+							Thread.sleep(1000);
+							Assert.assertEquals("Error with connection to server",inter.msg);
+							Assert.assertTrue(TestUtils.getLogsAmmount(instance)<500&&TestUtils.getLogsAmmount(instance)>0);
+								PrivateAccessor.setField(instance, "serverURI", original);
+								instance.commit();
+								Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					 catch (NoSuchFieldException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					 }
+					 catch (URISyntaxException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			};
+		t.start();
+		instance.commit();
+
+		
+		
+	}	
 	
 		
 	

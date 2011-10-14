@@ -161,6 +161,15 @@ final public class UsageStatistic {
 			}
 			return instance;
 		} else
+			try {
+				instance.init();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			instance.setCommittingDetails(committingDetails);
 			return instance;
 	}
