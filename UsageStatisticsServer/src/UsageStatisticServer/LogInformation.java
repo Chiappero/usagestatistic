@@ -63,7 +63,14 @@ public static boolean validateLog(LogInformation log)
 	return !(date==null||functionality==null||functionality.equals("")||tool==null||tool.equals("")||user==null||user.equals(""));
 }
 
-
+LogInformation(Date date,String functionality,String user,String tool, String parameters)
+{
+	this.dateTime=date;
+	this.functionality=functionality;
+	this.user=user;
+	this.tool=tool;
+	this.parameters=parameters;
+}
 
 
 
