@@ -18,7 +18,6 @@ public class CommitingDetailsTestImp implements CommitingDetailsInterface
 	@Override
 	public void commitingFinishedSuccesful()
 	{
-		System.out.println("DONE");
 	}
 
 	@Override

@@ -64,11 +64,11 @@ public class UsageStatisticTest {
 		TestUtils.addSomeLogsToDao(instance, 46);
 		PrivateAccessor.setField(instance, "serverURI", new URI("localhost:8123"));
 		instance.commit();
-		Assert.assertEquals(inter.msg,"Error with connection to server");
+		Assert.assertEquals(inter.msg,Errors.ERROR_WITH_CONNECTION_TO_SERVER);
 		
 		PrivateAccessor.setField(instance, "serverURI", new URI("http://fakeaddress.pl"));
 		instance.commit();
-		Assert.assertTrue(inter.msg.equals("Error with server - server doesn't receive data")||inter.msg.equals("Error with connection to server"));
+		Assert.assertTrue(inter.msg.equals(Errors.SERVER_DOESNT_RECEIVE_DATA)||inter.msg.equals(Errors.ERROR_WITH_CONNECTION_TO_SERVER)||inter.msg.equals(Errors.CANNOT_EXTRACT_RESPONSE));
 		TestUtils.addSomeLogsToDao(instance, 70);
 		Assert.assertEquals(TestUtils.getLogsAmmount(instance), 46+70);
 		
@@ -114,7 +114,7 @@ public class UsageStatisticTest {
 			};
 		t.start();
 		instance.commit();
-		Assert.assertEquals("Error with connection to server",inter.msg);
+		Assert.assertEquals(Errors.ERROR_WITH_CONNECTION_TO_SERVER,inter.msg);
 	//	System.out.println(TestUtils.getLogsAmmount(instance));
 		Assert.assertTrue(TestUtils.getLogsAmmount(instance)<500&&TestUtils.getLogsAmmount(instance)>0);
 			PrivateAccessor.setField(instance, "serverURI", original);

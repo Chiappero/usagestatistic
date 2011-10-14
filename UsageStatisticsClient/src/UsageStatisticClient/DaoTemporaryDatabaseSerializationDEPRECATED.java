@@ -9,7 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 
-class DaoTemporaryDatabaseSerializationDEPRECATED implements
+final class DaoTemporaryDatabaseSerializationDEPRECATED implements
 		DaoTemporaryDatabaseInterface {
 
 	private LinkedList<LogInformation> lista;
