@@ -72,7 +72,8 @@ LogInformation(Date date,String functionality,String user,String tool, String pa
 	this.parameters=parameters;
 }
 
-
+LogInformation()
+{}
 
 
 }
