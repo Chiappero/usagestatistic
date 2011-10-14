@@ -1,4 +1,4 @@
-package server;
+package UsageStatisticServer;
 import java.io.Serializable;
 import java.util.Date;
 

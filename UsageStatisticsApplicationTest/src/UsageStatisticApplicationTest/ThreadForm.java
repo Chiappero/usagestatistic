@@ -8,7 +8,7 @@
  *
  * Created on 2011-10-12, 18:22:17
  */
-package usagestatistictestapp;
+package UsageStatisticApplicationTest;
 
 import UsageStatisticClient.UsageStatistic;
 
