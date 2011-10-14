@@ -18,6 +18,7 @@ public static void removeAllLogsFromDao(UsageStatistic instance) throws NoSuchFi
 	}
 }
 
+
 public static int getLogsAmmount(UsageStatistic instance) throws NoSuchFieldException, SQLException
 {
 	
@@ -43,15 +44,24 @@ public static DaoTemporaryDatabaseH2 getLocalDao(UsageStatistic instance) throws
 public static void corruptFile(UsageStatistic instance) throws NoSuchFieldException, SQLException
 {
 	DaoTemporaryDatabaseH2 dao = (DaoTemporaryDatabaseH2) PrivateAccessor.getField(instance, "dao");
-	String sql="DROP TABLE Log";
-	Connection conn=(Connection) PrivateAccessor.getField(dao, "conn");
-	conn.createStatement().execute(sql);
-	
+	dropTable(dao);
 }
 
 public static LogInformation getExampleLog()
 {
 	return new LogInformation(new GregorianCalendar().getTime(), "test", "test", "test", "test");
+}
+
+public static void dropTable(DaoTemporaryDatabaseH2 dao) throws NoSuchFieldException, SQLException
+{
+	String sql="DROP TABLE Log";
+	Connection conn=(Connection) PrivateAccessor.getField(dao, "conn");
+	conn.createStatement().execute(sql);
+}
+
+public static void makeConnectionNull(DaoTemporaryDatabaseH2 dao)
+{
+	dao.conn=null;
 }
 
 }

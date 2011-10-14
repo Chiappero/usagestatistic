@@ -2,13 +2,13 @@ package UsageStatisticClient;
 
 import junit.framework.Assert;
 
-public class CommitingDetailsTestImp implements CommitingDetailsInterface
+public class CommitingDetailsTestImp3 implements CommitingDetailsInterface
 {	
+	String msg;
 	boolean success=false;
-	private int amountExpected;
-	public CommitingDetailsTestImp(int amountExpected)
+	
+	public CommitingDetailsTestImp3()
 	{
-		this.amountExpected=amountExpected;
 	}
 
 	@Override
@@ -25,16 +25,12 @@ public class CommitingDetailsTestImp implements CommitingDetailsInterface
 	@Override
 	public void commitingFailureWithError(String error)
 	{
-		Assert.fail(error);
 	}
 
 	@Override
 	public void step()
 	{
 	}
-
-	
-	
 	
 	@Override
 	public void setInfo(String info)
@@ -44,13 +40,12 @@ public class CommitingDetailsTestImp implements CommitingDetailsInterface
 	@Override
 	public void setLogsAmount(int amount)
 	{
-		Assert.assertEquals(amount, amountExpected);
 	}
 
 	@Override
 	public void stepInvalid(String reason)
 	{
-		Assert.fail(reason);
+		msg=reason;
 	}
 
 }
