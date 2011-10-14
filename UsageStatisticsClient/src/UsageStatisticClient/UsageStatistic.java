@@ -71,7 +71,7 @@ final public class UsageStatistic {
 	{
 		if (committingDetails==null)
 		{
-		committingDetails = new CommitingDetailsEmpty();
+		this.committingDetails = new CommitingDetailsEmpty();
 		}
 		else
 		{
