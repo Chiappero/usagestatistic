@@ -165,12 +165,29 @@ public class DaoTemporaryDatabaseH2Test
 	@Test
 	public void AT34_Cannot_save_to_local_database_or_database_corrupted() throws NoSuchFieldException, SQLException
 	{
+	while (!dao.isEmpty())
+	{
+		dao.clearFirstLog();
+	}
+	dao.saveLog(TestUtils.getExampleLog());
 	dao.closeDatabase();
 	Assert.assertTrue(dao.saveLog(TestUtils.getExampleLog()));
-	String sql="DROP TABLE Log";
-	Connection conn=(Connection) PrivateAccessor.getField(dao, "conn");
-	conn.createStatement().execute(sql);
+	Assert.assertEquals(dao.getLogsAmount(),2);
+	Assert.assertFalse(dao.isEmpty());
+	
+	TestUtils.dropTable((DaoTemporaryDatabaseH2) dao);
 	Assert.assertTrue(dao.saveLog(TestUtils.getExampleLog()));
+	Assert.assertEquals(dao.getLogsAmount(),1);
+	Assert.assertFalse(dao.isEmpty());
+	
+	while (!dao.isEmpty())
+	{
+		dao.clearFirstLog();
+	}
+	TestUtils.makeConnectionNull((DaoTemporaryDatabaseH2) dao);
+	Assert.assertTrue(dao.saveLog(TestUtils.getExampleLog()));
+	Assert.assertEquals(dao.getLogsAmount(),1);
+	Assert.assertFalse(dao.isEmpty());
 	}
 	
 	
