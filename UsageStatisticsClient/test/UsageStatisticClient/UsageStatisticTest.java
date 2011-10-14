@@ -116,12 +116,72 @@ public class UsageStatisticTest {
 		
 	}	
 	
+	
+	@Test
+	public void AT25_Invalid_readout_log() throws NoSuchFieldException, SQLException, UsageStatisticException
+	{
+		CommitingDetailsTestImp inter = new CommitingDetailsTestImp(0);
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
+		TestUtils.removeAllLogsFromDao(instance);//0
+		DaoTemporaryDatabaseInterface localDao = TestUtils.getLocalDao(instance);
+		Assert.assertTrue(localDao.isEmpty());
+		instance.commit();
+		Assert.assertTrue(inter.success);
+		
+		localDao.saveLog(TestUtils.getExampleLog());//1
+		
+		localDao.closeDatabase();
+		Assert.assertNotNull(localDao.getFirstLog());//GETFIRSTLOG ratuje
+		Assert.assertEquals(localDao.getLogsAmount(),1);
+		
+		TestUtils.dropTable((DaoTemporaryDatabaseH2) localDao); //0
+		Assert.assertNull(localDao.getFirstLog());//GETFIRSTLOG ratuje
+		Assert.assertTrue(localDao.isEmpty());
+		
+		localDao.saveLog(TestUtils.getExampleLog());//1
+		TestUtils.makeConnectionNull((DaoTemporaryDatabaseH2) localDao);
+		Assert.assertNotNull(localDao.getFirstLog());//GETFIRSTLOG ratuje
+		Assert.assertEquals(localDao.getLogsAmount(),1);//1
+		
+		localDao.closeDatabase();
+		Assert.assertFalse(localDao.isEmpty()); //ISEMPTY ratuje
+		
+		TestUtils.dropTable((DaoTemporaryDatabaseH2) localDao); //0
+		Assert.assertTrue(localDao.isEmpty());//ISEMPTY ratuje
+		
+		TestUtils.makeConnectionNull((DaoTemporaryDatabaseH2) localDao);
+		Assert.assertTrue(localDao.isEmpty());//ISEMPTY ratuje
+		
+		localDao.closeDatabase();
+		Assert.assertEquals(localDao.getLogsAmount(),0); //GETLOGSAMOUNT ratuje
+		localDao.saveLog(TestUtils.getExampleLog());//1
+		
+		TestUtils.dropTable((DaoTemporaryDatabaseH2) localDao); //0
+		Assert.assertEquals(localDao.getLogsAmount(),0); //GETLOGSAMOUNT ratuje
+		
+		localDao.saveLog(TestUtils.getExampleLog());//1
+		TestUtils.makeConnectionNull((DaoTemporaryDatabaseH2) localDao);
+		Assert.assertEquals(localDao.getLogsAmount(),1); //GETLOGSAMOUNT ratuje
+		
+		
+		localDao=new DaoTemporaryDatabaseH2TestImp2();
+		PrivateAccessor.setField(instance, "dao", localDao);
+		CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
+		instance.setCommittingDetails(com);
+		instance.commit();
+		Assert.assertEquals(com.msg, Errors.LOG_WAS_NULL);
+		
+		
+	}
+	
 	@Test 
 	public void AT26_Empty_Local_Database() throws NoSuchFieldException, SQLException, UsageStatisticException
 	{
-		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", new CommitingDetailsTestImp(0));
+		CommitingDetailsTestImp inter=new CommitingDetailsTestImp(0);
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
 		TestUtils.removeAllLogsFromDao(instance);
 		instance.commit();
+		Assert.assertTrue(inter.success);
 		TestUtils.addSomeLogsToDao(instance, 50);
 		TestUtils.corruptFile(instance);
 		TestUtils.addSomeLogsToDao(instance, 50);
