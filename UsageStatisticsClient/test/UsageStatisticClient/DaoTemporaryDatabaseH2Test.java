@@ -1,10 +1,12 @@
 package UsageStatisticClient;
 
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
+import junitx.util.PrivateAccessor;
 
 import org.junit.After;
 import org.junit.Before;
@@ -161,41 +163,14 @@ public class DaoTemporaryDatabaseH2Test
 	}
 	
 	@Test
-	public void AT34_Cannot_save_to_local_database_or_database_corrupted()
+	public void AT34_Cannot_save_to_local_database_or_database_corrupted() throws NoSuchFieldException, SQLException
 	{
 	dao.closeDatabase();
-	Assert.assertFalse(dao.saveLog(new LogInformation(new GregorianCalendar().getTime(), "test", "test", "test", "test")));
-	try
-	{
-		dao.clearFirstLog();
-		Assert.fail();
-	} catch (SQLException e)
-	{
-	}
-	
-	try
-	{
-		dao.getLogsAmount();
-		Assert.fail();
-	} catch (SQLException e)
-	{
-	}
-	
-	try
-	{
-		dao.isEmpty();
-		Assert.fail();
-	} catch (SQLException e)
-	{
-	}
-	
-	try
-	{
-		dao.getFirstLog();
-		Assert.fail();
-	} catch (SQLException e)
-	{
-	}
+	Assert.assertTrue(dao.saveLog(TestUtils.getExampleLog()));
+	String sql="DROP TABLE Log";
+	Connection conn=(Connection) PrivateAccessor.getField(dao, "conn");
+	conn.createStatement().execute(sql);
+	Assert.assertTrue(dao.saveLog(TestUtils.getExampleLog()));
 	}
 	
 	
