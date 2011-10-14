@@ -1,6 +1,6 @@
 package UsageStatisticClient;
 
-class CommitingDetailsEmpty implements CommitingDetailsInterface {
+final class CommitingDetailsEmpty implements CommitingDetailsInterface {
 	
 	CommitingDetailsEmpty()
 	{

@@ -2,6 +2,7 @@ package UsageStatisticClient;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.GregorianCalendar;
 
 import junitx.util.PrivateAccessor;
 
@@ -46,6 +47,11 @@ public static void corruptFile(UsageStatistic instance) throws NoSuchFieldExcept
 	Connection conn=(Connection) PrivateAccessor.getField(dao, "conn");
 	conn.createStatement().execute(sql);
 	
+}
+
+public static LogInformation getExampleLog()
+{
+	return new LogInformation(new GregorianCalendar().getTime(), "test", "test", "test", "test");
 }
 
 }
