@@ -1,8 +1,11 @@
 package UsageStatisticClient;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
+
+import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 import junitx.util.PrivateAccessor;
 
@@ -63,5 +66,11 @@ public static void makeConnectionNull(DaoTemporaryDatabaseH2 dao)
 {
 	dao.conn=null;
 }
+
+public static void createExampleConfigFile() throws IOException
+{
+	ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password");
+}
+
 
 }
