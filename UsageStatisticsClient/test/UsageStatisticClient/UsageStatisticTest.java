@@ -1,5 +1,9 @@
 package UsageStatisticClient;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -9,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import UsageStatisticClient.UsageStatistic;
+import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 public class UsageStatisticTest {
 
@@ -240,6 +245,135 @@ public class UsageStatisticTest {
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 		
 		
+	}
+	
+	
+	public void AT41_Proper_load_configuration_from_file() throws UsageStatisticException, NoSuchFieldException
+	{
+		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		URI serverURL = (URI) PrivateAccessor.getField(instance, "serverURL");
+		Assert.assertEquals("http://localhost:8080/UsageStatisticsServer/post", serverURL);
+		String user = (String) PrivateAccessor.getField(instance, "user");
+		Assert.assertEquals("matuszek", user);
+		String password = (String) PrivateAccessor.getField(instance, "password");
+		Assert.assertEquals("password", password);
+	}
+	
+	public void AT42_Handle_invalid_load_or_no_configuration_file() throws NoSuchFieldException, IOException
+	{	
+		FileCopy.copy("client-config.cfg", "kopia.cfg");
+		File f = new File("client-config.cfg");
+		f.delete();
+		try
+		{
+			final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+			Assert.fail();
+		} catch (UsageStatisticException e)
+		{
+			Assert.assertEquals(e.getMessage(),UsageStatisticException.INVALID_CONFIGURATION);
+		}
+		
+		FileCopy.copy("kopia.cfg","client-config.cfg");
+		f = new File("client-config.cfg");
+		BufferedReader bufferedReader = new BufferedReader(new FileReader(f));
+		bufferedReader.read();
+		try
+		{
+			UsageStatistic.getInstance("aplikacja", null);
+			Assert.fail();
+		} catch (UsageStatisticException e)
+		{
+			Assert.assertEquals(e.getMessage(),UsageStatisticException.CANNOT_READ_CONFIGURATION_FILE);
+		}
+		bufferedReader.close();
+		f.delete();
+		ConfigGenerator.createConfigFile("client-config.cfg", "", "matuszek", "password");
+		try
+		{
+			UsageStatistic.getInstance("aplikacja", null);
+			Assert.fail();
+		} catch (UsageStatisticException e)
+		{
+			Assert.assertEquals(e.getMessage(),UsageStatisticException.INVALID_SERVER_URI);
+		}
+		
+		
+		
+		f = new File("client-config.cfg");
+		f.delete();
+		ConfigGenerator.createConfigFile("client-config.cfg", null, "matuszek", "password");
+		try
+		{
+			UsageStatistic.getInstance("aplikacja", null);
+			Assert.fail();
+		} catch (UsageStatisticException e)
+		{
+			Assert.assertEquals(e.getMessage(),UsageStatisticException.INVALID_CONFIGURATION);
+		}
+		
+		f = new File("client-config.cfg");
+		f.delete();
+		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", null, "password");
+		try
+		{
+			UsageStatistic.getInstance("aplikacja", null);
+			Assert.fail();
+		} catch (UsageStatisticException e)
+		{
+			Assert.assertEquals(e.getMessage(),UsageStatisticException.INVALID_CONFIGURATION);
+		}
+		
+		f = new File("client-config.cfg");
+		f.delete();
+		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "matuszek", null);
+		try
+		{
+			UsageStatistic.getInstance("aplikacja", null);
+			Assert.fail();
+		} catch (UsageStatisticException e)
+		{
+			Assert.assertEquals(e.getMessage(),UsageStatisticException.INVALID_CONFIGURATION);
+		}
+		
+		
+		
+		
+		
+		f = new File("client-config.cfg");
+		f.delete();
+		ConfigGenerator.createConfigFile("client-config.cfg", "", "matuszek", "password");
+		try
+		{
+			UsageStatistic.getInstance("aplikacja", null);
+			Assert.fail();
+		} catch (UsageStatisticException e)
+		{
+			Assert.assertEquals(e.getMessage(),UsageStatisticException.INVALID_CONFIGURATION);
+		}
+		
+		f = new File("client-config.cfg");
+		f.delete();
+		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "", "password");
+		try
+		{
+			UsageStatistic.getInstance("aplikacja", null);
+			Assert.fail();
+		} catch (UsageStatisticException e)
+		{
+			Assert.assertEquals(e.getMessage(),UsageStatisticException.INVALID_CONFIGURATION);
+		}
+		
+		f = new File("client-config.cfg");
+		f.delete();
+		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "matuszek", "");
+		try
+		{
+			UsageStatistic.getInstance("aplikacja", null);
+			Assert.fail();
+		} catch (UsageStatisticException e)
+		{
+			Assert.assertEquals(e.getMessage(),UsageStatisticException.INVALID_CONFIGURATION);
+		}
 	}
 	
 	
