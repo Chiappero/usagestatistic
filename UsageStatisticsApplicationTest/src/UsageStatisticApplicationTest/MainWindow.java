@@ -11,6 +11,9 @@
 package UsageStatisticApplicationTest;
 
 import UsageStatisticClient.UsageStatistic;
+import UsageStatisticClient.UsageStatisticException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,7 +25,11 @@ public class MainWindow extends javax.swing.JFrame {
     
     /** Creates new form MainWindow */
     public MainWindow() {
-        us = UsageStatistic.getInstance("TestApp", null);
+        try {
+            us = UsageStatistic.getInstance("TestApp", null);
+        } catch (UsageStatisticException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
         initComponents();
     }
 
