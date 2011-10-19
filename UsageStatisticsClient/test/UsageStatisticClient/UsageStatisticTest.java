@@ -3,7 +3,6 @@ package UsageStatisticClient;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.Calendar;
 import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
@@ -61,11 +60,11 @@ public class UsageStatisticTest {
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 46);
-		PrivateAccessor.setField(instance, "serverURI", new URI("localhost:8123"));
+		PrivateAccessor.setField(instance, "serverURL", new URI("localhost:8123"));
 		instance.commit();
 		Assert.assertEquals(inter.msg,Errors.ERROR_WITH_CONNECTION_TO_SERVER);
 		
-		PrivateAccessor.setField(instance, "serverURI", new URI("http://fakeaddress.pl"));
+		PrivateAccessor.setField(instance, "serverURL", new URI("http://fakeaddress.pl"));
 		instance.commit();
 		Assert.assertTrue(inter.msg.equals(Errors.SERVER_DOESNT_RECEIVE_DATA)||inter.msg.equals(Errors.ERROR_WITH_CONNECTION_TO_SERVER)||inter.msg.equals(Errors.CANNOT_EXTRACT_RESPONSE));
 		TestUtils.addSomeLogsToDao(instance, 70);
@@ -79,7 +78,7 @@ public class UsageStatisticTest {
 
 		final CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
-		final URI original=(URI) PrivateAccessor.getField(instance, "serverURI");
+		final URI original=(URI) PrivateAccessor.getField(instance, "serverURL");
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 500);		
 		Assert.assertEquals(500,TestUtils.getLogsAmmount(instance));	
@@ -91,7 +90,7 @@ public class UsageStatisticTest {
 					try {
 						Thread.sleep(500);
 
-							PrivateAccessor.setField(instance, "serverURI", new URI("localhost:8123"));
+							PrivateAccessor.setField(instance, "serverURL", new URI("localhost:8123"));
 
 					} catch (InterruptedException e) {
 						Assert.fail();
@@ -108,7 +107,7 @@ public class UsageStatisticTest {
 		instance.commit();
 		Assert.assertEquals(Errors.ERROR_WITH_CONNECTION_TO_SERVER,inter.msg);
 		Assert.assertTrue(TestUtils.getLogsAmmount(instance)<500&&TestUtils.getLogsAmmount(instance)>0);
-			PrivateAccessor.setField(instance, "serverURI", original);
+			PrivateAccessor.setField(instance, "serverURL", original);
 			instance.commit();
 			Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 		
