@@ -116,7 +116,6 @@ public class DaoTemporaryDatabaseH2Test
 				Thread.sleep(stalaLiczbaCzasuDoSpania);
 			} catch (InterruptedException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -140,7 +139,6 @@ public class DaoTemporaryDatabaseH2Test
 		log.setFunctionality("");
 		Assert.assertFalse(dao.saveLog(log));
 		log.setFunctionality("test");
-		//Przyjmuje ze parameters mog¹ byæ nullem - zgadzacie sie? TODO
 		log.setParameters("");
 		Assert.assertTrue(dao.saveLog(log));
 		LogInformation firstLog = dao.getFirstLog();
