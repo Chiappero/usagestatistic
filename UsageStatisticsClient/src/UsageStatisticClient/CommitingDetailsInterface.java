@@ -1,6 +1,6 @@
 package UsageStatisticClient;
 
-public interface CommitingDetailsInterface { //TODO a co jak przypisza nulla
+public interface CommitingDetailsInterface {
 void commitingStart();
 void commitingFinishedSuccesful();
 void commitingFailureWithError(String error);
