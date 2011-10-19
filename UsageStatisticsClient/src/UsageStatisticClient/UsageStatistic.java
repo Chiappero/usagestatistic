@@ -14,7 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 final public class UsageStatistic {
-	private URI serverURI;
+	private URI serverURL;
 	private String user;
 	private String password;
 	private String tool;
@@ -32,7 +32,7 @@ final public class UsageStatistic {
 		try
 		{
 			bufferedReader = new BufferedReader(new FileReader(file));
-			serverURI = new URI(bufferedReader.readLine());
+			serverURL = new URI(bufferedReader.readLine());
 			user = bufferedReader.readLine();
 			password = bufferedReader.readLine();
 			bufferedReader.close();
@@ -112,7 +112,7 @@ final public class UsageStatistic {
 
 				if (log!=null)
 				{
-					String postForObject = restTemplate.postForObject(serverURI, log, String.class);
+					String postForObject = restTemplate.postForObject(serverURL, log, String.class);
 					if ("OK".equals(postForObject)) 
 					{
 						dao.clearFirstLog();
