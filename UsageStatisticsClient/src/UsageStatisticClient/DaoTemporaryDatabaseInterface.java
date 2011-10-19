@@ -2,7 +2,7 @@ package UsageStatisticClient;
 
 import java.sql.SQLException;
 
-interface DaoTemporaryDatabaseInterface { //TODO obsluga pliku jakby sie wysypal - wyjatki
+interface DaoTemporaryDatabaseInterface {
 
 boolean saveLog(LogInformation log);
 void clearFirstLog() throws SQLException; 

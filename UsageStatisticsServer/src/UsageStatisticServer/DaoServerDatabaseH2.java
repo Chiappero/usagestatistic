@@ -74,7 +74,7 @@ public class DaoServerDatabaseH2
 
 	}
 	
-	public void closeDatabase() //TODO JAK ZAMKNAC baze?
+	public void closeDatabase()
 	{
 
 			try {

@@ -177,7 +177,6 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
 private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-// TODO add your handling code here:
     new Thread(){
             @Override
         public void run(){
@@ -188,37 +187,30 @@ private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_jButton6ActionPerformed
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-// TODO add your handling code here:
     us.used("Funkcja1", "przycisknr1");
 }//GEN-LAST:event_jButton1ActionPerformed
 
 private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-// TODO add your handling code here:
     us.used("Funkcja2", "przycisknr2");
 }//GEN-LAST:event_jButton2ActionPerformed
 
 private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-// TODO add your handling code here:
     us.used("Funkcja3", "przycisknr3");
 }//GEN-LAST:event_jButton3ActionPerformed
 
 private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-// TODO add your handling code here:
     us.used("Funkcja4", "przycisknr4");
 }//GEN-LAST:event_jButton4ActionPerformed
 
 private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-// TODO add your handling code here:
     us.used("Funkcja5", "przycisknr5");
 }//GEN-LAST:event_jButton5ActionPerformed
 
 private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-// TODO add your handling code here:
     us.commit();
 }//GEN-LAST:event_jButton7ActionPerformed
 
 private void jPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseMoved
-// TODO add your handling code here:
     us.used("Funkcja6", "Panel1");
 }//GEN-LAST:event_jPanel1MouseMoved
 

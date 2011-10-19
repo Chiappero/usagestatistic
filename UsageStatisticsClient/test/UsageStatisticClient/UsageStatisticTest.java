@@ -31,8 +31,7 @@ public class UsageStatisticTest {
 //	@Test
 	public void methodCommit() throws NoSuchFieldException, SQLException, UsageStatisticException
 	{
-		commitLogs(99);  //TODO DZIA£A
-		//commitLogs(100); //TODO NIE DZIALA!
+		commitLogs(99); 
 		
 	}
 	
