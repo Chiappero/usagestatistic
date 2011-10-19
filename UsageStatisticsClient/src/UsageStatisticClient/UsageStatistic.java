@@ -14,7 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 final public class UsageStatistic {
-	private URI serverURI;
+	private URI serverURL;
 	private String user;
 	private String password;
 	private String tool;
@@ -24,6 +24,9 @@ final public class UsageStatistic {
 	private CommitingDetailsInterface committingDetails;
 
 	private void init() throws UsageStatisticException {
+		user=null;
+		password=null;
+		serverURL=null;
 		dao = new DaoTemporaryDatabaseH2(); 													// throwsa
 		restTemplate = new RestTemplate();
 		File file = new File("client-config.cfg"); // TODO2 - zakoduj to i dodaj
@@ -32,10 +35,22 @@ final public class UsageStatistic {
 		try
 		{
 			bufferedReader = new BufferedReader(new FileReader(file));
-			serverURI = new URI(bufferedReader.readLine());
-			user = bufferedReader.readLine();
-			password = bufferedReader.readLine();
+			
+			String line;
+			while ((line=bufferedReader.readLine())!=null)
+			{
+				String[] field=line.split("=");
+				if (field.length==2)
+				{
+					field[0]=field[0].trim();
+					field[1]=field[1].trim();
+					setField(field);
+				}
+			}
 			bufferedReader.close();
+			areFieldsSetCorrectly();
+			
+			
 		}
 			catch (URISyntaxException e)
 			{
@@ -48,6 +63,25 @@ final public class UsageStatistic {
 
 		
 
+	}
+
+	private void areFieldsSetCorrectly() throws UsageStatisticException 
+	{
+		if (user==null||user==""||password==null||password=="")
+			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION);
+
+	}
+
+	private void setField(String[] field) throws URISyntaxException 
+	{
+		if (field[0].equals("serverURL"))
+			serverURL=new URI(field[1]+"/post");
+		if (field[0].equals("user"))
+			user=field[1];
+		if (field[0].equals("password"))
+			password=field[1];
+
+		
 	}
 
 	private UsageStatistic(String tool,
@@ -112,7 +146,7 @@ final public class UsageStatistic {
 
 				if (log!=null)
 				{
-					String postForObject = restTemplate.postForObject(serverURI, log, String.class);
+					String postForObject = restTemplate.postForObject(serverURL, log, String.class);
 					if ("OK".equals(postForObject)) 
 					{
 						dao.clearFirstLog();
@@ -212,6 +246,7 @@ final public class UsageStatistic {
 		}
 		catch (Exception e)
 		{
+
 			throw new UsageStatisticException(UsageStatisticException.CANNOT_GET_INSTANCE);
 		}
 		
