@@ -69,7 +69,17 @@ public static void makeConnectionNull(DaoTemporaryDatabaseH2 dao)
 
 public static void createExampleConfigFile() throws IOException
 {
-	ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password");
+	ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password", null);
+}
+
+public static void createExampleConfigFileWithTool() throws IOException
+{
+	ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password", "tool");
+}
+
+public static void createExampleConfigFileWithToolEmpty() throws IOException
+{
+	ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password", "");
 }
 
 

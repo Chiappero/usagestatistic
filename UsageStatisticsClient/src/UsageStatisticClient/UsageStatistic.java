@@ -23,7 +23,7 @@ final public class UsageStatistic {
 	private DaoTemporaryDatabaseInterface dao;
 	private CommitingDetailsInterface committingDetails;
 
-	private void init() throws UsageStatisticException {
+	private void init(String toolInstance) throws UsageStatisticException {
 		user=null;
 		password=null;
 		serverURL=null;
@@ -50,11 +50,19 @@ final public class UsageStatistic {
 			bufferedReader.close();
 			areFieldsSetCorrectly();
 			
+			if (toolInstance!=null&&!toolInstance.isEmpty())
+			{
+				tool = toolInstance;
+			} 
+			else if (tool==null||tool.isEmpty())
+				{
+				tool = "Default Application";
+				} //else zostaje domyslny tool wczytany przez loadera
 			
 		}
 			catch (URISyntaxException e)
 			{
-				throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URI);
+				throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URL);
 			}
 		 catch (IOException e)
 		 	{
@@ -67,8 +75,10 @@ final public class UsageStatistic {
 
 	private void areFieldsSetCorrectly() throws UsageStatisticException 
 	{
-		if (user==null||user==""||password==null||password=="")
+		if (user==null||user.equals("")||password==null||password.equals(""))
 			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION);
+		if (serverURL==null||serverURL.toString().equals("/post"))
+			throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URL);
 
 	}
 
@@ -80,6 +90,9 @@ final public class UsageStatistic {
 			user=field[1];
 		if (field[0].equals("password"))
 			password=field[1];
+		if (field[0].equals("tool"))
+			tool=field[1];
+		
 
 		
 	}
@@ -88,16 +101,9 @@ final public class UsageStatistic {
 			CommitingDetailsInterface committingDetails) throws UsageStatisticException {
 			
 		
-		if (tool == null)
-		{
-			tool = "Default Application";
-		} 
-		else
-		{
-			this.tool = tool;
-		}
+		
 		setCommittingDetails(committingDetails);
-		init();
+		init(tool);
 	}
 
 	public boolean used(String functionality, String parameters) { 
@@ -235,7 +241,7 @@ final public class UsageStatistic {
 			} 
 			else
 			{
-			instance.init();
+			instance.init(tool);
 			instance.setCommittingDetails(committingDetails);
 			return instance;
 			}
