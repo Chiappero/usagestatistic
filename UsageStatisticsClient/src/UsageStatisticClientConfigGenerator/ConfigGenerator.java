@@ -8,13 +8,14 @@ import java.io.PrintWriter;
 
 public class ConfigGenerator
 {
-public static void createConfigFile(String fileName, String serverURL, String user, String password) throws IOException
+public static void createConfigFile(String fileName, String serverURL, String user, String password, String tool) throws IOException
 {
 	 File f = new File(fileName);
 	 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f)));
 	 if (serverURL!=null) out.println("serverURL = "+serverURL);
 	 if (user!=null)out.println("user = "+user);
 	 if (password!=null)out.println("password = "+password);
+	 if (tool!=null)out.println("tool = "+tool);
 	 out.close();
 }
 }
