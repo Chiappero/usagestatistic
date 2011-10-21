@@ -11,6 +11,9 @@
 package UsageStatisticApplicationTest;
 
 import UsageStatisticClient.UsageStatistic;
+import UsageStatisticClient.UsageStatisticException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,7 +25,11 @@ public class MainWindow extends javax.swing.JFrame {
     
     /** Creates new form MainWindow */
     public MainWindow() {
-        us = UsageStatistic.getInstance("TestApp", null);
+        try {
+            us = UsageStatistic.getInstance("TestApp", null);
+        } catch (UsageStatisticException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
         initComponents();
     }
 
@@ -208,6 +215,7 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
     us.commit();
+    us.commitWait();
 }//GEN-LAST:event_jButton7ActionPerformed
 
 private void jPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseMoved

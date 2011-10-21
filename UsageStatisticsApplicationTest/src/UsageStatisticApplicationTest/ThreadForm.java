@@ -11,6 +11,9 @@
 package UsageStatisticApplicationTest;
 
 import UsageStatisticClient.UsageStatistic;
+import UsageStatisticClient.UsageStatisticException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,7 +23,11 @@ public class ThreadForm extends javax.swing.JFrame {
     UsageStatistic us;
     /** Creates new form ThreadForm */
     public ThreadForm() {
-        us = UsageStatistic.getInstance("TestApp", null);
+        try {
+            us = UsageStatistic.getInstance("TestApp", null);
+        } catch (UsageStatisticException ex) {
+            Logger.getLogger(ThreadForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
         initComponents();
         
     }
