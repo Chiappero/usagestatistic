@@ -17,7 +17,7 @@ public class DaoServerDatabaseH2Test {
 	{
 		
 		DaoServerDatabaseH2 dao=new DaoServerDatabaseH2();
-		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(), "function1", "user2", "tool4", "params=fege"));
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(), "function1", "user3", "tool5", "params=fege"));
 		Assert.assertFalse(dao.isEmpty());
 //		
 //		System.out.println("\nusers:");
@@ -68,9 +68,12 @@ public class DaoServerDatabaseH2Test {
 		a2.add("tool4");
 		ArrayList<String> a3=new ArrayList<String>();
 		a3.add("user2");
-		logs=dao.getLogsWithWhereClausure(null, null,a1,a3,a2);
+		logs=dao.getAllLogs(1,10);
 		System.out.println(logs.size());
-		
+		for (LogInformation l: logs)
+		{
+			System.out.println(l);
+		}			
 	}
 
 }
