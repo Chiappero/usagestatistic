@@ -14,7 +14,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 final public class UsageStatistic {
-	private URI serverURI;
+	private URI serverURL;
 	private String user;
 	private String password;
 	private String tool;
@@ -22,8 +22,13 @@ final public class UsageStatistic {
 	private RestTemplate restTemplate;
 	private DaoTemporaryDatabaseInterface dao;
 	private CommitingDetailsInterface committingDetails;
+	private CommitThread commitThread;
 
-	private void init() throws UsageStatisticException {
+	private void init(String toolInstance) throws UsageStatisticException {
+		user=null;
+		password=null;
+		serverURL=null;
+		tool=null;
 		dao = new DaoTemporaryDatabaseH2(); 													// throwsa
 		restTemplate = new RestTemplate();
 		File file = new File("client-config.cfg"); // TODO2 - zakoduj to i dodaj
@@ -32,14 +37,35 @@ final public class UsageStatistic {
 		try
 		{
 			bufferedReader = new BufferedReader(new FileReader(file));
-			serverURI = new URI(bufferedReader.readLine());
-			user = bufferedReader.readLine();
-			password = bufferedReader.readLine();
+			
+			String line;
+			while ((line=bufferedReader.readLine())!=null)
+			{
+				String[] field=line.split("=");
+				if (field.length==2)
+				{
+					field[0]=field[0].trim();
+					field[1]=field[1].trim();
+					setField(field);
+				}
+			}
 			bufferedReader.close();
+			areFieldsSetCorrectly();
+			
+			if (toolInstance!=null&&!toolInstance.isEmpty())
+			{
+				tool = toolInstance;
+			} 
+			else if (tool==null||tool.isEmpty())
+				{
+				
+				tool = "Default Application";
+				} //else zostaje domyslny tool wczytany przez loadera
+			
 		}
 			catch (URISyntaxException e)
 			{
-				throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URI);
+				throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URL);
 			}
 		 catch (IOException e)
 		 	{
@@ -50,20 +76,37 @@ final public class UsageStatistic {
 
 	}
 
+	private void areFieldsSetCorrectly() throws UsageStatisticException 
+	{
+		if (user==null||user.equals("")||password==null||password.equals(""))
+			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION);
+		if (serverURL==null||serverURL.toString().equals("/post"))
+			throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URL);
+
+	}
+
+	private void setField(String[] field) throws URISyntaxException 
+	{
+		if (field[0].equals("serverURL"))
+			serverURL=new URI(field[1]+"/post");
+		if (field[0].equals("user"))
+			user=field[1];
+		if (field[0].equals("password"))
+			password=field[1];
+		if (field[0].equals("tool"))
+			tool=field[1];
+		
+
+		
+	}
+
 	private UsageStatistic(String tool,
 			CommitingDetailsInterface committingDetails) throws UsageStatisticException {
 			
 		
-		if (tool == null)
-		{
-			tool = "Default Application";
-		} 
-		else
-		{
-			this.tool = tool;
-		}
+		
 		setCommittingDetails(committingDetails);
-		init();
+		init(tool);
 	}
 
 	public boolean used(String functionality, String parameters) { 
@@ -95,8 +138,20 @@ final public class UsageStatistic {
 		this.committingDetails=committingDetails;
 		}
 	}
-
+	
 	public synchronized void commit()
+	{
+		if(commitThread==null || !commitThread.isAlive()){
+			commitThread = null;
+			commitThread = new CommitThread();
+			commitThread.setDaemon(true);
+			commitThread.start();
+		}
+		
+	}
+	
+
+	private synchronized void commitInCommit()
 	{
 		try
 		{
@@ -112,7 +167,7 @@ final public class UsageStatistic {
 
 				if (log!=null)
 				{
-					String postForObject = restTemplate.postForObject(serverURI, log, String.class);
+					String postForObject = restTemplate.postForObject(serverURL, log, String.class);
 					if ("OK".equals(postForObject)) 
 					{
 						dao.clearFirstLog();
@@ -201,7 +256,7 @@ final public class UsageStatistic {
 			} 
 			else
 			{
-			instance.init();
+			instance.init(tool);
 			instance.setCommittingDetails(committingDetails);
 			return instance;
 			}
@@ -212,6 +267,7 @@ final public class UsageStatistic {
 		}
 		catch (Exception e)
 		{
+
 			throw new UsageStatisticException(UsageStatisticException.CANNOT_GET_INSTANCE);
 		}
 		
@@ -221,4 +277,23 @@ final public class UsageStatistic {
 	{
 		return getInstance(tool,null);
 	}
+	
+	public void commitWait(){
+		try {
+			commitThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	private class CommitThread extends Thread{
+		
+		@Override
+		public void run(){
+			commitInCommit();
+		}
+	}
+	
 }

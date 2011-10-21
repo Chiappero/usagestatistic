@@ -181,7 +181,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	}
 	
 	@Override
-	public void closeDatabase() //TODO nie uzywane nigdy
+	public void closeDatabase()
 	{
 
 			try {

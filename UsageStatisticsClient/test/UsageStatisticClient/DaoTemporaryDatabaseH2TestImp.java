@@ -7,20 +7,16 @@ public class DaoTemporaryDatabaseH2TestImp implements DaoTemporaryDatabaseInterf
 	@Override
 	public boolean saveLog(LogInformation log)
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 	@Override
 	public void openDatabase()
 	{
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override
 	public boolean isEmpty() throws SQLException
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
@@ -39,7 +35,6 @@ public class DaoTemporaryDatabaseH2TestImp implements DaoTemporaryDatabaseInterf
 	@Override
 	public void closeDatabase()
 	{
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -51,7 +46,6 @@ public class DaoTemporaryDatabaseH2TestImp implements DaoTemporaryDatabaseInterf
 	@Override
 	public void resetDatabase()
 	{
-		// TODO Auto-generated method stub
 		
 	}
 }
