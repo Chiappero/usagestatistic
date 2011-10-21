@@ -217,16 +217,7 @@ public class UsageStatisticTest {
 	}
 
 	
-	@Test
-	public void AT29_Large_Data() throws NoSuchFieldException, SQLException, UsageStatisticException
-	{
-		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		TestUtils.removeAllLogsFromDao(instance);
-		TestUtils.addSomeLogsToDao(instance, 10000);
-		instance.commit();
-		instance.commitWait();
-		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
-	}
+	
 	
 	@Test
 	public void AT210_Paralell_Commits() throws NoSuchFieldException, SQLException, UsageStatisticException
@@ -458,11 +449,13 @@ public class UsageStatisticTest {
 	public void AT52_Handle_all_exception_thrown_by_each_public_method() throws UsageStatisticException, NoSuchFieldException, SQLException
 	{
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		PrivateAccessor.setField(instance, "dao", null);
+		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
+		PrivateAccessor.setField(localDao, "conn", null);
 		try
 		{
 		instance.used("test", "test");
 		instance.commit();
+		instance.commitWait();
 		}
 		catch (Exception e)
 		{
@@ -483,6 +476,7 @@ public class UsageStatisticTest {
 		CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
 		instance.setCommittingDetails(com);
 		instance.commit();
+		instance.commitWait();
 		Assert.assertTrue(com.success);
 	}
 	
@@ -495,8 +489,20 @@ public class UsageStatisticTest {
 	CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
 	instance.setCommittingDetails(com);
 	instance.commit();
+	instance.commitWait();
 	Assert.assertEquals(com.msg, Errors.LOG_WAS_NULL);
 	Assert.assertTrue(com.success);
+	}
+	
+	@Test
+	public void AT29_Large_Data() throws NoSuchFieldException, SQLException, UsageStatisticException
+	{
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 10000);
+		instance.commit();
+		instance.commitWait();
+		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 	}
 	
 	

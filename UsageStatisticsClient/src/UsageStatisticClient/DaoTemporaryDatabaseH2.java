@@ -19,7 +19,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	public boolean saveLog(LogInformation log) 
 	{	
 		checkIfBaseIsOpen();
-		if (log==null)
+		if (log==null || conn==null)
 		{
 			return false;
 		}
@@ -50,10 +50,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				return false;
 			}
 		}
-		catch (Exception e)
-		{
-			return false;
-		}
+		
 			
 		return true;
 	}
@@ -62,9 +59,8 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	public synchronized void clearFirstLog() throws SQLException 
 	{	
 		checkIfBaseIsOpen();
-		try
-		{
-		if (isEmpty())
+		
+		if (isEmpty() || conn==null)
 		{
 			throw new SQLException();
 		}
@@ -74,16 +70,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		int index=rs.getInt("id");
 		sql="DELETE FROM Log WHERE id="+index;
 		conn.createStatement().executeUpdate(sql);
-		}
-		catch (SQLException e)
-		{
-			throw e;
-		}
 		
-		catch (Exception e)
-		{
-			throw new SQLException();
-		}
 		
 	}
 
@@ -91,7 +78,9 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	public LogInformation getFirstLog() throws SQLException 
 	{	
 		checkIfBaseIsOpen();
-		if (isEmpty())return null;
+		if (isEmpty() || conn==null){
+			return null;
+		}
 		String sql="SELECT TOP 1 * FROM Log";
 		ResultSet rs = null;
 		try
@@ -118,6 +107,9 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	public boolean isEmpty() throws SQLException 
 	{	
 			checkIfBaseIsOpen();
+			if(conn==null){
+				return false;
+			}
 			String sql="SELECT COUNT(*) FROM Log";
 			try
 			{
@@ -136,7 +128,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				
 			}			
 	}
-
+	//-------------------TU SKONCZYLEM : D -----------------------------------
 	@Override
 	public int getLogsAmount() throws SQLException 
 	{	

@@ -110,20 +110,13 @@ final public class UsageStatistic {
 	}
 
 	public boolean used(String functionality, String parameters) { 
-		try
-		{
-		LogInformation log = new LogInformation();
-		log.setDate(Calendar.getInstance().getTime());
+		LogInformation log = new LogInformation(Calendar.getInstance().getTime(), functionality, user, tool, parameters);
+		/*log.setDate(Calendar.getInstance().getTime());
 		log.setFunctionality(functionality);
 		log.setParameters(parameters);
 		log.setTool(tool);
-		log.setUser(user);
+		log.setUser(user);*/
 		return dao.saveLog(log);
-		}
-		catch (Exception e)
-		{
-		return false;	
-		}
 	}
 	
 	
@@ -180,7 +173,8 @@ final public class UsageStatistic {
 					} 
 					else
 					{
-							throw new ServerDoesntReceiveDataException();
+						committingDetails
+						.commitingFailureWithError(Errors.SERVER_DOESNT_RECEIVE_DATA);
 					}
 					
 				} else
@@ -196,13 +190,6 @@ final public class UsageStatistic {
 		} 
 		
 		
-		catch (ServerDoesntReceiveDataException e)
-		{
-			committingDetails
-			.commitingFailureWithError(Errors.SERVER_DOESNT_RECEIVE_DATA);			
-		}
-		
-		
 		catch (org.springframework.web.client.HttpClientErrorException e)
 		{
 			committingDetails
@@ -215,7 +202,8 @@ final public class UsageStatistic {
 			committingDetails
 			.commitingFailureWithError(Errors.ERROR_WITH_CONNECTION_TO_SERVER);
 				
-		} catch (SQLException e)
+		} 
+		catch (SQLException e)
 		{	
 			dao.resetDatabase();
 			committingDetails
@@ -228,7 +216,7 @@ final public class UsageStatistic {
 			.commitingFailureWithError(Errors.CANNOT_EXTRACT_RESPONSE);
 		}
 		
-		catch (Exception e)
+		/*catch (Exception e)
 		{
 			try
 			{
@@ -236,7 +224,7 @@ final public class UsageStatistic {
 			}
 			catch (Exception e2)
 			{}
-		}
+		}*/
 
 
 
@@ -247,29 +235,18 @@ final public class UsageStatistic {
 	public static UsageStatistic getInstance(String tool, CommitingDetailsInterface committingDetails) throws UsageStatisticException 
 	{
 		
-		try
+		if (instance == null) 
 		{
-			if (instance == null) 
-			{
-				instance = new UsageStatistic(tool, committingDetails);
-				return instance;
-			} 
-			else
-			{
+			instance = new UsageStatistic(tool, committingDetails);
+			return instance;
+		} 
+		else
+		{
 			instance.init(tool);
 			instance.setCommittingDetails(committingDetails);
 			return instance;
-			}
-		} 
-		catch (UsageStatisticException e)
-		{
-			throw e;
 		}
-		catch (Exception e)
-		{
 
-			throw new UsageStatisticException(UsageStatisticException.CANNOT_GET_INSTANCE);
-		}
 		
 	}
 	
@@ -278,12 +255,15 @@ final public class UsageStatistic {
 		return getInstance(tool,null);
 	}
 	
+	public static UsageStatistic getInstance() throws UsageStatisticException{
+		return getInstance(null,null);
+	}
+	
 	public void commitWait(){
 		try {
 			commitThread.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		}
 	}
 	
