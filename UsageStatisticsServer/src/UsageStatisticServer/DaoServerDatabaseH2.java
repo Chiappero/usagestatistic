@@ -1,6 +1,7 @@
 package UsageStatisticServer;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 
 
@@ -66,15 +67,17 @@ public class DaoServerDatabaseH2
 	        createTables();
 		} catch (ClassNotFoundException e) 
 		{
+			System.out.println(e.getMessage());
 		}
         catch (SQLException e) 
         {
-			
+        	//TODO Baza otwarta przez inny proces
+			System.out.println(e.getMessage());
 		}
 
 	}
 	
-	public void closeDatabase() //TODO JAK ZAMKNAC baze?
+	public void closeDatabase()
 	{
 
 			try {
@@ -112,5 +115,317 @@ public class DaoServerDatabaseH2
 			
 		}
 	}
+	
+	public boolean isEmpty() throws SQLException 
+	{	
+			checkIfBaseIsOpen();
+			String sql="SELECT COUNT(*) FROM Log";
+			try
+			{
+			ResultSet rs=conn.createStatement().executeQuery(sql);
+			rs.first();
+			return rs.getString(1).equals("0");
+			}
+			catch (SQLException e)
+			{
+				if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+				{
+					//TODO cos bardzo zlego powinno tu byc
+					throw e;
+
+				}
+				else throw e;
+				
+			}			
+	}
+	
+	public int getLogsAmount() throws SQLException 
+	{	
+		checkIfBaseIsOpen();
+		String sql="SELECT COUNT(*) FROM Log";
+		try
+		{
+		ResultSet rs=conn.createStatement().executeQuery(sql);
+		rs.first();
+		return Integer.parseInt(rs.getString(1));
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc	
+				throw e;
+			}
+			else throw e;
+			
+		}
+	}
+	
+
+	public ArrayList<LogInformation> getAllLogs() throws SQLException 
+	{	
+		checkIfBaseIsOpen();
+		if (isEmpty())return new ArrayList<LogInformation>();
+		String sql="SELECT * FROM Log";
+		ResultSet rs = null;
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+
+			}	
+			else throw e;
+		}
+
+	}
+	
+	public ArrayList<LogInformation> getAllLogs(int from, int count) throws SQLException 
+	{	
+		checkIfBaseIsOpen();
+		if (isEmpty())return new ArrayList<LogInformation>();
+		if (from<0)from=0;
+		if (count<1)return new ArrayList<LogInformation>();
+		String sql="SELECT * FROM Log LIMIT "+count+" OFFSET "+(from-1);
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+
+
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			else throw e;
+		}
+
+	}	
+	
+	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure) throws SQLException 
+	{	
+		checkIfBaseIsOpen();
+		if (isEmpty())return new ArrayList<LogInformation>();
+		String sql="SELECT * FROM Log";
+		if (whereclausure!=null&&!whereclausure.isEmpty())sql+=" WHERE "+whereclausure;
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			//TODO czy tu rozpatrujemy zly format zapytania skoro to bedzie prywatne?
+			else throw e;
+		}
+
+	}		
+	
+	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure,int from, int count) throws SQLException 
+	{	
+		checkIfBaseIsOpen();
+		if (isEmpty())return new ArrayList<LogInformation>();
+		if (from<0)from=0;
+		if (count<1)return new ArrayList<LogInformation>();
+		String sql="SELECT * FROM Log";
+		if (whereclausure!=null&&!whereclausure.isEmpty())sql+=" WHERE "+whereclausure;
+		sql+="LIMIT "+count+" OFFSET "+(from-1);
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		
+		
+		
+		//return getLogsFromResultSet(rs,from,count);
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			//TODO czy tu rozpatrujemy zly format zapytania skoro to bedzie prywatne?
+			else throw e;
+		}
+
+	}		
+	
+	public  ArrayList<LogInformation> getLogsWithWhereClausure
+			(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
+			 ArrayList<String> user, ArrayList<String> tool, int from, int count) throws SQLException
+	{
+		StringBuffer where=new StringBuffer("");
+		if (datefrom!=null)
+		{
+			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(datefrom.getTime());
+			where.append(" timestamp>=\'"+sqlTimestamp+"\' AND");
+		}
+		if (datebefore!=null)
+		{
+			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(datebefore.getTime());
+			where.append(" timestamp<=\'"+sqlTimestamp+"\' AND");
+		}	
+		
+		
+		if (functionality!=null&&!functionality.isEmpty())
+		{
+			where.append("(");
+			for (String f: functionality)
+			{
+				where.append(" functionality=\'"+f+"\' OR");
+			}
+			where.delete(where.length()-3, where.length());
+			where.append(") AND");
+		}
+		if (user!=null&&!user.isEmpty())
+		{
+			where.append("(");
+			for (String u: user)
+			{
+				where.append(" user=\'"+u+"\' OR");
+			}		
+			where.delete(where.length()-3, where.length());
+			where.append(") AND");
+		}
+		if (tool!=null&&!tool.isEmpty())
+		{
+			where.append("(");
+			for (String t: tool)
+			{
+				where.append(" tool=\'"+t+"\' OR");
+			}
+			where.delete(where.length()-3, where.length());
+			where.append(") AND");
+		}
+		if (!where.toString().isEmpty())
+			where.delete(where.length()-4, where.length());
+		String clausure=where.toString();
+		if (from!=-1&&count!=-1)
+			return getLogsWithWhereClausure(clausure,from,count);
+		else return getLogsWithWhereClausure(clausure);
+		
+}
+	
+	public  ArrayList<LogInformation> getLogsWithWhereClausure
+	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
+	 ArrayList<String> user, ArrayList<String> tool) throws SQLException
+	 {
+		return getLogsWithWhereClausure
+		(datefrom,datebefore,functionality,user,tool, -1,-1);
+	 }
+	
+	
+	
+	
+	
+	
+
+@Deprecated	
+	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs, int from, int count) throws SQLException {
+		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
+
+		if (!rs.absolute(from))return new ArrayList<LogInformation>();
+		from=0;
+		do
+		{
+		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
+		if (LogInformation.validateLog(logInformation))
+		{
+			loglist.add(logInformation);
+			from++;
+		}
+		rs.next();
+		
+		}
+		while (!rs.isAfterLast()&&from<count);
+		return loglist;
+	}
+
+
+	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs) throws SQLException {
+		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
+		if (!rs.first())return new ArrayList<LogInformation>();
+		do
+		{
+		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
+		if (LogInformation.validateLog(logInformation))
+			loglist.add(logInformation);
+		rs.next();
+		}
+		while (!rs.isAfterLast());
+		return loglist;
+	}
+	
+	public ArrayList<String> getUsers() throws SQLException
+	{
+		return getColumn("user");
+	}
+	
+	public ArrayList<String> getTools() throws SQLException
+	{
+		return getColumn("tool");
+	}	
+	public ArrayList<String> getFunctionalities() throws SQLException
+	{
+		return getColumn("functionality");
+	}
+	
+	
+	private ArrayList<String> getColumn(String column) throws SQLException
+	{
+		ArrayList<String> values=new ArrayList<String>();
+		checkIfBaseIsOpen();
+		if (isEmpty())return values;
+		String sql="SELECT DISTINCT "+column+" FROM Log";
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		rs.first();
+		do
+		{
+			values.add(rs.getString(column));
+			rs.next();
+		}
+		while (!rs.isAfterLast());
+		return values;
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			else throw e;
+		}
+	}
+	
+	
 
 }
