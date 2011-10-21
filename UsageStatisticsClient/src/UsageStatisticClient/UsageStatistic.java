@@ -27,6 +27,7 @@ final public class UsageStatistic {
 		user=null;
 		password=null;
 		serverURL=null;
+		tool=null;
 		dao = new DaoTemporaryDatabaseH2(); 													// throwsa
 		restTemplate = new RestTemplate();
 		File file = new File("client-config.cfg"); // TODO2 - zakoduj to i dodaj
@@ -56,6 +57,7 @@ final public class UsageStatistic {
 			} 
 			else if (tool==null||tool.isEmpty())
 				{
+				
 				tool = "Default Application";
 				} //else zostaje domyslny tool wczytany przez loadera
 			
