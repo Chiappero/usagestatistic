@@ -22,6 +22,7 @@ final public class UsageStatistic {
 	private RestTemplate restTemplate;
 	private DaoTemporaryDatabaseInterface dao;
 	private CommitingDetailsInterface committingDetails;
+	private CommitThread commitThread;
 
 	private void init(String toolInstance) throws UsageStatisticException {
 		user=null;
@@ -137,8 +138,20 @@ final public class UsageStatistic {
 		this.committingDetails=committingDetails;
 		}
 	}
-
+	
 	public synchronized void commit()
+	{
+		if(commitThread==null || !commitThread.isAlive()){
+			commitThread = null;
+			commitThread = new CommitThread();
+			commitThread.setDaemon(true);
+			commitThread.start();
+		}
+		
+	}
+	
+
+	private synchronized void commitInCommit()
 	{
 		try
 		{
@@ -264,4 +277,23 @@ final public class UsageStatistic {
 	{
 		return getInstance(tool,null);
 	}
+	
+	public void commitWait(){
+		try {
+			commitThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	private class CommitThread extends Thread{
+		
+		@Override
+		public void run(){
+			commitInCommit();
+		}
+	}
+	
 }
