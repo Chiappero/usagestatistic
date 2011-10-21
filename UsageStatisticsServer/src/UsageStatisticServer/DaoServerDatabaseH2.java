@@ -273,40 +273,38 @@ public class DaoServerDatabaseH2
 	}		
 	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
-			(Date datefrom, Date datebefore, ArrayList<String> functionality,
+			(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
 			 ArrayList<String> user, ArrayList<String> tool, int from, int count) throws SQLException
 	{
-		StringBuffer where=new StringBuffer("WHERE");
+		StringBuffer where=new StringBuffer("");
 		if (datefrom!=null)
 		{
 			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(datefrom.getTime());
-			where.append(" timestamp>="+sqlTimestamp+" AND");
+			where.append(" timestamp>=\'"+sqlTimestamp+"\' AND");
 		}
 		if (datebefore!=null)
 		{
 			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(datebefore.getTime());
-			where.append(" timestamp<="+sqlTimestamp+" AND");
+			where.append(" timestamp<=\'"+sqlTimestamp+"\' AND");
 		}	
 		if (functionality!=null)
 			for (String f: functionality)
 			{
-				where.append(" functionality=\""+f+"\" AND");
+				where.append(" functionality=\'"+f+"\' AND");
 			}
 		if (user!=null)
 			for (String u: user)
 			{
-				where.append(" user=\""+u+"\" AND");
+				where.append(" user=\'"+u+"\' AND");
 			}		
 		if (tool!=null)
 			for (String t: tool)
 			{
-				where.append(" tool=\""+t+"\" AND");
-			}		
-		where.delete(where.length()-4, where.length());
+				where.append(" tool=\'"+t+"\' AND");
+			}
+		if (!where.toString().isEmpty())
+			where.delete(where.length()-4, where.length());
 		String clausure=where.toString();
-		if (clausure.equals("W"))
-			clausure=null;
-		String sql;
 		if (from!=-1&&count!=-1)
 			return getLogsWithWhereClausure(clausure,from,count);
 		else return getLogsWithWhereClausure(clausure);
@@ -314,11 +312,11 @@ public class DaoServerDatabaseH2
 }
 	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
-	(Date datefrom, Date datebefore, ArrayList<String> functionality,
+	(java.util.Date datefrom, java.util.Date date, ArrayList<String> functionality,
 	 ArrayList<String> user, ArrayList<String> tool) throws SQLException
 	 {
 		return getLogsWithWhereClausure
-		(datefrom,datebefore,functionality,user,tool, -1,-1);
+		(datefrom,date,functionality,user,tool, -1,-1);
 	 }
 	
 	
@@ -336,7 +334,7 @@ public class DaoServerDatabaseH2
 		do
 		{
 		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
-		if (!LogInformation.validateLog(logInformation))
+		if (LogInformation.validateLog(logInformation))
 		{
 			loglist.add(logInformation);
 			from++;
@@ -355,12 +353,58 @@ public class DaoServerDatabaseH2
 		do
 		{
 		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
-		if (!LogInformation.validateLog(logInformation))
+		if (LogInformation.validateLog(logInformation))
 			loglist.add(logInformation);
 		rs.next();
 		}
 		while (!rs.isAfterLast());
 		return loglist;
+	}
+	
+	public ArrayList<String> getUsers() throws SQLException
+	{
+		return getColumn("user");
+	}
+	
+	public ArrayList<String> getTools() throws SQLException
+	{
+		return getColumn("tool");
+	}	
+	public ArrayList<String> getFunctionalities() throws SQLException
+	{
+		return getColumn("functionality");
+	}
+	
+	
+	private ArrayList<String> getColumn(String column) throws SQLException
+	{
+		ArrayList<String> values=new ArrayList<String>();
+		checkIfBaseIsOpen();
+		if (isEmpty())return values;
+		String sql="SELECT DISTINCT "+column+" FROM Log";
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		rs.first();
+		do
+		{
+			values.add(rs.getString(column));
+			rs.next();
+		}
+		while (!rs.isAfterLast());
+		return values;
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			else throw e;
+		}
 	}
 	
 	
