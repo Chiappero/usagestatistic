@@ -131,17 +131,19 @@ final public class UsageStatistic {
 		}
 	}
 	
-	public void commit()
+	public synchronized void commit()
 	{
-		if(commitThread==null){
+		if(commitThread==null || !commitThread.isAlive()){
+			commitThread = null;
 			commitThread = new CommitThread();
 			commitThread.setDaemon(true);
+			commitThread.start();
 		}
-		commitThread.start();
-
+		
 	}
+	
 
-	public synchronized void commitInCommit()
+	private synchronized void commitInCommit()
 	{
 		try
 		{
@@ -266,6 +268,15 @@ final public class UsageStatistic {
 	public static UsageStatistic getInstance(String tool) throws UsageStatisticException
 	{
 		return getInstance(tool,null);
+	}
+	
+	public void commitWait(){
+		try {
+			commitThread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	

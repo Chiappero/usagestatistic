@@ -23,6 +23,7 @@ public class UsageStatisticTest {
 		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
 		Assert.assertEquals(localDao.getLogsAmount(),1);
 		instance.commit();
+		instance.commitWait();
 		Assert.assertTrue(localDao.isEmpty());
 	}
 			
@@ -46,6 +47,7 @@ public class UsageStatisticTest {
 		TestUtils.addSomeLogsToDao(instance, amountRecord);
 		System.out.println("addSomeLogs");
 		instance.commit(); //<-- tutaj jest test ilosci oraz tego czy nie wyrzuca bledu
+		instance.commitWait();
 		System.out.println("commit");
 		TestUtils.removeAllLogsFromDao(instance);
 		System.out.println("removeAllLogs2");
@@ -62,10 +64,12 @@ public class UsageStatisticTest {
 		TestUtils.addSomeLogsToDao(instance, 46);
 		PrivateAccessor.setField(instance, "serverURL", new URI("localhost:8123"));
 		instance.commit();
+		instance.commitWait();
 		Assert.assertEquals(inter.msg,Errors.ERROR_WITH_CONNECTION_TO_SERVER);
 		
 		PrivateAccessor.setField(instance, "serverURL", new URI("http://fakeaddress.pl"));
 		instance.commit();
+		instance.commitWait();
 		Assert.assertTrue(inter.msg.equals(Errors.SERVER_DOESNT_RECEIVE_DATA)||inter.msg.equals(Errors.ERROR_WITH_CONNECTION_TO_SERVER)||inter.msg.equals(Errors.CANNOT_EXTRACT_RESPONSE));
 		TestUtils.addSomeLogsToDao(instance, 70);
 		Assert.assertEquals(TestUtils.getLogsAmmount(instance), 46+70);
@@ -105,10 +109,12 @@ public class UsageStatisticTest {
 			};
 		t.start();
 		instance.commit();
+		instance.commitWait();
 		Assert.assertEquals(Errors.ERROR_WITH_CONNECTION_TO_SERVER,inter.msg);
 		Assert.assertTrue(TestUtils.getLogsAmmount(instance)<500&&TestUtils.getLogsAmmount(instance)>0);
 			PrivateAccessor.setField(instance, "serverURL", original);
 			instance.commit();
+			instance.commitWait();
 			Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 		
 		
@@ -124,6 +130,7 @@ public class UsageStatisticTest {
 		DaoTemporaryDatabaseInterface localDao = TestUtils.getLocalDao(instance);
 		Assert.assertTrue(localDao.isEmpty());
 		instance.commit();
+		instance.commitWait();
 		Assert.assertTrue(inter.success);
 		
 		localDao.saveLog(TestUtils.getExampleLog());//1
@@ -167,6 +174,7 @@ public class UsageStatisticTest {
 		CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
 		instance.setCommittingDetails(com);
 		instance.commit();
+		instance.commitWait();
 		Assert.assertEquals(com.msg, Errors.LOG_WAS_NULL);
 		
 		
@@ -179,6 +187,7 @@ public class UsageStatisticTest {
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
 		TestUtils.removeAllLogsFromDao(instance);
 		instance.commit();
+		instance.commitWait();
 		Assert.assertTrue(inter.success);
 		TestUtils.addSomeLogsToDao(instance, 50);
 		TestUtils.corruptFile(instance);
@@ -195,6 +204,7 @@ public class UsageStatisticTest {
 		DaoTemporaryDatabaseInterface daoMock = new DaoTemporaryDatabaseH2TestImp();
 		PrivateAccessor.setField(instance, "dao", daoMock);
 		instance.commit();
+		instance.commitWait();
 		Assert.assertEquals(inter.msg,Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
 	}
 
@@ -206,6 +216,7 @@ public class UsageStatisticTest {
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 10000);
 		instance.commit();
+		instance.commitWait();
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 	}
 	
@@ -230,6 +241,7 @@ public class UsageStatisticTest {
 				} catch (InterruptedException e) {
 				}
 				instance.commit();
+				instance.commitWait();
 				
 			}
 		};
@@ -237,6 +249,7 @@ public class UsageStatisticTest {
 		for (int i=0;i<10;i++)
 			tg[i].start();
 		instance.commit();
+		instance.commitWait();
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 		
 		
