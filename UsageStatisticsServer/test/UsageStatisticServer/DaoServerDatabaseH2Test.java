@@ -64,16 +64,21 @@ public class DaoServerDatabaseH2Test {
 		System.out.println(logs.size());			
 		ArrayList<String> a1=new ArrayList<String>();
 		a1.add("function1");
+		a1.add("function2");
 		ArrayList<String> a2=new ArrayList<String>();
-		a2.add("tool4");
+		a2.add("tool2");
+		a2.add("tool5");
 		ArrayList<String> a3=new ArrayList<String>();
 		a3.add("user2");
+		a3.add("user3");
 		logs=dao.getAllLogs(1,10);
 		System.out.println(logs.size());
+		logs=dao.getLogsWithWhereClausure(null, Calendar.getInstance().getTime(), a1, a3, a2,2,10);
 		for (LogInformation l: logs)
 		{
 			System.out.println(l);
-		}			
+		}		
+		
 	}
 
 }
