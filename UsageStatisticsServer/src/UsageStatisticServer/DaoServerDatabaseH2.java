@@ -289,21 +289,38 @@ public class DaoServerDatabaseH2
 			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(datebefore.getTime());
 			where.append(" timestamp<=\'"+sqlTimestamp+"\' AND");
 		}	
-		if (functionality!=null)
+		
+		
+		if (functionality!=null&&!functionality.isEmpty())
+		{
+			where.append("(");
 			for (String f: functionality)
 			{
-				where.append(" functionality=\'"+f+"\' AND");
+				where.append(" functionality=\'"+f+"\' OR");
 			}
-		if (user!=null)
+			where.delete(where.length()-3, where.length());
+			where.append(") AND");
+		}
+		if (user!=null&&!user.isEmpty())
+		{
+			where.append("(");
 			for (String u: user)
 			{
-				where.append(" user=\'"+u+"\' AND");
+				where.append(" user=\'"+u+"\' OR");
 			}		
-		if (tool!=null)
+			where.delete(where.length()-3, where.length());
+			where.append(") AND");
+		}
+		if (tool!=null&&!tool.isEmpty())
+		{
+			where.append("(");
 			for (String t: tool)
 			{
-				where.append(" tool=\'"+t+"\' AND");
+				where.append(" tool=\'"+t+"\' OR");
 			}
+			where.delete(where.length()-3, where.length());
+			where.append(") AND");
+		}
 		if (!where.toString().isEmpty())
 			where.delete(where.length()-4, where.length());
 		String clausure=where.toString();
