@@ -192,7 +192,7 @@ public class DaoServerDatabaseH2
 		if (isEmpty())return new ArrayList<LogInformation>();
 		if (from<0)from=0;
 		if (count<1)return new ArrayList<LogInformation>();
-		String sql="SELECT TOP "+(from+count)+" * FROM Log";
+		String sql="SELECT * FROM Log LIMIT "+count+" OFFSET "+(from-1);
 		ResultSet rs = null;
 
 		try
@@ -200,7 +200,7 @@ public class DaoServerDatabaseH2
 		rs=conn.createStatement().executeQuery(sql);
 
 
-		return getLogsFromResultSet(rs,from,count);
+		return getLogsFromResultSet(rs);
 		}
 		catch (SQLException e)
 		{
@@ -247,8 +247,9 @@ public class DaoServerDatabaseH2
 		if (isEmpty())return new ArrayList<LogInformation>();
 		if (from<0)from=0;
 		if (count<1)return new ArrayList<LogInformation>();
-		String sql="SELECT TOP "+(from+count)+" * FROM Log";
+		String sql="SELECT * FROM Log";
 		if (whereclausure!=null&&!whereclausure.isEmpty())sql+=" WHERE "+whereclausure;
+		sql+="LIMIT "+count+" OFFSET "+(from-1);
 		ResultSet rs = null;
 
 		try
@@ -257,7 +258,8 @@ public class DaoServerDatabaseH2
 		
 		
 		
-		return getLogsFromResultSet(rs,from,count);
+		//return getLogsFromResultSet(rs,from,count);
+		return getLogsFromResultSet(rs);
 		}
 		catch (SQLException e)
 		{
@@ -312,11 +314,11 @@ public class DaoServerDatabaseH2
 }
 	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
-	(java.util.Date datefrom, java.util.Date date, ArrayList<String> functionality,
+	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
 	 ArrayList<String> user, ArrayList<String> tool) throws SQLException
 	 {
 		return getLogsWithWhereClausure
-		(datefrom,date,functionality,user,tool, -1,-1);
+		(datefrom,datebefore,functionality,user,tool, -1,-1);
 	 }
 	
 	
@@ -325,7 +327,7 @@ public class DaoServerDatabaseH2
 	
 	
 
-
+@Deprecated	
 	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs, int from, int count) throws SQLException {
 		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
 
