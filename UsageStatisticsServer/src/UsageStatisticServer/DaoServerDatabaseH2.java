@@ -21,7 +21,7 @@ public class DaoServerDatabaseH2
 		checkIfBaseIsOpen();
 		if (log!=null&&LogInformation.validateLog(log))
 		{
-		java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(log.getDate().getTime());
+		java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(log.getDateTime().getTime());
 		String sql="INSERT INTO Log " +
 				"(timestamp, functionality , user , tool ,parameters) " +
 				"values(\'"+sqlTimestamp+"\', \'"+log.getFunctionality()+"\', \'"+log.getUser()+"\', \'"+log.getTool()+"\', \'"+log.getParameters()+"\')";
@@ -192,7 +192,7 @@ public class DaoServerDatabaseH2
 		if (isEmpty())return new ArrayList<LogInformation>();
 		if (from<0)from=0;
 		if (count<1)return new ArrayList<LogInformation>();
-		String sql="SELECT * FROM Log LIMIT "+count+" OFFSET "+(from-1);
+		String sql="SELECT * FROM Log LIMIT "+count+" OFFSET "+(from-1); //TODO a co jezeli from = 1 lub from = 0
 		ResultSet rs = null;
 
 		try
@@ -249,7 +249,7 @@ public class DaoServerDatabaseH2
 		if (count<1)return new ArrayList<LogInformation>();
 		String sql="SELECT * FROM Log";
 		if (whereclausure!=null&&!whereclausure.isEmpty())sql+=" WHERE "+whereclausure;
-		sql+="LIMIT "+count+" OFFSET "+(from-1);
+		sql+="LIMIT "+count+" OFFSET "+(from-1); //TODO a co jezeli from=1 lub from=0;
 		ResultSet rs = null;
 
 		try
