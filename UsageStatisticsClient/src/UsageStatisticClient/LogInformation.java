@@ -30,10 +30,10 @@ public String getTool() {
 public void setTool(String tool) {
 	this.tool = tool;
 }
-public Date getDate() {
+public Date getDateTime() {
 	return dateTime;
 }
-public void setDate(Date dateTime) {
+public void setDateTime(Date dateTime) {
 	this.dateTime = dateTime;
 }
 public String getFunctionality() {
@@ -70,7 +70,7 @@ LogInformation(Date date,String functionality,String user,String tool, String pa
 
 static boolean validateLog(LogInformation log)
 {
-	Date date = log.getDate();
+	Date date = log.getDateTime();
 	String functionality = log.getFunctionality();
 	String tool = log.getTool();
 	String user = log.getUser();
