@@ -368,7 +368,7 @@ public class DaoServerDatabaseH2
 			sql+=" ORDER BY ";
 			for (String s:orderby)
 				sql+=(s+", ");
-			sql.substring(0, sql.length()-2);
+			sql=sql.substring(0, sql.length()-2);
 				
 		}
 		return sql;
@@ -382,7 +382,7 @@ public class DaoServerDatabaseH2
 			sql+="";
 			for (String s:columns)
 				sql+=(s+", ");
-			sql.substring(0, sql.length()-2);
+			sql=sql.substring(0, sql.length()-2);
 				
 		}
 		return sql;
@@ -495,19 +495,62 @@ public class DaoServerDatabaseH2
 		}
 	}
 	
-	private ArrayList<Pair<LogInformation,Integer>> agregate(ArrayList<String> groupby)
+	public ArrayList<Pair<LogInformation,Integer>> agregate(ArrayList<String> groupby) throws SQLException
 	{
 		ArrayList<Pair<LogInformation,Integer>> values=new ArrayList<Pair<LogInformation,Integer>>();
 		checkIfBaseIsOpen();
 		if (isEmpty())return values;
 		String columns=getColumnsString(groupby);
-		String sql="SELECT "+columns+", COUNT(*) FROM Log";
+		String sql="SELECT "+columns+", COUNT(*) AS cnt FROM Log";
 		sql+=" GROUP BY "+columns;
 		sql+=getOrderByString(groupby);
+		ResultSet rs = null;
 		
-		
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+
+
+		return agregate(rs,groupby);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			else throw e;
+		}
+	
 	}
 	
+	
+	private ArrayList<Pair<LogInformation,Integer>> agregate(ResultSet rs, ArrayList<String> groupby) throws SQLException {
+		ArrayList<Pair<LogInformation,Integer>> pairlist=new ArrayList<Pair<LogInformation,Integer>>();
+		if (!rs.first())return pairlist;
+		do
+		{
+			int count=rs.getInt("cnt");
+			String[] str=new String[4];
+			for (String s:groupby)
+			{
+				if (s.equals("functionality"))
+					str[0]=rs.getString(s);
+				else if (s.equals("user"))
+					str[1]=rs.getString(s);
+				else if (s.equals("tool"))
+					str[2]=rs.getString(s);
+				else if (s.equals("parameters"))
+					str[3]=rs.getString(s);
+			}
+		LogInformation logInformation = new LogInformation(null,str[0],str[1],str[2],str[3]);
+		pairlist.add(new Pair<LogInformation,Integer>(logInformation,count));
+		rs.next();
+		}
+		while (!rs.isAfterLast());
+		return pairlist;
+	}
 	
 	
 	

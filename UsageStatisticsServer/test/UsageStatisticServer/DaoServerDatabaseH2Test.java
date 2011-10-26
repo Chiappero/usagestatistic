@@ -80,5 +80,29 @@ public class DaoServerDatabaseH2Test {
 		}		
 		
 	}
+	
+	@Test
+	public void agregateTest() throws SQLException
+	{
+		DaoServerDatabaseH2 dao=new DaoServerDatabaseH2();
+		Assert.assertFalse(dao.isEmpty());
+		ArrayList<String> groupby=new ArrayList<String>();
+		groupby.add("user");
+	//	groupby.add("functionality");
+		ArrayList<Pair<LogInformation,Integer>> list=dao.agregate(groupby);
+		Assert.assertFalse(list.isEmpty());
+		for (Pair<LogInformation,Integer> p: list)
+		{
+			System.out.println(p.getLewy().toString()+" "+p.getPrawy());
+		}
+		System.out.println();
+		groupby.add("functionality");
+		list=dao.agregate(groupby);
+		Assert.assertFalse(list.isEmpty());
+		for (Pair<LogInformation,Integer> p: list)
+		{
+			System.out.println(p.getLewy().toString()+" "+p.getPrawy());
+		}		
+	}
 
 }
