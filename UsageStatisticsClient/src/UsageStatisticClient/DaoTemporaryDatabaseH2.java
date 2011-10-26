@@ -32,7 +32,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		{
 			return false;
 		}
-		java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(log.getDate().getTime());
+		java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(log.getDateTime().getTime());
 		String sql="INSERT INTO Log " +
 				"(timestamp, functionality , user , tool ,parameters) " +
 				"values(\'"+sqlTimestamp+"\', \'"+log.getFunctionality()+"\', \'"+log.getUser()+"\', \'"+log.getTool()+"\', \'"+log.getParameters()+"\')";
@@ -215,7 +215,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		} catch (ClassNotFoundException e)
 		{
 		}
-        conn= DriverManager.getConnection("jdbc:h2:~/db", "user", "");
+        conn= DriverManager.getConnection("jdbc:h2:db", "user", "");
         String query="DROP TABLE IF EXISTS Log"; 
         conn.createStatement().execute(query);
         createTables();
