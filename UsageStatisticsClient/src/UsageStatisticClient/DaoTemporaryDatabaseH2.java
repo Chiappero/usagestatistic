@@ -165,7 +165,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	{
         try {
 			Class.forName("org.h2.Driver");
-	        conn= DriverManager.getConnection("jdbc:h2:~/db", "user", "");
+	        conn= DriverManager.getConnection("jdbc:h2:db", "user", "");
 	        createTables();
 		} catch (ClassNotFoundException e) 
 		{

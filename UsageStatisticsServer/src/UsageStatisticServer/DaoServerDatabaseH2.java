@@ -2,6 +2,7 @@ package UsageStatisticServer;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 
 
@@ -164,64 +165,24 @@ public class DaoServerDatabaseH2
 
 	public ArrayList<LogInformation> getAllLogs() throws SQLException 
 	{	
-		checkIfBaseIsOpen();
-		if (isEmpty())return new ArrayList<LogInformation>();
-		String sql="SELECT * FROM Log";
-		ResultSet rs = null;
-		try
-		{
-		rs=conn.createStatement().executeQuery(sql);
-		return getLogsFromResultSet(rs);
-		}
-		catch (SQLException e)
-		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
-				//TODO cos bardzo zlego powinno tu byc
-				throw e;
-
-			}	
-			else throw e;
-		}
-
+		return getAllLogsSorted(null);
 	}
 	
 	public ArrayList<LogInformation> getAllLogs(int from, int count) throws SQLException 
 	{	
-		checkIfBaseIsOpen();
-		if (isEmpty())return new ArrayList<LogInformation>();
-		if (from<0)from=0;
-		if (count<1)return new ArrayList<LogInformation>();
-		String sql="SELECT * FROM Log LIMIT "+count+" OFFSET "+(from-1); //TODO a co jezeli from = 1 lub from = 0
-		ResultSet rs = null;
-
-		try
-		{
-		rs=conn.createStatement().executeQuery(sql);
-
-
-		return getLogsFromResultSet(rs);
-		}
-		catch (SQLException e)
-		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
-				//TODO cos bardzo zlego powinno tu byc
-				throw e;
-			}	
-			else throw e;
-		}
+		return getAllLogsSorted(null);
 
 	}	
 	
-	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure) throws SQLException 
+	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure, LinkedList<String> orderby) throws SQLException 
 	{	
 		checkIfBaseIsOpen();
 		if (isEmpty())return new ArrayList<LogInformation>();
 		String sql="SELECT * FROM Log";
 		if (whereclausure!=null&&!whereclausure.isEmpty())sql+=" WHERE "+whereclausure;
+		sql+=getOrderByString(orderby);
 		ResultSet rs = null;
-
+		
 		try
 		{
 		rs=conn.createStatement().executeQuery(sql);
@@ -241,15 +202,16 @@ public class DaoServerDatabaseH2
 
 	}		
 	
-	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure,int from, int count) throws SQLException 
+	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure,LinkedList<String> orderby,int from, int count) throws SQLException 
 	{	
 		checkIfBaseIsOpen();
 		if (isEmpty())return new ArrayList<LogInformation>();
-		if (from<0)from=0;
+		if (from<1)from=1;
 		if (count<1)return new ArrayList<LogInformation>();
 		String sql="SELECT * FROM Log";
 		if (whereclausure!=null&&!whereclausure.isEmpty())sql+=" WHERE "+whereclausure;
-		sql+="LIMIT "+count+" OFFSET "+(from-1); //TODO a co jezeli from=1 lub from=0;
+		sql+=getOrderByString(orderby);
+		sql+="LIMIT "+count+" OFFSET "+(from-1); //TODO a co jezeli from=1
 		ResultSet rs = null;
 
 		try
@@ -274,9 +236,26 @@ public class DaoServerDatabaseH2
 
 	}		
 	
+	
+	
+	public  ArrayList<LogInformation> getLogsWithWhereClausure
+	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
+	 ArrayList<String> user, ArrayList<String> tool, int from, int count) throws SQLException
+	 {
+		return getLogsWithWhereClausure(datefrom,datebefore,functionality,user,tool, null, from,count);
+	 }
+	
+	public  ArrayList<LogInformation> getLogsWithWhereClausure
+	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
+	 ArrayList<String> user, ArrayList<String> tool, LinkedList<String>orderby) throws SQLException
+	 {
+		return getLogsWithWhereClausure(datefrom,datebefore,functionality,user,tool, orderby, -1,-1);
+	 }
+	
+	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
 			(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
-			 ArrayList<String> user, ArrayList<String> tool, int from, int count) throws SQLException
+			 ArrayList<String> user, ArrayList<String> tool, LinkedList<String> orderby, int from, int count) throws SQLException
 	{
 		StringBuffer where=new StringBuffer("");
 		if (datefrom!=null)
@@ -325,8 +304,8 @@ public class DaoServerDatabaseH2
 			where.delete(where.length()-4, where.length());
 		String clausure=where.toString();
 		if (from!=-1&&count!=-1)
-			return getLogsWithWhereClausure(clausure,from,count);
-		else return getLogsWithWhereClausure(clausure);
+			return getLogsWithWhereClausure(clausure,orderby,from,count);
+		else return getLogsWithWhereClausure(clausure,orderby);
 		
 }
 	
@@ -335,7 +314,7 @@ public class DaoServerDatabaseH2
 	 ArrayList<String> user, ArrayList<String> tool) throws SQLException
 	 {
 		return getLogsWithWhereClausure
-		(datefrom,datebefore,functionality,user,tool, -1,-1);
+		(datefrom,datebefore,functionality,user,tool, null,-1,-1);
 	 }
 	
 	
@@ -380,6 +359,80 @@ public class DaoServerDatabaseH2
 		return loglist;
 	}
 	
+	private String getOrderByString(LinkedList<String> orderby)
+	{
+		String sql="";
+		if (orderby!=null&&!orderby.isEmpty())
+		{
+			sql+=" ORDER BY ";
+			for (String s:orderby)
+				sql+=(s+", ");
+			sql.substring(0, sql.length()-2);
+				
+		}
+		return sql;
+	}
+	
+	
+	public ArrayList<LogInformation> getAllLogsSorted(LinkedList<String> orderby) throws SQLException
+	{
+		
+		checkIfBaseIsOpen();
+		if (isEmpty())return new ArrayList<LogInformation>();
+		String sql="SELECT * FROM Log";
+		sql+=getOrderByString(orderby);
+		
+		ResultSet rs = null;
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+
+			}	
+			else throw e;
+		}		
+	}
+	
+	public ArrayList<LogInformation> getAllLogsSorted(LinkedList<String> orderby, int from, int count) throws SQLException
+	{
+		checkIfBaseIsOpen();
+		if (isEmpty())return new ArrayList<LogInformation>();
+		if (from<0)from=0;
+		if (count<1)return new ArrayList<LogInformation>();
+		String sql="SELECT * FROM Log"; //TODO a co jezeli from = 1 lub from = 0
+		sql+=getOrderByString(orderby);
+		sql+=" LIMIT "+count+" OFFSET "+(from-1);
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+
+
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			else throw e;
+		}
+	}
+	
+
+	
+	
+	
 	public ArrayList<String> getUsers() throws SQLException
 	{
 		return getColumn("user");
@@ -394,6 +447,7 @@ public class DaoServerDatabaseH2
 		return getColumn("functionality");
 	}
 	
+
 	
 	private ArrayList<String> getColumn(String column) throws SQLException
 	{
@@ -425,6 +479,11 @@ public class DaoServerDatabaseH2
 			else throw e;
 		}
 	}
+	
+	
+	
+	
+	
 	
 	
 
