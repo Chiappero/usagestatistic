@@ -21,4 +21,12 @@ public void setPrawy(Prawy prawy)
 	this.prawy = prawy;
 }
 
+public Pair()
+{}
+
+public Pair(Lewy l, Prawy p)
+{
+	lewy=l;
+	prawy=p;
+}
 }
