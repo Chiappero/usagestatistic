@@ -113,7 +113,7 @@ final public class UsageStatistic {
 		try
 		{
 		LogInformation log = new LogInformation();
-		log.setDate(Calendar.getInstance().getTime());
+		log.setDateTime(Calendar.getInstance().getTime());
 		log.setFunctionality(functionality);
 		log.setParameters(parameters);
 		log.setTool(tool);
@@ -278,7 +278,7 @@ final public class UsageStatistic {
 		return getInstance(tool,null);
 	}
 	
-	public void commitWait(){
+	private void commitWait(){
 		try {
 			commitThread.join();
 		} catch (InterruptedException e) {
