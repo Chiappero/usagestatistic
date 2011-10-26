@@ -3,6 +3,7 @@ package UsageStatisticServer;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 
 
@@ -359,13 +360,27 @@ public class DaoServerDatabaseH2
 		return loglist;
 	}
 	
-	private String getOrderByString(LinkedList<String> orderby)
+	private String getOrderByString(List<String> orderby)
 	{
 		String sql="";
 		if (orderby!=null&&!orderby.isEmpty())
 		{
 			sql+=" ORDER BY ";
 			for (String s:orderby)
+				sql+=(s+", ");
+			sql.substring(0, sql.length()-2);
+				
+		}
+		return sql;
+	}
+
+	private String getColumnsString(ArrayList<String> columns)
+	{
+		String sql="";
+		if (columns!=null&&!columns.isEmpty())
+		{
+			sql+="";
+			for (String s:columns)
 				sql+=(s+", ");
 			sql.substring(0, sql.length()-2);
 				
@@ -478,6 +493,19 @@ public class DaoServerDatabaseH2
 			}	
 			else throw e;
 		}
+	}
+	
+	private ArrayList<Pair<LogInformation,Integer>> agregate(ArrayList<String> groupby)
+	{
+		ArrayList<Pair<LogInformation,Integer>> values=new ArrayList<Pair<LogInformation,Integer>>();
+		checkIfBaseIsOpen();
+		if (isEmpty())return values;
+		String columns=getColumnsString(groupby);
+		String sql="SELECT "+columns+", COUNT(*) FROM Log";
+		sql+=" GROUP BY "+columns;
+		sql+=getOrderByString(groupby);
+		
+		
 	}
 	
 	
