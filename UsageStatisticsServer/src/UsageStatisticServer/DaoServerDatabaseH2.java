@@ -259,6 +259,24 @@ public class DaoServerDatabaseH2
 	 }
 	
 	
+	private String getOneFilterString(String column,ArrayList<String> filter)
+	{
+		StringBuffer fil=new StringBuffer("");
+		if (filter!=null&&!filter.isEmpty())
+		{
+			fil.append("(");
+			for (String f: filter)
+			{
+				fil.append(" "+column+"=\'"+f+"\' OR");
+			}
+			fil.delete(fil.length()-3, fil.length());
+			fil.append(") AND");			
+		}
+		return fil.toString();
+	}
+	
+	
+	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
 			(LogFilter filter, LinkedList<String> orderby, int from, int count) throws SQLException
 	{
@@ -274,37 +292,11 @@ public class DaoServerDatabaseH2
 			where.append(" timestamp<=\'"+sqlTimestamp+"\' AND");
 		}	
 		
-		
-		if (filter.getFunctionality()!=null&&!filter.getFunctionality().isEmpty())
-		{
-			where.append("(");
-			for (String f: filter.getFunctionality())
-			{
-				where.append(" functionality=\'"+f+"\' OR");
-			}
-			where.delete(where.length()-3, where.length());
-			where.append(") AND");
-		}
-		if (filter.getUser()!=null&&!filter.getUser().isEmpty())
-		{
-			where.append("(");
-			for (String u: filter.getUser())
-			{
-				where.append(" user=\'"+u+"\' OR");
-			}		
-			where.delete(where.length()-3, where.length());
-			where.append(") AND");
-		}
+		where.append(getOneFilterString("functionality",filter.getFunctionality()));		
+		where.append(getOneFilterString("user",filter.getUser()));	
+		where.append(getOneFilterString("tool", filter.getTool()));
 		if (filter.getTool()!=null&&!filter.getTool().isEmpty())
-		{
-			where.append("(");
-			for (String t: filter.getTool())
-			{
-				where.append(" tool=\'"+t+"\' OR");
-			}
-			where.delete(where.length()-3, where.length());
-			where.append(") AND");
-		}
+
 		if (!where.toString().isEmpty())
 			where.delete(where.length()-4, where.length());
 		String clausure=where.toString();
