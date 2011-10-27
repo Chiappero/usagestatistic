@@ -14,6 +14,7 @@ import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.web.client.RestTemplate;
 
 import UsageStatisticClient.UsageStatistic;
 import UsageStatisticClientConfigGenerator.ConfigGenerator;
@@ -23,7 +24,7 @@ public class UsageStatisticTest {
 	
 	
 	@Test
-	public void AT21_Proper_commit() throws NoSuchFieldException, SQLException, UsageStatisticException
+	public void AT21_Proper_commit() throws Throwable
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", new CommitingDetailsTestImp(1));
 		TestUtils.removeAllLogsFromDao(instance);
@@ -31,19 +32,19 @@ public class UsageStatisticTest {
 		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
 		Assert.assertEquals(localDao.getLogsAmount(),1);
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertTrue(localDao.isEmpty());
 	}
 			
 	
 //	@Test
-	public void methodCommit() throws NoSuchFieldException, SQLException, UsageStatisticException
+	public void methodCommit() throws Throwable
 	{
 		commitLogs(99); 
 		
 	}
 	
-	private void commitLogs(int amountRecord) throws NoSuchFieldException, SQLException, UsageStatisticException
+	private void commitLogs(int amountRecord) throws Throwable
 	{	
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		
@@ -55,14 +56,14 @@ public class UsageStatisticTest {
 		TestUtils.addSomeLogsToDao(instance, amountRecord);
 		System.out.println("addSomeLogs");
 		instance.commit(); //<-- tutaj jest test ilosci oraz tego czy nie wyrzuca bledu
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		System.out.println("commit");
 		TestUtils.removeAllLogsFromDao(instance);
 		System.out.println("removeAllLogs2");
 	}
 	
 	@Test
-	public void AT22_Server_doesnt_receive_data() throws NoSuchFieldException, SQLException, URISyntaxException, UsageStatisticException
+	public void AT22_Server_doesnt_receive_data() throws Throwable
 	{
 		
 
@@ -72,12 +73,12 @@ public class UsageStatisticTest {
 		TestUtils.addSomeLogsToDao(instance, 46);
 		PrivateAccessor.setField(instance, "serverURL", new URI("localhost:8123"));
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertEquals(inter.msg,Errors.ERROR_WITH_CONNECTION_TO_SERVER);
 		
 		PrivateAccessor.setField(instance, "serverURL", new URI("http://fakeaddress.pl"));
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertTrue(inter.msg.equals(Errors.SERVER_DOESNT_RECEIVE_DATA)||inter.msg.equals(Errors.ERROR_WITH_CONNECTION_TO_SERVER)||inter.msg.equals(Errors.CANNOT_EXTRACT_RESPONSE));
 		TestUtils.addSomeLogsToDao(instance, 70);
 		Assert.assertEquals(TestUtils.getLogsAmmount(instance), 46+70);
@@ -85,7 +86,7 @@ public class UsageStatisticTest {
 	}
 
 	@Test 
-	public void AT24_Connection_Lost() throws NoSuchFieldException, SQLException, URISyntaxException, UsageStatisticException
+	public void AT24_Connection_Lost() throws Throwable
 	{
 
 		final CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
@@ -117,12 +118,12 @@ public class UsageStatisticTest {
 			};
 		t.start();
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertEquals(Errors.ERROR_WITH_CONNECTION_TO_SERVER,inter.msg);
 		Assert.assertTrue(TestUtils.getLogsAmmount(instance)<500&&TestUtils.getLogsAmmount(instance)>0);
 			PrivateAccessor.setField(instance, "serverURL", original);
 			instance.commit();
-			instance.commitWait();
+			PrivateAccessor.invoke(instance, "commitWait", null, null);
 			Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 		
 		
@@ -130,7 +131,7 @@ public class UsageStatisticTest {
 	
 	
 	@Test
-	public void AT25_Invalid_readout_log() throws NoSuchFieldException, SQLException, UsageStatisticException
+	public void AT25_Invalid_readout_log() throws Throwable
 	{
 		CommitingDetailsTestImp inter = new CommitingDetailsTestImp(0);
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
@@ -138,7 +139,7 @@ public class UsageStatisticTest {
 		DaoTemporaryDatabaseInterface localDao = TestUtils.getLocalDao(instance);
 		Assert.assertTrue(localDao.isEmpty());
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertTrue(inter.success);
 		
 		localDao.saveLog(TestUtils.getExampleLog());//1
@@ -182,20 +183,20 @@ public class UsageStatisticTest {
 		CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
 		instance.setCommittingDetails(com);
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertEquals(com.msg, Errors.LOG_WAS_NULL);
 		
 		
 	}
 	
 	@Test 
-	public void AT26_Empty_Local_Database() throws NoSuchFieldException, SQLException, UsageStatisticException
+	public void AT26_Empty_Local_Database() throws Throwable
 	{
 		CommitingDetailsTestImp inter=new CommitingDetailsTestImp(0);
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
 		TestUtils.removeAllLogsFromDao(instance);
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertTrue(inter.success);
 		TestUtils.addSomeLogsToDao(instance, 50);
 		TestUtils.corruptFile(instance);
@@ -205,14 +206,14 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT28_Cannot_delete_log_from_local_database() throws UsageStatisticException, NoSuchFieldException
+	public void AT28_Cannot_delete_log_from_local_database() throws Throwable
 	{
 		CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", inter);
 		DaoTemporaryDatabaseInterface daoMock = new DaoTemporaryDatabaseH2TestImp();
 		PrivateAccessor.setField(instance, "dao", daoMock);
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertEquals(inter.msg,Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
 	}
 
@@ -220,7 +221,7 @@ public class UsageStatisticTest {
 	
 	
 	@Test
-	public void AT210_Paralell_Commits() throws NoSuchFieldException, SQLException, UsageStatisticException
+	public void AT210_Paralell_Commits() throws Throwable
 	{
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		TestUtils.removeAllLogsFromDao(instance);
@@ -240,7 +241,14 @@ public class UsageStatisticTest {
 				} catch (InterruptedException e) {
 				}
 				instance.commit();
-				instance.commitWait();
+				try
+				{
+					PrivateAccessor.invoke(instance, "commitWait", null, null);
+				} catch (Throwable e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 			}
 		};
@@ -248,7 +256,7 @@ public class UsageStatisticTest {
 		for (int i=0;i<10;i++)
 			tg[i].start();
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 		
 		
@@ -446,16 +454,15 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT52_Handle_all_exception_thrown_by_each_public_method() throws UsageStatisticException, NoSuchFieldException, SQLException
+	public void AT52_Handle_all_exception_thrown_by_each_public_method() throws Throwable
 	{
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
-		PrivateAccessor.setField(localDao, "conn", null);
+		PrivateAccessor.setField(instance, "dao", null);
 		try
 		{
 		instance.used("test", "test");
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		}
 		catch (Exception e)
 		{
@@ -469,19 +476,46 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT62_Empty_commit() throws UsageStatisticException, NoSuchFieldException, SQLException
+	public void AT61_Proper_flow_of_usage_commit_interface() throws Throwable
+	{
+		CommitingDetailsTestImp4 com = new CommitingDetailsTestImp4();
+		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", com);
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 5);
+		instance.commit();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertEquals(com.licznik, 10);
+		Assert.assertEquals(com.amount, 5);
+		Assert.assertTrue(com.commitingFinishedSuccesful);
+		Assert.assertTrue(com.commitingStart);
+	}
+	
+	@Test
+	public void AT62_Empty_commit() throws Throwable
 	{
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		TestUtils.removeAllLogsFromDao(instance);
 		CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
 		instance.setCommittingDetails(com);
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertTrue(com.success);
 	}
 	
 	@Test
-	public void AT64_Commit_with_invalid_steps() throws UsageStatisticException, NoSuchFieldException, SQLException
+	public void AT63_Commit_with_failure() throws Throwable
+	{
+		//Remaining tests of error codes are included in other testcases 
+		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		RestTemplate rest = (RestTemplate) PrivateAccessor.getField(instance, "restTemplate");
+		URI serverURL = (URI) PrivateAccessor.getField(instance, "serverURL");
+		Assert.assertEquals(rest.postForObject(serverURL, new LogInformation(null, null, null, null, null), String.class),"ERROR");
+	}
+	
+	
+	
+	@Test
+	public void AT64_Commit_with_invalid_steps() throws Throwable
 	{
 	final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 	DaoTemporaryDatabaseInterface localDao=new DaoTemporaryDatabaseH2TestImp2();
@@ -489,26 +523,78 @@ public class UsageStatisticTest {
 	CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
 	instance.setCommittingDetails(com);
 	instance.commit();
-	instance.commitWait();
+	PrivateAccessor.invoke(instance, "commitWait", null, null);
 	Assert.assertEquals(com.msg, Errors.LOG_WAS_NULL);
 	Assert.assertTrue(com.success);
 	}
 	
 	@Test
-	public void AT29_Large_Data() throws NoSuchFieldException, SQLException, UsageStatisticException
+	public void AT91_Proper_create_local_database_for_each_configuration() throws IOException, UsageStatisticException, NoSuchFieldException
+	{
+		System.setProperty("user.dir","D:\\JAVA\\Repo\\UsageStatisticsClient\\baza1");
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		TestUtils.getLocalDao(instance).closeDatabase();
+		System.setProperty("user.dir","D:\\JAVA\\Repo\\UsageStatisticsClient\\baza2");
+		instance = UsageStatistic.getInstance("aplikacja", null); //TODO dalej wczytuje z UsageStatisticClient zamiast z BazaX client-configa..
+		TestUtils.getLocalDao(instance).closeDatabase();
+		Assert.assertTrue(new File("baza1/db.h2.db").exists());
+		Assert.assertTrue(new File("baza2/db.h2.db").exists());
+		Assert.assertTrue(TestUtils.deleteDir(new File("baza1")));
+		Assert.assertTrue(TestUtils.deleteDir(new File("baza2")));
+
+	}
+	
+	 
+	
+	
+	@Test
+	public void AT92_Proper_load_of_new_configuration_file_when_creating_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
+	{
+		TestUtils.createExampleConfigFile();
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		Assert.assertEquals("matuszek", (String) PrivateAccessor.getField(instance, "user"));
+		Assert.assertEquals("password", (String) PrivateAccessor.getField(instance, "password"));
+		Assert.assertEquals("aplikacja", (String) PrivateAccessor.getField(instance, "tool"));
+		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "AT92user", "AT92pass", "AT92tool");
+		instance = UsageStatistic.getInstance("tool92", null);
+		Assert.assertEquals("tool92", (String) PrivateAccessor.getField(instance, "tool"));		
+		instance = UsageStatistic.getInstance();
+		Assert.assertEquals("AT92tool", (String) PrivateAccessor.getField(instance, "tool"));
+	}	
+	
+	@Test
+	public void AT93_Proper_load_of_new_initiation_parameters_Commiting_Details_and_Tool_when_create_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
+	{
+		TestUtils.createExampleConfigFile();
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		CommitingDetailsEmpty empty=(CommitingDetailsEmpty)PrivateAccessor.getField(instance, "committingDetails");
+		CommitingDetailsTestImp4 com = new CommitingDetailsTestImp4();
+		instance = UsageStatistic.getInstance("aplikacja", com);
+		CommitingDetailsTestImp4 notempty=(CommitingDetailsTestImp4)PrivateAccessor.getField(instance, "committingDetails");
+		instance = UsageStatistic.getInstance("aplikacja");
+		empty=(CommitingDetailsEmpty)PrivateAccessor.getField(instance, "committingDetails");
+		//if interface not changed it should throw "cannot cast" exception and fail the test
+		Assert.assertEquals("aplikacja", (String) PrivateAccessor.getField(instance, "tool"));	
+		TestUtils.createExampleConfigFileWithTool();
+		instance = UsageStatistic.getInstance();
+		Assert.assertEquals("tool", (String) PrivateAccessor.getField(instance, "tool"));	
+		instance = UsageStatistic.getInstance("tool2");
+		Assert.assertEquals("tool2", (String) PrivateAccessor.getField(instance, "tool"));
+		TestUtils.createExampleConfigFile();
+		instance = UsageStatistic.getInstance();
+		Assert.assertEquals("Default Application", (String) PrivateAccessor.getField(instance, "tool"));
+	}		
+	
+	@Test
+	public void AT29_Large_Data() throws Throwable
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 10000);
 		instance.commit();
-		instance.commitWait();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 	}
-	
-	
-	
-	
-		
 	
 	
 }
