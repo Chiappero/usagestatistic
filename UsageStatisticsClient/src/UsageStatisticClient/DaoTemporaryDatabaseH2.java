@@ -190,7 +190,6 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 					conn.close();
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
 			}
 	}	
 	

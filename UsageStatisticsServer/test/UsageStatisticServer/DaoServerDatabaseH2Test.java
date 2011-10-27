@@ -13,6 +13,10 @@ import junitx.util.PrivateAccessor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.WebDriverCommandProcessor;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
+import com.thoughtworks.selenium.DefaultSelenium;
 
 
 public class DaoServerDatabaseH2Test {
@@ -116,7 +120,7 @@ public class DaoServerDatabaseH2Test {
 	public void AT75_Concurrent_read_and_save_to_server_database() throws SQLException, InterruptedException, NoSuchFieldException
 	{
 		usunWszystkieLogi();
-		tempSaveAndLoadManyLogsAtOneTime(3, 1000, 10, 1, 10, 600);
+		tempSaveAndLoadManyLogsAtOneTime(3, 1000, 10, 1, 10, 6000);
 		
 	}
 	
@@ -235,5 +239,7 @@ public class DaoServerDatabaseH2Test {
 		}
 		
 	}
+	
+	
 
 }
