@@ -3,6 +3,7 @@ package UsageStatisticServer;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,20 +29,6 @@ public class LogPresenterController{
 	@Autowired
 	DaoServerDatabaseH2 dao;
 	
-	/*@RequestMapping(value = "/form", method = RequestMethod.GET)
-	protected ModelAndView handleRequestInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception{
-		ModelAndView mav = new ModelAndView("formatka");
-		mav.addObject("msg", "HELLO!");
-		return mav;
-	}
-	
-	@RequestMapping(value = "/wyniki", method = RequestMethod.POST)
-	protected ModelAndView handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception{
-		ModelAndView mav = new ModelAndView("wyniki");
-		mav.addObject("msg", "wyniki");
-		return mav;
-	}*/
-	
 	@RequestMapping(value = "/results", method = RequestMethod.GET)
 	protected ModelAndView wyswietlFormatke(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception{
 		 //Map<String, Object> myModel = new HashMap<String, Object>();
@@ -52,6 +39,15 @@ public class LogPresenterController{
 		mav.addObject("functionalities",dao.getFunctionalities());
 		mav.addObject("users",dao.getUsers());
 		mav.addObject("command",new Results());
+		//Dropdown list
+		ArrayList<String> columns = new ArrayList<String>();
+		columns.add("---Select---");
+		columns.add("tool");
+		columns.add("functionality");
+		columns.add("user");
+		columns.add("timestamp");
+		columns.add("parameters");
+		mav.addObject("columns", columns);
 		return mav;
 	}
 	
