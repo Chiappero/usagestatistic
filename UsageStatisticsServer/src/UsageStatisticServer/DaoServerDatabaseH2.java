@@ -295,7 +295,6 @@ public class DaoServerDatabaseH2
 		where.append(getOneFilterString("functionality",filter.getFunctionality()));		
 		where.append(getOneFilterString("user",filter.getUser()));	
 		where.append(getOneFilterString("tool", filter.getTool()));
-		if (filter.getTool()!=null&&!filter.getTool().isEmpty())
 
 		if (!where.toString().isEmpty())
 			where.delete(where.length()-4, where.length());
