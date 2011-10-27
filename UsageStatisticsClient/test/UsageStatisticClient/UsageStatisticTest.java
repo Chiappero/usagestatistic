@@ -524,7 +524,24 @@ public class UsageStatisticTest {
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 	}
 	
-	
+	@Test
+	public void AT92_Proper_load_of_new_configuration_file_when_creating_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
+	{
+		TestUtils.createExampleConfigFile();
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		String user=(String) PrivateAccessor.getField(instance, "user");
+		String password=(String) PrivateAccessor.getField(instance, "password");
+		String tool=(String) PrivateAccessor.getField(instance, "tool");
+		Assert.assertEquals("matuszek", (String) PrivateAccessor.getField(instance, "user"));
+		Assert.assertEquals("password", (String) PrivateAccessor.getField(instance, "password"));
+		Assert.assertEquals("aplikacja", (String) PrivateAccessor.getField(instance, "tool"));
+		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "AT92user", "AT92pass", "AT92tool");
+		instance = UsageStatistic.getInstance("tool92", null);
+		Assert.assertEquals("tool92", (String) PrivateAccessor.getField(instance, "tool"));		
+		instance = UsageStatistic.getInstance();
+		Assert.assertEquals("AT92tool", (String) PrivateAccessor.getField(instance, "tool"));
+
+	}	
 	
 		
 	

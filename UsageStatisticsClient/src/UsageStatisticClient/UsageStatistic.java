@@ -288,6 +288,12 @@ final public class UsageStatistic {
 	}
 	
 	
+	public static UsageStatistic getInstance() throws UsageStatisticException
+	{
+		return getInstance(null,null);
+	}
+	
+
 	private class CommitThread extends Thread{
 		
 		@Override
