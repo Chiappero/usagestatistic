@@ -14,6 +14,7 @@ import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.web.client.RestTemplate;
 
 import UsageStatisticClient.UsageStatistic;
 import UsageStatisticClientConfigGenerator.ConfigGenerator;
@@ -498,6 +499,18 @@ public class UsageStatisticTest {
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertTrue(com.success);
 	}
+	
+	@Test
+	public void AT63_Commit_with_failure() throws Throwable
+	{
+		//Remaining tests of error codes are included in other testcases 
+		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		RestTemplate rest = (RestTemplate) PrivateAccessor.getField(instance, "restTemplate");
+		URI serverURL = (URI) PrivateAccessor.getField(instance, "serverURL");
+		Assert.assertEquals(rest.postForObject(serverURL, new LogInformation(null, null, null, null, null), String.class),"ERROR");
+	}
+	
+	
 	
 	@Test
 	public void AT64_Commit_with_invalid_steps() throws Throwable
