@@ -456,6 +456,49 @@ public class UsageStatisticTest {
 		Assert.assertEquals(tool,"aplikacja");
 	}
 	
+	
+	@Test
+	public void AT51_Proper_usage_of_thread() throws Throwable
+	{
+		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
+		for(int i=0; i<1000; i++){
+			instance.used("test"+i, "paremtry"+i);
+		}
+		instance.commit();
+		Assert.assertFalse(localDao.isEmpty());
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertTrue(localDao.isEmpty());
+		for(int i=0; i<300; i++){
+			instance.used("test"+i, "paremtry"+i);
+		}
+		instance.commit();
+		for(int i=0; i<100; i++){
+			instance.used("test"+i, "paremtry"+i);
+		}
+		Assert.assertFalse(localDao.isEmpty());
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertFalse(localDao.isEmpty());
+		
+		instance.commit();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertTrue(localDao.isEmpty());
+		
+		for(int i=0; i<1000; i++){
+			instance.used("test"+i, "paremtry"+i);
+			if(i==480 || i==999){
+				instance.commit();
+				//PrivateAccessor.invoke(instance, "commitWait", null, null);
+			}
+			if(i%100==0){
+				Assert.assertFalse(localDao.isEmpty());
+			}
+		}
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertTrue(localDao.isEmpty());
+	}
+	
+	
 	@Test
 	public void AT52_Handle_all_exception_thrown_by_each_public_method() throws Throwable
 	{
@@ -531,7 +574,7 @@ public class UsageStatisticTest {
 	Assert.assertTrue(com.success);
 	}
 	
-	@Test
+	/*@Test
 	public void AT81_Proper_show_filtered_data() throws Throwable
 	{
 	final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
@@ -548,7 +591,7 @@ public class UsageStatisticTest {
 	selenium.waitForPageToLoad("3000");
 	Assert.assertEquals(selenium.getText("//tr[4]/td[2]"),"SELENIUM");
 	selenium.stop();
-	}
+	}*/
 	
 	@Test
 	public void AT91_Proper_create_local_database_for_each_configuration() throws IOException, UsageStatisticException, NoSuchFieldException
@@ -558,7 +601,7 @@ public class UsageStatisticTest {
 		url=url.substring(0, url.lastIndexOf("/"));
 		url=url.substring(0, url.lastIndexOf("/"));
 		url=url.replace("/","\\\\");
-		System.out.println(url);
+		//System.out.println(url);
 		System.setProperty("user.dir",url+"\\baza1");
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		TestUtils.getLocalDao(instance).closeDatabase();

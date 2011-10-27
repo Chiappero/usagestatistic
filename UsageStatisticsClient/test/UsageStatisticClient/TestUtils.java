@@ -59,8 +59,10 @@ public static LogInformation getExampleLog()
 public static void dropTable(DaoTemporaryDatabaseH2 dao) throws NoSuchFieldException, SQLException
 {
 	String sql="DROP TABLE Log";
+	dao.openDatabase();
 	Connection conn=(Connection) PrivateAccessor.getField(dao, "conn");
 	conn.createStatement().execute(sql);
+	dao.closeDatabase();
 }
 
 public static void makeConnectionNull(DaoTemporaryDatabaseH2 dao)

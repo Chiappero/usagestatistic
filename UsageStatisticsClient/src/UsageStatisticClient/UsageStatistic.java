@@ -116,7 +116,9 @@ final public class UsageStatistic {
 		log.setParameters(parameters);
 		log.setTool(tool);
 		log.setUser(user);*/
-		return dao.saveLog(log);
+		boolean savesucc = dao.saveLog(log);
+		dao.closeDatabase();
+		return savesucc;
 	}
 	
 	
@@ -187,6 +189,7 @@ final public class UsageStatistic {
 			}
 				committingDetails.setInfo("Commiting finised succesful");
 				committingDetails.commitingFinishedSuccesful();
+				dao.closeDatabase();
 		} 
 		
 		

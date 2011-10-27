@@ -46,13 +46,12 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			{
 				conn.createStatement().execute(sql);
 			} catch (SQLException e1)
-			{
+			{	
 				return false;
 			}
 		}
-		
-			
 		return true;
+		
 	}
 
 	@Override
@@ -62,6 +61,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		
 		if (isEmpty() || conn==null)
 		{
+			
 			throw new SQLException();
 		}
 		String sql="SELECT TOP 1 * FROM Log";
@@ -70,6 +70,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		int index=rs.getInt("id");
 		sql="DELETE FROM Log WHERE id="+index;
 		conn.createStatement().executeUpdate(sql);
+	
 		
 		
 	}
@@ -79,6 +80,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	{	
 		checkIfBaseIsOpen();
 		if (isEmpty() || conn==null){
+		
 			return null;
 		}
 		String sql="SELECT TOP 1 * FROM Log";
@@ -92,13 +94,18 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				createTables();
-				return null; //dopiero co utworzono tabele, loga nie ma
-			}			
+			
+				//return null; //dopiero co utworzono tabele, loga nie ma
+			}
+			return null;
 		}
 		rs.first();
 		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
-		if (!LogInformation.validateLog(logInformation))
+		if (!LogInformation.validateLog(logInformation)){
+		
 			return null;
+		}
+	
 		return logInformation;
 
 	}
@@ -108,6 +115,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	{	
 			checkIfBaseIsOpen();
 			if(conn==null){
+			
 				return false;
 			}
 			String sql="SELECT COUNT(*) FROM Log";
@@ -115,6 +123,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			{
 			ResultSet rs=conn.createStatement().executeQuery(sql);
 			rs.first();
+	
 			return rs.getString(1).equals("0");
 			}
 			catch (SQLException e)
@@ -122,9 +131,13 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 				{
 					createTables();
+	
 					return true;
 				}
-				else throw e;
+				else{
+			
+					throw e;
+				}
 				
 			}			
 	}
@@ -138,6 +151,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		{
 		ResultSet rs=conn.createStatement().executeQuery(sql);
 		rs.first();
+
 		return Integer.parseInt(rs.getString(1));
 		}
 		catch (SQLException e)
@@ -145,9 +159,13 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				createTables();
+
 				return 0; //utworzono tabele, liczba logow = 0				
 			}
-			else throw e;
+			else{
+
+				throw e;
+			}
 			
 		}
 	}
@@ -249,6 +267,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 						String query="DROP TABLE IF EXISTS Log"; 
 				        conn.createStatement().execute(query);
 				        createTables();
+
 				}
 			} 
 			catch (SQLException e)
