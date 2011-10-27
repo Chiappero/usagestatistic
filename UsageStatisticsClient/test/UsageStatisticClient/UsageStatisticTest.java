@@ -530,24 +530,36 @@ public class UsageStatisticTest {
 	Assert.assertTrue(com.success);
 	}
 	
-	@Test
-	public void AT81_Proper_show_filtered_data() throws Throwable
-	{
-	final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-	TestUtils.removeAllLogsFromDao(instance);
-	instance.used("SELENIUM", "PARAMETRY");
-	instance.commit();
-	FirefoxDriver firefoxDriver = new FirefoxDriver();
-	//a co jak nie ma firefoxa? :P
-	WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);
-	DefaultSelenium selenium = new DefaultSelenium(webDriverCommandProcessor);
-	selenium.open("/results");
-	selenium.click("id=functionalities3"); //TODO nie dzia³a na wszystkich bazach (u mnie zaznaczyl test)
-	selenium.click("css=input[type=\"submit\"]");
-	selenium.waitForPageToLoad("3000");
-	Assert.assertEquals(selenium.getText("//tr[4]/td[2]"),"SELENIUM");
-	selenium.stop();
-	}
+//	@Test
+//	public void AT71_Proper_show_data() throws UsageStatisticException
+//	{
+//		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+//		
+//	}
+	
+	
+	
+	
+	
+//	@Test
+	// przeniesione na serwer, chyba ze ktos ma pomysl jak to tu zrobic z czyszczeniem
+//	public void AT81_Proper_show_filtered_data() throws UsageStatisticException, NoSuchFieldException, SQLException
+//	{
+//	final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+//	TestUtils.removeAllLogsFromDao(instance);
+//	instance.used("SELENIUM", "PARAMETRY");
+//	instance.commit();
+//	FirefoxDriver firefoxDriver = new FirefoxDriver();
+//	//a co jak nie ma firefoxa? :P
+//	WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);
+//	DefaultSelenium selenium = new DefaultSelenium(webDriverCommandProcessor);
+//	selenium.open("/results");
+//	selenium.click("id=functionalities3"); //TODO nie dzia³a na wszystkich bazach (u mnie zaznaczyl test a nie SELENIUM)
+//	selenium.click("css=input[type=\"submit\"]");
+//	selenium.waitForPageToLoad("3000");
+//	Assert.assertEquals(selenium.getText("//tr[4]/td[2]"),"SELENIUM");
+//	selenium.stop();
+//	}
 	
 	@Test
 	public void AT91_Proper_create_local_database_for_each_configuration() throws IOException, UsageStatisticException, NoSuchFieldException

@@ -212,7 +212,7 @@ public class DaoServerDatabaseH2
 		String sql="SELECT * FROM Log";
 		if (whereclausure!=null&&!whereclausure.isEmpty())sql+=" WHERE "+whereclausure;
 		sql+=getOrderByString(orderby);
-		sql+="LIMIT "+count+" OFFSET "+(from-1); //TODO a co jezeli from=1
+		sql+=" LIMIT "+count+" OFFSET "+(from-1); //TODO a co jezeli from=1
 		ResultSet rs = null;
 
 		try
@@ -304,7 +304,7 @@ public class DaoServerDatabaseH2
 		if (!where.toString().isEmpty())
 			where.delete(where.length()-4, where.length());
 		String clausure=where.toString();
-		if (from!=-1&&count!=-1)
+		if (from!=-1||count!=-1)
 			return getLogsWithWhereClausure(clausure,orderby,from,count);
 		else return getLogsWithWhereClausure(clausure,orderby);
 		
