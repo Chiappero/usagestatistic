@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.SQLException;
 
 import junitx.util.PrivateAccessor;
@@ -537,10 +538,11 @@ public class UsageStatisticTest {
 	instance.used("SELENIUM", "PARAMETRY");
 	instance.commit();
 	FirefoxDriver firefoxDriver = new FirefoxDriver();
+	//a co jak nie ma firefoxa? :P
 	WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);
 	DefaultSelenium selenium = new DefaultSelenium(webDriverCommandProcessor);
 	selenium.open("/results");
-	selenium.click("id=functionalities3");
+	selenium.click("id=functionalities3"); //TODO nie dzia³a na wszystkich bazach (u mnie zaznaczyl test)
 	selenium.click("css=input[type=\"submit\"]");
 	selenium.waitForPageToLoad("3000");
 	Assert.assertEquals(selenium.getText("//tr[4]/td[2]"),"SELENIUM");
@@ -550,10 +552,16 @@ public class UsageStatisticTest {
 	@Test
 	public void AT91_Proper_create_local_database_for_each_configuration() throws IOException, UsageStatisticException, NoSuchFieldException
 	{
-		System.setProperty("user.dir","D:\\JAVA\\Repo\\UsageStatisticsClient\\baza1");
+		String url=this.getClass().getResource(this.getClass().getSimpleName() + ".class").toString();
+		url=url.substring(url.indexOf("/")+1, url.lastIndexOf("/"));
+		url=url.substring(0, url.lastIndexOf("/"));
+		url=url.substring(0, url.lastIndexOf("/"));
+		url=url.replace("/","\\\\");
+		System.out.println(url);
+		System.setProperty("user.dir",url+"\\baza1");
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		TestUtils.getLocalDao(instance).closeDatabase();
-		System.setProperty("user.dir","D:\\JAVA\\Repo\\UsageStatisticsClient\\baza2");
+		System.setProperty("user.dir",url+"\\baza2");
 		instance = UsageStatistic.getInstance("aplikacja", null); //TODO dalej wczytuje z UsageStatisticClient zamiast z BazaX client-configa..
 		TestUtils.getLocalDao(instance).closeDatabase();
 		Assert.assertTrue(new File("baza1/db.h2.db").exists());
