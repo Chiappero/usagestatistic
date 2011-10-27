@@ -26,7 +26,7 @@
 	 		</form:select>        
 		  </td></tr>
 		  <tr><td>Sortowanie3</td><td>
-		   <form:select path="sortChoose3"  id="columns3" name="columns2">
+		   <form:select path="sortChoose3" id="columns3" name="columns2">
            <c:forEach var="col" items="${columns}">
 	 		  <option value="${col}">${col}</option>
 	 		  </c:forEach>
@@ -37,75 +37,77 @@
   </form:form>
 </div>
 
-<script language="javascript">
-	document.getElementById("columns1").disabled = false;
-	document.getElementById("columns2").disabled = true;
-	document.getElementById("columns3").disabled = true;
+<script language="javascript"><!--
+	var drop1 = document.getElementById("columns1");
+	var drop2 = document.getElementById("columns2");	
+	var drop3 = document.getElementById("columns3");	
+	drop1.selectedIndex=0;
+	drop2.selectedIndex=0;
+	drop3.selectedIndex=0;
+
+
+	drop1.disabled = false;
+	drop2.disabled = true;
+	drop3.disabled = true;
 	
-	function change1(){
-		var none = document.getElementById("columns1")[0].value;
-		var drop1 = document.getElementById("columns1");
-		var drop2 = document.getElementById("columns2");
-		var drop3 = document.getElementById("columns3");
-		
-		if (drop1.value != none){
-			drop2.disabled = false;
-			
-			drop2.remove(drop1.selectedIndex);
-		}
-		else{
-			drop2.disabled = true;
-			drop3.disabled = true;
-			reload2();
-			reload3();
-		}
+	function change1()
+	{
+		change(drop1, drop2);
+		drop3.selectedIndex=0;
+		drop3.disabled=true;
 	}
 	
-	function change2(){
-		var none = document.getElementById("columns2")[0].value;
-		var drop1 = document.getElementById("columns1");
-		var drop2 = document.getElementById("columns2");
-		var drop3 = document.getElementById("columns3");
-		
-		if (drop2.value != none){
-			drop3.disabled = false;
-			
-			drop3.remove(drop1.selectedIndex);
-			drop3.remove(drop2.selectedIndex);
-		}
-		else{
-			drop3.disabled = true;
-			reload3();
-		}
-	}
-		
-	function reload2(){
-		var drop1 = document.getElementById("columns1");
-		var drop2 = document.getElementById("columns2");
-		var len = drop2.length;
-		for(i=0; i<len;i++){
-			drop2.remove('0');
-		}
-		for(i=0; i<drop1.length;i++){
-			var opt = document.createElement("option");
-			drop2.options.add(opt);
-			opt.text = drop1[i].value;
-	        opt.value = drop1[i].value;
-		}
+	function change2()
+	{
+		change(drop2, drop3);
 	}
 	
-	function reload3(){
-		var drop1 = document.getElementById("columns1");
-		var drop3 = document.getElementById("columns3");
-		var len = drop3.length;
-		for(i=0; i<len;i++){
-			drop3.remove('0');
-		}
-		for(i=0; i<drop1.length;i++){
-			var opt = document.createElement("option");
-			drop3.options.add(opt);
-			opt.text = drop1[i].value;
-	        opt.value = drop1[i].value;
-		}
+	function change(dropA, dropB)
+	{
+		
+		if (dropA.selectedIndex==0)
+			{
+			dropB.selectedIndex=0;
+			dropB.disabled=true;
+			}
+		else
+			{
+			addRemaining(dropA, dropB);
+			dropB.disabled=false;
+			}
 	}
+	
+	
+	
+	
+	function addRemaining(dropA, dropB)
+	{	
+		for (i=dropB.length;i>0;i--)
+			{
+			dropB.remove(i);
+			}
+		
+		for (i=1;i<dropA.selectedIndex;i++)
+		{
+		add(dropA, dropB, i);
+		}
+		
+		for (i=dropA.selectedIndex+1;i<dropA.length;i++)
+		{
+		add(dropA, dropB, i);
+		}
+		
+	}
+	
+	function add(dropA, dropB, i)
+	{
+		var opt = document.createElement("option");
+		opt.text = dropA[i].text;
+		opt.value = dropA[i].value;
+		dropB.options.add(opt);
+	}
+	
+	
+	
+	
 </script>
