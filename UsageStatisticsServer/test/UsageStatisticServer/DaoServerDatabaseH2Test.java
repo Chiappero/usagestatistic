@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 
 import junitx.util.PrivateAccessor;
 
@@ -17,7 +18,6 @@ import org.openqa.selenium.WebDriverCommandProcessor;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.thoughtworks.selenium.DefaultSelenium;
-
 
 public class DaoServerDatabaseH2Test {
 
@@ -238,6 +238,91 @@ public class DaoServerDatabaseH2Test {
 		dao.saveLog(log);
 		}
 		
+	}
+	
+	@Test
+	public void AT81_Proper_show_filtered_data() throws SQLException, NoSuchFieldException
+	{
+	usunWszystkieLogi();
+	saveTemporaryData(25);
+	dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SELENIUM2","SELENIUM3","SELENIUM4"));
+	dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-60000),"SELA","SEL2","SELA","SEL4"));
+	dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SEL3","SEL4"));
+	
+	//filter test
+	ArrayList<LogInformation> list1=dao.getAllLogs();
+	Assert.assertEquals(28, list1.size());
+	ArrayList<LogInformation> list2=dao.getLogsWithWhereClausure(null, null, null, null, null);
+	Assert.assertEquals(list1.size(), list2.size());
+	list2=dao.getLogsWithWhereClausure(new GregorianCalendar().getTime(), null, null, null, null);
+	Assert.assertEquals(1, list2.size());
+	Assert.assertEquals("SELB", list2.get(0).getFunctionality());
+	list2=dao.getLogsWithWhereClausure(null, new GregorianCalendar().getTime(), null, null, null);
+	Assert.assertEquals(list1.size(), list2.size()+1);
+	list2=dao.getLogsWithWhereClausure(new java.util.Date(new GregorianCalendar().getTimeInMillis()-30000), new java.util.Date(new GregorianCalendar().getTimeInMillis()+30000), null, null, null);
+	Assert.assertEquals(list1.size(), list2.size()+2);
+	list2=dao.getLogsWithWhereClausure(null,new java.util.Date(new GregorianCalendar().getTimeInMillis()-30000), null, null, null);
+	Assert.assertEquals(1, list2.size());
+	Assert.assertEquals("SELA", list2.get(0).getFunctionality());	
+	
+	ArrayList<String> testlist=new ArrayList<String>();
+	testlist.add("test");
+	list2=dao.getLogsWithWhereClausure(null,null,testlist , null, null);
+	Assert.assertEquals(25, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,null , testlist, null);
+	Assert.assertEquals(25, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,null , null, testlist);
+	Assert.assertEquals(25, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,testlist , testlist, testlist);
+	Assert.assertEquals(25, list2.size());
+	testlist.add("SELA");
+	list2=dao.getLogsWithWhereClausure(null,null,testlist , null, null);
+	Assert.assertEquals(26, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,null , testlist, null);
+	Assert.assertEquals(25, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,null , null, testlist);
+	Assert.assertEquals(26, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,testlist , testlist, testlist);
+	Assert.assertEquals(25, list2.size());	
+	list2=dao.getLogsWithWhereClausure(null,null,testlist , null, testlist);
+	Assert.assertEquals(26, list2.size());	
+	list2=dao.getLogsWithWhereClausure(new GregorianCalendar().getTime(),null,testlist , null, null);
+	Assert.assertEquals(0, list2.size());		
+	
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,1,28);
+	Assert.assertEquals(28, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,1,29);
+	Assert.assertEquals(28, list2.size());	
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,1,27);
+	Assert.assertEquals(27, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,-1,28);
+	Assert.assertEquals(28, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,1,20);
+	Assert.assertEquals(20, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,21,10);
+	Assert.assertEquals(8, list2.size());
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,26,10);
+	Assert.assertEquals(3, list2.size());
+	Assert.assertEquals(list2.get(0).getFunctionality(), "SELENIUM");
+	Assert.assertEquals(list2.get(1).getFunctionality(), "SELA");
+	Assert.assertEquals(list2.get(2).getFunctionality(), "SELB");
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,26,1);
+	Assert.assertEquals(1, list2.size());	
+	Assert.assertEquals(list2.get(0).getFunctionality(), "SELENIUM");
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,1,0);
+	Assert.assertEquals(0, list2.size());	
+	list2=dao.getLogsWithWhereClausure(null,null,null,null,null,1,-1);
+	Assert.assertEquals(0, list2.size());	
+	LinkedList<String> order=new LinkedList<String>();
+	order.add("functionality");
+	list2=dao.getLogsWithWhereClausure(null,null,testlist,null,null,order,1,28);
+	Assert.assertEquals( "SELA",list2.get(0).getFunctionality());
+	Assert.assertEquals("SEL2",list2.get(0).getUser());
+	Assert.assertEquals("test",list2.get(4).getFunctionality());	
+	
+	
+	
+	
 	}
 	
 	
