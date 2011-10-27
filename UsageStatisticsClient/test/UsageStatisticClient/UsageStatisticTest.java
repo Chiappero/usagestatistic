@@ -459,7 +459,8 @@ public class UsageStatisticTest {
 	public void AT52_Handle_all_exception_thrown_by_each_public_method() throws Throwable
 	{
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		PrivateAccessor.setField(instance, "dao", null);
+		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
+		PrivateAccessor.setField(localDao, "conn", null);
 		try
 		{
 		instance.used("test", "test");
@@ -550,10 +551,10 @@ public class UsageStatisticTest {
 	@Test
 	public void AT91_Proper_create_local_database_for_each_configuration() throws IOException, UsageStatisticException, NoSuchFieldException
 	{
-		System.setProperty("user.dir","D:\\JAVA\\Repo\\UsageStatisticsClient\\baza1");
+		System.setProperty("user.dir",/*"D:\\JAVA\\Repo\\UsageStatisticsClient\\baza1"*/"D:\\Uczelnia\\zpi\\Repozytorium\\UsageStatisticsClient\\baza1");
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		TestUtils.getLocalDao(instance).closeDatabase();
-		System.setProperty("user.dir","D:\\JAVA\\Repo\\UsageStatisticsClient\\baza2");
+		System.setProperty("user.dir",/*"D:\\JAVA\\Repo\\UsageStatisticsClient\\baza2"*/"D:\\Uczelnia\\zpi\\Repozytorium\\UsageStatisticsClient\\baza2");
 		instance = UsageStatistic.getInstance("aplikacja", null); //TODO dalej wczytuje z UsageStatisticClient zamiast z BazaX client-configa..
 		TestUtils.getLocalDao(instance).closeDatabase();
 		Assert.assertTrue(new File("baza1/db.h2.db").exists());

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DaoServerDatabaseH2
 {
-	Connection conn=null;
+	private Connection conn=null;
 	
 	public DaoServerDatabaseH2()
 	{
