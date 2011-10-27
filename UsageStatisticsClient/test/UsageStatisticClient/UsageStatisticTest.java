@@ -529,9 +529,6 @@ public class UsageStatisticTest {
 	{
 		TestUtils.createExampleConfigFile();
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		String user=(String) PrivateAccessor.getField(instance, "user");
-		String password=(String) PrivateAccessor.getField(instance, "password");
-		String tool=(String) PrivateAccessor.getField(instance, "tool");
 		Assert.assertEquals("matuszek", (String) PrivateAccessor.getField(instance, "user"));
 		Assert.assertEquals("password", (String) PrivateAccessor.getField(instance, "password"));
 		Assert.assertEquals("aplikacja", (String) PrivateAccessor.getField(instance, "tool"));
@@ -543,7 +540,34 @@ public class UsageStatisticTest {
 
 	}	
 	
+	@Test
+	public void AT93_Proper_load_of_new_initiation_parameters_Commiting_Details_and_Tool_when_create_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
+	{
+		TestUtils.createExampleConfigFile();
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		CommitingDetailsEmpty empty=(CommitingDetailsEmpty)PrivateAccessor.getField(instance, "committingDetails");
+		CommitingDetailsTestImp4 com = new CommitingDetailsTestImp4();
+		instance = UsageStatistic.getInstance("aplikacja", com);
+		CommitingDetailsTestImp4 notempty=(CommitingDetailsTestImp4)PrivateAccessor.getField(instance, "committingDetails");
+		instance = UsageStatistic.getInstance("aplikacja");
+		empty=(CommitingDetailsEmpty)PrivateAccessor.getField(instance, "committingDetails");
+		//if interface not changed it should throw "cannot cast" exception and fail the test
+		Assert.assertEquals("aplikacja", (String) PrivateAccessor.getField(instance, "tool"));	
+		TestUtils.createExampleConfigFileWithTool();
+		instance = UsageStatistic.getInstance();
+		Assert.assertEquals("tool", (String) PrivateAccessor.getField(instance, "tool"));	
+		instance = UsageStatistic.getInstance("tool2");
+		Assert.assertEquals("tool2", (String) PrivateAccessor.getField(instance, "tool"));
+		TestUtils.createExampleConfigFile();
+		instance = UsageStatistic.getInstance();
+		Assert.assertEquals("Default Application", (String) PrivateAccessor.getField(instance, "tool"));
+			
 		
+		
+		
+
+
+	}			
 	
 	
 }
