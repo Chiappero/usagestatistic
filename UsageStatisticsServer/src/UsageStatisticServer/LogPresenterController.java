@@ -30,7 +30,7 @@ public class LogPresenterController{
 	DaoServerDatabaseH2 dao;
 	
 	@RequestMapping(value = "/results", method = RequestMethod.GET)
-	protected ModelAndView wyswietlFormatke(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception{
+	protected ModelAndView wyswietlFormatke(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException{
 		 //Map<String, Object> myModel = new HashMap<String, Object>();
 		String data = (new java.util.Date()).toString();
 		ModelAndView mav = new ModelAndView("wybierzStatystyki");

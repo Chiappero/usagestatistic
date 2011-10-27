@@ -10,18 +10,18 @@ import java.util.List;
 
 public class DaoServerDatabaseH2
 {
+	Connection conn=null;
 	
 	public DaoServerDatabaseH2()
 	{
 		openDatabase();
 	}
 	
-	Connection conn=null;
 	
 	public boolean saveLog(LogInformation log) 
 	{
 		checkIfBaseIsOpen();
-		if (log!=null&&LogInformation.validateLog(log))
+		if (log!=null&&LogInformation.validateLog(log) && conn!=null)
 		{
 		java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(log.getDateTime().getTime());
 		String sql="INSERT INTO Log " +
@@ -44,14 +44,8 @@ public class DaoServerDatabaseH2
 					}
 				}	
 				
-				
 				return false;
-			}
-			
-			catch (Exception e)
-			{
-				return false;
-			}
+			}			
 			
 			return true;
 		}
@@ -88,18 +82,27 @@ public class DaoServerDatabaseH2
 					conn.close();
 				}
 			} catch (SQLException e) {
+				try {
+					conn.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 			}
 	}	
 	
 	private void createTables()
 	{
+		String query="CREATE TABLE IF NOT EXISTS Log (id int NOT NULL AUTO_INCREMENT, timestamp timestamp, functionality varchar(50), user varchar(50), tool varchar(50),parameters varchar(200))";
 		try {
-			
-
-			String query="CREATE TABLE IF NOT EXISTS Log (id int NOT NULL AUTO_INCREMENT, timestamp timestamp, functionality varchar(50), user varchar(50), tool varchar(50),parameters varchar(200))";
-			conn.createStatement().execute(query);
+			if(conn!=null){
+				conn.createStatement().execute(query);
+			}		
 		} catch (SQLException e) {
-			// TODO CO JAK SIE NIE UDA
+			try {
+				conn.createStatement().execute(query);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 	}
@@ -114,7 +117,7 @@ public class DaoServerDatabaseH2
 			}
 		} catch (SQLException e)
 		{
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -133,6 +136,7 @@ public class DaoServerDatabaseH2
 				if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 				{
 					//TODO cos bardzo zlego powinno tu byc
+					somethingVeryBad();
 					throw e;
 
 				}
@@ -156,6 +160,7 @@ public class DaoServerDatabaseH2
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				//TODO cos bardzo zlego powinno tu byc	
+				somethingVeryBad();
 				throw e;
 			}
 			else throw e;
@@ -195,6 +200,7 @@ public class DaoServerDatabaseH2
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
 				throw e;
 			}	
 			//TODO czy tu rozpatrujemy zly format zapytania skoro to bedzie prywatne?
@@ -229,6 +235,7 @@ public class DaoServerDatabaseH2
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
 				throw e;
 			}	
 			//TODO czy tu rozpatrujemy zly format zapytania skoro to bedzie prywatne?
@@ -408,8 +415,8 @@ public class DaoServerDatabaseH2
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
 				throw e;
-
 			}	
 			else throw e;
 		}		
@@ -438,6 +445,7 @@ public class DaoServerDatabaseH2
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
 				throw e;
 			}	
 			else throw e;
@@ -489,7 +497,9 @@ public class DaoServerDatabaseH2
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
 				throw e;
+				
 			}	
 			else throw e;
 		}
@@ -518,6 +528,7 @@ public class DaoServerDatabaseH2
 			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
 			{
 				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
 				throw e;
 			}	
 			else throw e;
@@ -550,6 +561,23 @@ public class DaoServerDatabaseH2
 		}
 		while (!rs.isAfterLast());
 		return pairlist;
+	}
+	
+	private void somethingVeryBad() throws SQLException
+	{
+		closeDatabase();
+		openDatabase();
+		if(conn!=null){
+			String sql = "SELECT COUNT(*) FROM RDB$RELATIONS WHERE RDB$RELATION_NAME = 'LOG'";
+				ResultSet rs=conn.createStatement().executeQuery(sql);
+				rs.first();
+			
+				if(rs.getString(1).equals("0")){
+					//TODO przywrocenie kopii zapasowej
+				}
+		}
+
+		
 	}
 	
 	
