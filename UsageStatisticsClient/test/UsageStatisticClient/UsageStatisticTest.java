@@ -1,23 +1,25 @@
 package UsageStatisticClient;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+
 import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.WebDriverCommandProcessor;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.web.client.RestTemplate;
 
-import UsageStatisticClient.UsageStatistic;
 import UsageStatisticClientConfigGenerator.ConfigGenerator;
+
+import com.thoughtworks.selenium.DefaultSelenium;
 
 public class UsageStatisticTest {
 
@@ -284,7 +286,7 @@ public class UsageStatisticTest {
 		f.delete();
 		try
 		{
-			final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+			UsageStatistic.getInstance("aplikacja", null);
 			Assert.fail();
 		} catch (UsageStatisticException e)
 		{
@@ -513,7 +515,6 @@ public class UsageStatisticTest {
 	}
 	
 	
-	
 	@Test
 	public void AT64_Commit_with_invalid_steps() throws Throwable
 	{
@@ -526,6 +527,24 @@ public class UsageStatisticTest {
 	PrivateAccessor.invoke(instance, "commitWait", null, null);
 	Assert.assertEquals(com.msg, Errors.LOG_WAS_NULL);
 	Assert.assertTrue(com.success);
+	}
+	
+	@Test
+	public void AT81_Proper_show_filtered_data() throws Throwable
+	{
+	final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+	TestUtils.removeAllLogsFromDao(instance);
+	instance.used("SELENIUM", "PARAMETRY");
+	instance.commit();
+	FirefoxDriver firefoxDriver = new FirefoxDriver();
+	WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);
+	DefaultSelenium selenium = new DefaultSelenium(webDriverCommandProcessor);
+	selenium.open("/results");
+	selenium.click("id=functionalities3");
+	selenium.click("css=input[type=\"submit\"]");
+	selenium.waitForPageToLoad("3000");
+	Assert.assertEquals(selenium.getText("//tr[4]/td[2]"),"SELENIUM");
+	selenium.stop();
 	}
 	
 	@Test
