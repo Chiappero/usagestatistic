@@ -72,7 +72,7 @@ public class LogPresenterController{
 		ArrayList<LogInformation> logsWithWhereClausure;
 		try
 		{
-			logsWithWhereClausure = dao.getLogsWithWhereClausure(null,null,functionalities,users,tools);
+			logsWithWhereClausure = dao.getLogsWithWhereClausure(new LogFilter(null,null,functionalities,users,tools));
 		} catch (SQLException e)
 		{
 			return new ModelAndView("ERROR");

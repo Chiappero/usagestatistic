@@ -247,61 +247,58 @@ public class DaoServerDatabaseH2
 	
 	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
-	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
-	 ArrayList<String> user, ArrayList<String> tool, int from, int count) throws SQLException
+	(LogFilter filter, int from, int count) throws SQLException
 	 {
-		return getLogsWithWhereClausure(datefrom,datebefore,functionality,user,tool, null, from,count);
+		return getLogsWithWhereClausure(filter, null, from,count);
 	 }
 	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
-	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
-	 ArrayList<String> user, ArrayList<String> tool, LinkedList<String>orderby) throws SQLException
+	(LogFilter filter, LinkedList<String>orderby) throws SQLException
 	 {
-		return getLogsWithWhereClausure(datefrom,datebefore,functionality,user,tool, orderby, -1,-1);
+		return getLogsWithWhereClausure(filter, orderby, -1,-1);
 	 }
 	
 	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
-			(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
-			 ArrayList<String> user, ArrayList<String> tool, LinkedList<String> orderby, int from, int count) throws SQLException
+			(LogFilter filter, LinkedList<String> orderby, int from, int count) throws SQLException
 	{
 		StringBuffer where=new StringBuffer("");
-		if (datefrom!=null)
+		if (filter.getDatefrom()!=null)
 		{
-			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(datefrom.getTime());
+			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(filter.getDatefrom().getTime());
 			where.append(" timestamp>=\'"+sqlTimestamp+"\' AND");
 		}
-		if (datebefore!=null)
+		if (filter.getDatebefore()!=null)
 		{
-			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(datebefore.getTime());
+			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(filter.getDatebefore().getTime());
 			where.append(" timestamp<=\'"+sqlTimestamp+"\' AND");
 		}	
 		
 		
-		if (functionality!=null&&!functionality.isEmpty())
+		if (filter.getFunctionality()!=null&&!filter.getFunctionality().isEmpty())
 		{
 			where.append("(");
-			for (String f: functionality)
+			for (String f: filter.getFunctionality())
 			{
 				where.append(" functionality=\'"+f+"\' OR");
 			}
 			where.delete(where.length()-3, where.length());
 			where.append(") AND");
 		}
-		if (user!=null&&!user.isEmpty())
+		if (filter.getUser()!=null&&!filter.getUser().isEmpty())
 		{
 			where.append("(");
-			for (String u: user)
+			for (String u: filter.getUser())
 			{
 				where.append(" user=\'"+u+"\' OR");
 			}		
 			where.delete(where.length()-3, where.length());
 			where.append(") AND");
 		}
-		if (tool!=null&&!tool.isEmpty())
+		if (filter.getTool()!=null&&!filter.getTool().isEmpty())
 		{
 			where.append("(");
-			for (String t: tool)
+			for (String t: filter.getTool())
 			{
 				where.append(" tool=\'"+t+"\' OR");
 			}
@@ -318,11 +315,10 @@ public class DaoServerDatabaseH2
 }
 	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
-	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
-	 ArrayList<String> user, ArrayList<String> tool) throws SQLException
+	(LogFilter filter) throws SQLException
 	 {
 		return getLogsWithWhereClausure
-		(datefrom,datebefore,functionality,user,tool, null,-1,-1);
+		(filter, null,-1,-1);
 	 }
 	
 	
@@ -330,28 +326,6 @@ public class DaoServerDatabaseH2
 	
 	
 	
-
-@Deprecated	
-	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs, int from, int count) throws SQLException {
-		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
-
-		if (!rs.absolute(from))return new ArrayList<LogInformation>();
-		from=0;
-		do
-		{
-		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
-		if (LogInformation.validateLog(logInformation))
-		{
-			loglist.add(logInformation);
-			from++;
-		}
-		rs.next();
-		
-		}
-		while (!rs.isAfterLast()&&from<count);
-		return loglist;
-	}
-
 
 	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs) throws SQLException {
 		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
@@ -537,7 +511,8 @@ public class DaoServerDatabaseH2
 	}
 	
 	
-	private ArrayList<Pair<LogInformation,Integer>> agregate(ResultSet rs, ArrayList<String> groupby) throws SQLException {
+	private ArrayList<Pair<LogInformation,Integer>> agregate(ResultSet rs, ArrayList<String> groupby) throws SQLException 
+	{
 		ArrayList<Pair<LogInformation,Integer>> pairlist=new ArrayList<Pair<LogInformation,Integer>>();
 		if (!rs.first())return pairlist;
 		do
