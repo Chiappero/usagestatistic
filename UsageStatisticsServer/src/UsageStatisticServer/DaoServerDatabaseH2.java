@@ -16,7 +16,7 @@ public class DaoServerDatabaseH2
 		openDatabase();
 	}
 	
-	Connection conn=null;
+	private Connection conn=null;
 	
 	public boolean saveLog(LogInformation log) 
 	{
