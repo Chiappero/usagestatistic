@@ -236,6 +236,49 @@ public class DaoServerDatabaseH2Test {
 		
 	}
 	
+	
+	@Test
+	public void AT71_Proper_show_data() throws SQLException, NoSuchFieldException
+	{	
+		usunWszystkieLogi();
+		saveTemporaryData(25);
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SELENIUM2","SELENIUM3","SELENIUM4"));
+		ArrayList<LogInformation> list1=dao.getAllLogs();
+		Assert.assertEquals(list1.size(), 26);
+		Assert.assertEquals(list1.get(0).getFunctionality(), "test");
+		Assert.assertEquals(list1.get(0).getTool(), "test");
+		Assert.assertEquals(list1.get(0).getUser(), "test");
+		Assert.assertEquals(list1.get(0).getParameters(), "test");
+		list1=dao.getAllLogs(-1,100);
+		Assert.assertEquals(list1.size(), 26);
+		list1=dao.getAllLogs(-1,-1);
+		Assert.assertEquals(list1.size(), 0);
+		list1=dao.getAllLogs(3,-1);
+		Assert.assertEquals(list1.size(), 0);
+		list1=dao.getAllLogs(26,1);
+		Assert.assertEquals(list1.size(), 1);	
+		Assert.assertEquals(list1.get(0).getFunctionality(), "SELENIUM");	
+
+		LinkedList<String> orderby=new LinkedList<String>();
+		orderby.add("functionality");
+		list1=dao.getAllLogsSorted(orderby);
+		Assert.assertEquals(list1.get(0).getFunctionality(), "SELENIUM");
+		for (int i=1;i<list1.size();i++)
+		Assert.assertEquals(list1.get(i).getFunctionality(), "test");
+		orderby.add("user");
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SELENIUM1","SELENIUM3","SELENIUM4"));
+		list1=dao.getAllLogsSorted(orderby);
+		Assert.assertEquals(list1.get(0).getFunctionality(), "SELENIUM");
+		Assert.assertEquals(list1.get(0).getUser(), "SELENIUM1");
+		Assert.assertEquals(list1.get(1).getFunctionality(), "SELENIUM");
+		Assert.assertEquals(list1.get(1).getUser(), "SELENIUM2");
+		
+		
+		
+		
+	}
+	
+	
 	@Test
 	public void AT81_Proper_show_filtered_data() throws SQLException, NoSuchFieldException
 	{

@@ -176,7 +176,7 @@ public class DaoServerDatabaseH2
 	
 	public ArrayList<LogInformation> getAllLogs(int from, int count) throws SQLException 
 	{	
-		return getAllLogsSorted(null);
+		return getAllLogsSorted(null, from, count);
 
 	}	
 	
@@ -400,9 +400,9 @@ public class DaoServerDatabaseH2
 	{
 		checkIfBaseIsOpen();
 		if (isEmpty())return new ArrayList<LogInformation>();
-		if (from<0)from=0;
+		if (from<1)from=1;
 		if (count<1)return new ArrayList<LogInformation>();
-		String sql="SELECT * FROM Log"; //TODO a co jezeli from = 1 lub from = 0
+		String sql="SELECT * FROM Log";
 		sql+=getOrderByString(orderby);
 		sql+=" LIMIT "+count+" OFFSET "+(from-1);
 		ResultSet rs = null;
