@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,20 @@ public class LogPresenterController{
 		ArrayList<LogInformation> logsWithWhereClausure;
 		try
 		{
-			logsWithWhereClausure = dao.getLogsWithWhereClausure(new LogFilter(null,null,functionalities,users,tools));
+			LinkedList<String> linked = new LinkedList<String>();
+			if (isValidNameColumn(results.getSortChoose1()))
+			{
+			linked.add(results.getSortChoose1());
+			}
+			if (isValidNameColumn(results.getSortChoose2()))
+			{
+			linked.add(results.getSortChoose2());
+			}
+			if (isValidNameColumn(results.getSortChoose3()))
+			{
+			linked.add(results.getSortChoose3());
+			}
+			logsWithWhereClausure = dao.getLogsWithWhereClausure(new LogFilter(null,null,functionalities,users,tools),linked);
 		} catch (SQLException e)
 		{
 			return new ModelAndView("ERROR");
@@ -83,5 +97,10 @@ public class LogPresenterController{
 		mav.addObject("logi", logsWithWhereClausure);
 		
 		return mav;
+	}
+	
+	private boolean isValidNameColumn(String columnName)
+	{
+		return "user".equals(columnName)||"tool".equals(columnName)||"functionality".equals(columnName)||"parameters".equals(columnName)||"timestamp".equals(columnName);
 	}
 }

@@ -12,25 +12,25 @@
           <tr><td>Userzy</td><td><form:checkboxes path="users" items="${users}" /></td></tr>
           <tr><td>Funkcjonalnosci</td><td><form:checkboxes path="functionalities" items="${functionalities}"/></td></tr>
           <tr><td>Sortowanie1</td><td>
-          <select onchange="change1();" id="columns1" name="columns1">
-	 		  <c:forEach var="col" items="${columns}">
+       	  <form:select path="sortChoose1"  onchange="change1();" id="columns1" name="columns1">
+		   	<c:forEach var="col" items="${columns}">
 	 		  <option value="${col}">${col}</option>
-	 		  </c:forEach>
-		  </select>          
+	 		</c:forEach>
+		  </form:select>     
 		  </td></tr>
 		  <tr><td>Sortowanie2</td><td>
-          <select onchange="change2();" id="columns2" name="columns2">
-	 		  <c:forEach var="col" items="${columns}">
+		  <form:select path="sortChoose2"  onchange="change2();" id="columns2" name="columns2">
+         	  <c:forEach var="col" items="${columns}">
 	 		  <option value="${col}">${col}</option>
 	 		  </c:forEach>
-		  </select>          
+	 		</form:select>        
 		  </td></tr>
 		  <tr><td>Sortowanie3</td><td>
-          <select id="columns3" name="columns3">
-	 		  <c:forEach var="col" items="${columns}">
+		   <form:select path="sortChoose3"  id="columns3" name="columns2">
+           <c:forEach var="col" items="${columns}">
 	 		  <option value="${col}">${col}</option>
 	 		  </c:forEach>
-		  </select>          
+			</form:select>                
 		  </td></tr>
       </table>
         <input type="submit" value="Pokaz logi"/>
