@@ -276,4 +276,20 @@ final public class UsageStatistic {
 		}
 	}
 	
+	public void closeInstance()
+	{
+		commitThread.interrupt();//TODO czy to jest bezpieczne?
+		commitThread=null;
+		dao.closeDatabase();
+		dao=null;
+		restTemplate=null;
+		commitThread=null;
+		committingDetails=null;
+		instance=null;
+		password=null;
+		serverURL=null;
+		tool=null;
+		
+	}
+	
 }
