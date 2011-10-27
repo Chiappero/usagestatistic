@@ -460,7 +460,8 @@ public class UsageStatisticTest {
 	public void AT52_Handle_all_exception_thrown_by_each_public_method() throws Throwable
 	{
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		PrivateAccessor.setField(instance, "dao", null);
+		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
+		PrivateAccessor.setField(localDao, "conn", null);
 		try
 		{
 		instance.used("test", "test");
