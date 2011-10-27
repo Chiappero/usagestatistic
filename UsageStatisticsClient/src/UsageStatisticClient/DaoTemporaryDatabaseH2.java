@@ -128,7 +128,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				
 			}			
 	}
-	//-------------------TU SKONCZYLEM : D -----------------------------------
+
 	@Override
 	public int getLogsAmount() throws SQLException 
 	{	
@@ -164,11 +164,14 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			e.printStackTrace();
 		}
         catch (SQLException e) {
+	        try {
+				conn= DriverManager.getConnection("jdbc:h2:db", "user", "");
+				createTables();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+	        
 		}
-        
-        catch (Exception e)
-        {
-        }
 
 	}
 	
@@ -182,18 +185,29 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 					conn.close();
 				}
 			} catch (SQLException e) {
-				e.printStackTrace();
+				try {
+					conn.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 			}
 	}	
 	
 	private void createTables()
 	{
+		String query="CREATE TABLE IF NOT EXISTS Log (id int NOT NULL AUTO_INCREMENT, timestamp timestamp, functionality varchar(50), user varchar(50), tool varchar(50),parameters varchar(200))";
 		try {
+				
+			if(conn!=null){
+				conn.createStatement().execute(query);
+			}
 			
-
-			String query="CREATE TABLE IF NOT EXISTS Log (id int NOT NULL AUTO_INCREMENT, timestamp timestamp, functionality varchar(50), user varchar(50), tool varchar(50),parameters varchar(200))";
-			conn.createStatement().execute(query);
 		} catch (SQLException e) {
+			try {
+				conn.createStatement().execute(query);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 	
@@ -206,11 +220,19 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			Class.forName("org.h2.Driver");
 		} catch (ClassNotFoundException e)
 		{
+			throw new SQLException("Cannot load database driver");
 		}
         conn= DriverManager.getConnection("jdbc:h2:db", "user", "");
-        String query="DROP TABLE IF EXISTS Log"; 
-        conn.createStatement().execute(query);
-        createTables();
+        if(conn!=null){
+        	String query="DROP TABLE IF EXISTS Log";
+        	conn.createStatement().execute(query);
+        	createTables();
+        }
+        else{
+        	throw new SQLException(Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
+        	
+        }
+      
 	}
 
 	@Override
@@ -228,8 +250,10 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				        conn.createStatement().execute(query);
 				        createTables();
 				}
-			} catch (SQLException e)
+			} 
+			catch (SQLException e)
 			{
+				e.printStackTrace();
 			}
 	}
 	
