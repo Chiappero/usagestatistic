@@ -1,5 +1,6 @@
 package UsageStatisticClient;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -82,5 +83,17 @@ public static void createExampleConfigFileWithToolEmpty() throws IOException
 	ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password", "");
 }
 
+public static boolean deleteDir(File dir) {
+    if (dir.isDirectory()) {
+        String[] children = dir.list();
+        for (int i=0; i<children.length; i++) {
+            boolean success = deleteDir(new File(dir, children[i]));
+            if (!success) {
+                return false;
+            }
+        }
+    }
+    return dir.delete();
+}
 
 }

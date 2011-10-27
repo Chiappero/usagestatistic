@@ -44,7 +44,7 @@ public class DaoTemporaryDatabaseH2Test
 		for (int i=0;i<10;i++)
 		{
 		String stringLiczba = new Integer(i).toString();
-		log.setDate(date);
+		log.setDateTime(date);
 		log.setFunctionality("funkcjonalnosc"+stringLiczba);
 		log.setParameters("parametry"+stringLiczba);
 		log.setTool("tool"+stringLiczba);
@@ -57,7 +57,7 @@ public class DaoTemporaryDatabaseH2Test
 		String stringLiczba = new Integer(i).toString();
 		LogInformation firstLog = dao.getFirstLog();
 		dao.clearFirstLog();
-		log.setDate(date);
+		log.setDateTime(date);
 		log.setFunctionality("funkcjonalnosc"+stringLiczba);
 		log.setParameters("parametry"+stringLiczba);
 		log.setTool("tool"+stringLiczba);
@@ -83,7 +83,7 @@ public class DaoTemporaryDatabaseH2Test
 	private void tempSaveManyLogsAtOneTime(final int stalaLiczbaWatkow, final int stalaLiczbaRekordow, final int stalaLiczbaCzasuDoSpania) throws SQLException
 	{	
 		final LogInformation log = new LogInformation();
-		log.setDate(new GregorianCalendar().getTime());
+		log.setDateTime(new GregorianCalendar().getTime());
 		log.setFunctionality("funkcjonalnosc");
 		log.setParameters("parametry");
 		log.setTool("tool");
@@ -133,7 +133,7 @@ public class DaoTemporaryDatabaseH2Test
 		LogInformation log = new LogInformation(null, "test", "test", "test", "test");
 		Assert.assertFalse(dao.saveLog(log));
 		//TODO a co gdy zly format daty
-		log.setDate(new GregorianCalendar().getTime());
+		log.setDateTime(new GregorianCalendar().getTime());
 		log.setFunctionality(null); 
 		Assert.assertFalse(dao.saveLog(log));
 		log.setFunctionality("");
@@ -214,7 +214,7 @@ public class DaoTemporaryDatabaseH2Test
 		
 		
 		final LogInformation log = new LogInformation();
-		log.setDate(new GregorianCalendar().getTime());
+		log.setDateTime(new GregorianCalendar().getTime());
 		log.setFunctionality("funkcjonalnosc");
 		log.setParameters("parametry");
 		log.setTool("tool");
@@ -313,7 +313,7 @@ public class DaoTemporaryDatabaseH2Test
 		LogInformation log = new LogInformation();
 		for (int i=0;i<amount;i++)
 		{
-		log.setDate(new GregorianCalendar().getTime());
+		log.setDateTime(new GregorianCalendar().getTime());
 		log.setFunctionality("test");
 		log.setParameters("test");
 		log.setTool("test");

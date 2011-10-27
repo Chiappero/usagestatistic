@@ -2,6 +2,8 @@ package UsageStatisticServer;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 
 
@@ -21,7 +23,7 @@ public class DaoServerDatabaseH2
 		checkIfBaseIsOpen();
 		if (log!=null&&LogInformation.validateLog(log))
 		{
-		java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(log.getDate().getTime());
+		java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(log.getDateTime().getTime());
 		String sql="INSERT INTO Log " +
 				"(timestamp, functionality , user , tool ,parameters) " +
 				"values(\'"+sqlTimestamp+"\', \'"+log.getFunctionality()+"\', \'"+log.getUser()+"\', \'"+log.getTool()+"\', \'"+log.getParameters()+"\')";
@@ -164,64 +166,24 @@ public class DaoServerDatabaseH2
 
 	public ArrayList<LogInformation> getAllLogs() throws SQLException 
 	{	
-		checkIfBaseIsOpen();
-		if (isEmpty())return new ArrayList<LogInformation>();
-		String sql="SELECT * FROM Log";
-		ResultSet rs = null;
-		try
-		{
-		rs=conn.createStatement().executeQuery(sql);
-		return getLogsFromResultSet(rs);
-		}
-		catch (SQLException e)
-		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
-				//TODO cos bardzo zlego powinno tu byc
-				throw e;
-
-			}	
-			else throw e;
-		}
-
+		return getAllLogsSorted(null);
 	}
 	
 	public ArrayList<LogInformation> getAllLogs(int from, int count) throws SQLException 
 	{	
-		checkIfBaseIsOpen();
-		if (isEmpty())return new ArrayList<LogInformation>();
-		if (from<0)from=0;
-		if (count<1)return new ArrayList<LogInformation>();
-		String sql="SELECT TOP "+(from+count)+" * FROM Log";
-		ResultSet rs = null;
-
-		try
-		{
-		rs=conn.createStatement().executeQuery(sql);
-
-
-		return getLogsFromResultSet(rs,from,count);
-		}
-		catch (SQLException e)
-		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
-				//TODO cos bardzo zlego powinno tu byc
-				throw e;
-			}	
-			else throw e;
-		}
+		return getAllLogsSorted(null);
 
 	}	
 	
-	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure) throws SQLException 
+	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure, LinkedList<String> orderby) throws SQLException 
 	{	
 		checkIfBaseIsOpen();
 		if (isEmpty())return new ArrayList<LogInformation>();
 		String sql="SELECT * FROM Log";
 		if (whereclausure!=null&&!whereclausure.isEmpty())sql+=" WHERE "+whereclausure;
+		sql+=getOrderByString(orderby);
 		ResultSet rs = null;
-
+		
 		try
 		{
 		rs=conn.createStatement().executeQuery(sql);
@@ -241,14 +203,16 @@ public class DaoServerDatabaseH2
 
 	}		
 	
-	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure,int from, int count) throws SQLException 
+	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure,LinkedList<String> orderby,int from, int count) throws SQLException 
 	{	
 		checkIfBaseIsOpen();
 		if (isEmpty())return new ArrayList<LogInformation>();
-		if (from<0)from=0;
+		if (from<1)from=1;
 		if (count<1)return new ArrayList<LogInformation>();
-		String sql="SELECT TOP "+(from+count)+" * FROM Log";
+		String sql="SELECT * FROM Log";
 		if (whereclausure!=null&&!whereclausure.isEmpty())sql+=" WHERE "+whereclausure;
+		sql+=getOrderByString(orderby);
+		sql+="LIMIT "+count+" OFFSET "+(from-1); //TODO a co jezeli from=1
 		ResultSet rs = null;
 
 		try
@@ -257,7 +221,8 @@ public class DaoServerDatabaseH2
 		
 		
 		
-		return getLogsFromResultSet(rs,from,count);
+		//return getLogsFromResultSet(rs,from,count);
+		return getLogsFromResultSet(rs);
 		}
 		catch (SQLException e)
 		{
@@ -272,53 +237,85 @@ public class DaoServerDatabaseH2
 
 	}		
 	
+	
+	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
-			(Date datefrom, Date datebefore, ArrayList<String> functionality,
-			 ArrayList<String> user, ArrayList<String> tool, int from, int count) throws SQLException
+	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
+	 ArrayList<String> user, ArrayList<String> tool, int from, int count) throws SQLException
+	 {
+		return getLogsWithWhereClausure(datefrom,datebefore,functionality,user,tool, null, from,count);
+	 }
+	
+	public  ArrayList<LogInformation> getLogsWithWhereClausure
+	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
+	 ArrayList<String> user, ArrayList<String> tool, LinkedList<String>orderby) throws SQLException
+	 {
+		return getLogsWithWhereClausure(datefrom,datebefore,functionality,user,tool, orderby, -1,-1);
+	 }
+	
+	
+	public  ArrayList<LogInformation> getLogsWithWhereClausure
+			(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
+			 ArrayList<String> user, ArrayList<String> tool, LinkedList<String> orderby, int from, int count) throws SQLException
 	{
-		StringBuffer where=new StringBuffer("WHERE");
+		StringBuffer where=new StringBuffer("");
 		if (datefrom!=null)
 		{
 			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(datefrom.getTime());
-			where.append(" timestamp>="+sqlTimestamp+" AND");
+			where.append(" timestamp>=\'"+sqlTimestamp+"\' AND");
 		}
 		if (datebefore!=null)
 		{
 			java.sql.Timestamp sqlTimestamp =new java.sql.Timestamp(datebefore.getTime());
-			where.append(" timestamp<="+sqlTimestamp+" AND");
+			where.append(" timestamp<=\'"+sqlTimestamp+"\' AND");
 		}	
-		if (functionality!=null)
+		
+		
+		if (functionality!=null&&!functionality.isEmpty())
+		{
+			where.append("(");
 			for (String f: functionality)
 			{
-				where.append(" functionality=\""+f+"\" AND");
+				where.append(" functionality=\'"+f+"\' OR");
 			}
-		if (user!=null)
+			where.delete(where.length()-3, where.length());
+			where.append(") AND");
+		}
+		if (user!=null&&!user.isEmpty())
+		{
+			where.append("(");
 			for (String u: user)
 			{
-				where.append(" user=\""+u+"\" AND");
+				where.append(" user=\'"+u+"\' OR");
 			}		
-		if (tool!=null)
+			where.delete(where.length()-3, where.length());
+			where.append(") AND");
+		}
+		if (tool!=null&&!tool.isEmpty())
+		{
+			where.append("(");
 			for (String t: tool)
 			{
-				where.append(" tool=\""+t+"\" AND");
-			}		
-		where.delete(where.length()-4, where.length());
+				where.append(" tool=\'"+t+"\' OR");
+			}
+			where.delete(where.length()-3, where.length());
+			where.append(") AND");
+		}
+		if (!where.toString().isEmpty())
+			where.delete(where.length()-4, where.length());
 		String clausure=where.toString();
-		if (clausure.equals("W"))
-			clausure=null;
-		String sql;
 		if (from!=-1&&count!=-1)
-			return getLogsWithWhereClausure(clausure,from,count);
-		else return getLogsWithWhereClausure(clausure);
+			return getLogsWithWhereClausure(clausure,orderby,from,count);
+		else return getLogsWithWhereClausure(clausure,orderby);
 		
 }
 	
 	public  ArrayList<LogInformation> getLogsWithWhereClausure
-	(Date datefrom, Date datebefore, ArrayList<String> functionality,
+	(java.util.Date datefrom, java.util.Date datebefore, ArrayList<String> functionality,
 	 ArrayList<String> user, ArrayList<String> tool) throws SQLException
 	 {
 		return getLogsWithWhereClausure
-		(datefrom,datebefore,functionality,user,tool, -1,-1);
+		(datefrom,datebefore,functionality,user,tool, null,-1,-1);
 	 }
 	
 	
@@ -327,7 +324,7 @@ public class DaoServerDatabaseH2
 	
 	
 
-
+@Deprecated	
 	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs, int from, int count) throws SQLException {
 		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
 
@@ -336,7 +333,7 @@ public class DaoServerDatabaseH2
 		do
 		{
 		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
-		if (!LogInformation.validateLog(logInformation))
+		if (LogInformation.validateLog(logInformation))
 		{
 			loglist.add(logInformation);
 			from++;
@@ -355,13 +352,209 @@ public class DaoServerDatabaseH2
 		do
 		{
 		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
-		if (!LogInformation.validateLog(logInformation))
+		if (LogInformation.validateLog(logInformation))
 			loglist.add(logInformation);
 		rs.next();
 		}
 		while (!rs.isAfterLast());
 		return loglist;
 	}
+	
+	private String getOrderByString(List<String> orderby)
+	{
+		String sql="";
+		if (orderby!=null&&!orderby.isEmpty())
+		{
+			sql+=" ORDER BY ";
+			for (String s:orderby)
+				sql+=(s+", ");
+			sql=sql.substring(0, sql.length()-2);
+				
+		}
+		return sql;
+	}
+
+	private String getColumnsString(ArrayList<String> columns)
+	{
+		String sql="";
+		if (columns!=null&&!columns.isEmpty())
+		{
+			sql+="";
+			for (String s:columns)
+				sql+=(s+", ");
+			sql=sql.substring(0, sql.length()-2);
+				
+		}
+		return sql;
+	}
+	
+	
+	public ArrayList<LogInformation> getAllLogsSorted(LinkedList<String> orderby) throws SQLException
+	{
+		
+		checkIfBaseIsOpen();
+		if (isEmpty())return new ArrayList<LogInformation>();
+		String sql="SELECT * FROM Log";
+		sql+=getOrderByString(orderby);
+		
+		ResultSet rs = null;
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+
+			}	
+			else throw e;
+		}		
+	}
+	
+	public ArrayList<LogInformation> getAllLogsSorted(LinkedList<String> orderby, int from, int count) throws SQLException
+	{
+		checkIfBaseIsOpen();
+		if (isEmpty())return new ArrayList<LogInformation>();
+		if (from<0)from=0;
+		if (count<1)return new ArrayList<LogInformation>();
+		String sql="SELECT * FROM Log"; //TODO a co jezeli from = 1 lub from = 0
+		sql+=getOrderByString(orderby);
+		sql+=" LIMIT "+count+" OFFSET "+(from-1);
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+
+
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			else throw e;
+		}
+	}
+	
+
+	
+	
+	
+	public ArrayList<String> getUsers() throws SQLException
+	{
+		return getColumn("user");
+	}
+	
+	public ArrayList<String> getTools() throws SQLException
+	{
+		return getColumn("tool");
+	}	
+	public ArrayList<String> getFunctionalities() throws SQLException
+	{
+		return getColumn("functionality");
+	}
+	
+
+	
+	private ArrayList<String> getColumn(String column) throws SQLException
+	{
+		ArrayList<String> values=new ArrayList<String>();
+		checkIfBaseIsOpen();
+		if (isEmpty())return values;
+		String sql="SELECT DISTINCT "+column+" FROM Log";
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		rs.first();
+		do
+		{
+			values.add(rs.getString(column));
+			rs.next();
+		}
+		while (!rs.isAfterLast());
+		return values;
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			else throw e;
+		}
+	}
+	
+	public ArrayList<Pair<LogInformation,Integer>> agregate(ArrayList<String> groupby) throws SQLException
+	{
+		ArrayList<Pair<LogInformation,Integer>> values=new ArrayList<Pair<LogInformation,Integer>>();
+		checkIfBaseIsOpen();
+		if (isEmpty())return values;
+		String columns=getColumnsString(groupby);
+		String sql="SELECT "+columns+", COUNT(*) AS cnt FROM Log";
+		sql+=" GROUP BY "+columns;
+		sql+=getOrderByString(groupby);
+		ResultSet rs = null;
+		
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+
+
+		return agregate(rs,groupby);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				throw e;
+			}	
+			else throw e;
+		}
+	
+	}
+	
+	
+	private ArrayList<Pair<LogInformation,Integer>> agregate(ResultSet rs, ArrayList<String> groupby) throws SQLException {
+		ArrayList<Pair<LogInformation,Integer>> pairlist=new ArrayList<Pair<LogInformation,Integer>>();
+		if (!rs.first())return pairlist;
+		do
+		{
+			int count=rs.getInt("cnt");
+			String[] str=new String[4];
+			for (String s:groupby)
+			{
+				if (s.equals("functionality"))
+					str[0]=rs.getString(s);
+				else if (s.equals("user"))
+					str[1]=rs.getString(s);
+				else if (s.equals("tool"))
+					str[2]=rs.getString(s);
+				else if (s.equals("parameters"))
+					str[3]=rs.getString(s);
+			}
+		LogInformation logInformation = new LogInformation(null,str[0],str[1],str[2],str[3]);
+		pairlist.add(new Pair<LogInformation,Integer>(logInformation,count));
+		rs.next();
+		}
+		while (!rs.isAfterLast());
+		return pairlist;
+	}
+	
+	
+	
+	
 	
 	
 
