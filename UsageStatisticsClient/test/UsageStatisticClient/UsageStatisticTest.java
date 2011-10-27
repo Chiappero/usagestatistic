@@ -454,7 +454,7 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT52_Handle_all_exception_thrown_by_each_public_method() throws UsageStatisticException, NoSuchFieldException, SQLException
+	public void AT52_Handle_all_exception_thrown_by_each_public_method() throws Throwable
 	{
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		PrivateAccessor.setField(instance, "dao", null);
@@ -462,6 +462,7 @@ public class UsageStatisticTest {
 		{
 		instance.used("test", "test");
 		instance.commit();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		}
 		catch (Exception e)
 		{
@@ -475,17 +476,18 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT61_Proper_flow_of_usage_commit_interface() throws UsageStatisticException, NoSuchFieldException, SQLException
+	public void AT61_Proper_flow_of_usage_commit_interface() throws Throwable
 	{
 		CommitingDetailsTestImp4 com = new CommitingDetailsTestImp4();
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", com);
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 5);
 		instance.commit();
-		/*Assert.assertEquals(com.licznik, 9);
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertEquals(com.licznik, 10);
 		Assert.assertEquals(com.amount, 5);
 		Assert.assertTrue(com.commitingFinishedSuccesful);
-		Assert.assertTrue(com.commitingStart);*/
+		Assert.assertTrue(com.commitingStart);
 	}
 	
 	@Test
@@ -526,16 +528,7 @@ public class UsageStatisticTest {
 	Assert.assertTrue(com.success);
 	}
 	
-	@Test
-	public void AT29_Large_Data() throws Throwable
-	{
-		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-		TestUtils.removeAllLogsFromDao(instance);
-		TestUtils.addSomeLogsToDao(instance, 10000);
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
-		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
-	}
+	
 	
 	@Test
 	public void AT92_Proper_load_of_new_configuration_file_when_creating_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
@@ -574,13 +567,18 @@ public class UsageStatisticTest {
 		TestUtils.createExampleConfigFile();
 		instance = UsageStatistic.getInstance();
 		Assert.assertEquals("Default Application", (String) PrivateAccessor.getField(instance, "tool"));
-			
-		
-		
-		
-
-
-	}			
+	}		
+	
+	@Test
+	public void AT29_Large_Data() throws Throwable
+	{
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 10000);
+		instance.commit();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
+	}
 	
 	
 }
