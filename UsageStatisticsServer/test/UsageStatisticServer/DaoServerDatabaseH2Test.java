@@ -2,16 +2,23 @@ package UsageStatisticServer;
 
 import static org.junit.Assert.*;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import junitx.util.PrivateAccessor;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+
 
 public class DaoServerDatabaseH2Test {
 
+	DaoServerDatabaseH2 dao = new DaoServerDatabaseH2();
+	
 	@Test
 	public void test() throws SQLException 
 	{
@@ -103,6 +110,130 @@ public class DaoServerDatabaseH2Test {
 		{
 			System.out.println(p.getLewy().toString()+" "+p.getPrawy());
 		}		
+	}
+	
+	@Test
+	public void AT75_Concurrent_read_and_save_to_server_database() throws SQLException, InterruptedException, NoSuchFieldException
+	{
+		usunWszystkieLogi();
+		tempSaveAndLoadManyLogsAtOneTime(3, 1000, 10, 1, 10, 600);
+		
+	}
+	
+	
+	public void usunWszystkieLogi() throws SQLException, NoSuchFieldException
+	{	
+		String sql="DELETE FROM Log";
+		Connection conn = (Connection) PrivateAccessor.getField(dao, "conn");
+		conn.createStatement().executeUpdate(sql);
+	}
+	
+	private void tempSaveAndLoadManyLogsAtOneTime(final int stalaLiczbaWatkowSave, final int stalaLiczbaRekordowSave, final int stalaLiczbaCzasuDoSpania, final int stalaLiczbaWatkowLoad, final int jednoczesneOdczytyWszystkichLogow, final int rekordyZapisaneOdRazu) throws SQLException, InterruptedException
+	{	//nie usuwamy w tej wersji juz rekordow
+		saveTemporaryData(rekordyZapisaneOdRazu); 
+		
+		
+		final LogInformation log = new LogInformation();
+		log.setDateTime(new GregorianCalendar().getTime());
+		log.setFunctionality("funkcjonalnosc");
+		log.setParameters("parametry");
+		log.setTool("tool");
+		log.setUser("user");
+		Thread[] threadsSave = new Thread[stalaLiczbaWatkowSave];
+		for (int j = 0; j < stalaLiczbaWatkowSave; j++)
+		{
+			threadsSave[j] = new Thread()
+			{
+				@Override
+				public void run()
+				{
+					for (int k = 0; k < stalaLiczbaRekordowSave; k++)
+					{
+						boolean saveLog = dao.saveLog(log);
+						if (!saveLog)
+						{
+							Assert.fail("nie umiem zapisac jednego loga");
+						}
+					}
+
+				}
+			};
+		} 
+		Thread[] threadsLoad = new Thread[stalaLiczbaWatkowLoad];
+		for (int j = 0; j < stalaLiczbaWatkowLoad; j++)
+		{
+			threadsLoad[j] = new Thread()
+			{
+				@Override
+				public void run()
+				{
+					for (int k = 0; k < jednoczesneOdczytyWszystkichLogow; k++)
+					{
+						try
+						{
+							dao.getAllLogs();
+						} catch (SQLException e)
+						{
+							Assert.fail("nie umiem odczytac jednego loga");
+						}
+					}
+
+				}
+			};
+		}
+		for (int j = 0; j < stalaLiczbaWatkowLoad; j++)
+		{
+			threadsLoad[j].start();
+			try
+			{
+				Thread.sleep(stalaLiczbaCzasuDoSpania);
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			
+		}
+		
+		
+		
+		for (int j = 0; j < stalaLiczbaWatkowSave; j++)
+		{
+			threadsSave[j].start();
+			try
+			{
+				Thread.sleep(stalaLiczbaCzasuDoSpania);
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+			
+		}
+		
+		for (int j = 0; j < stalaLiczbaWatkowLoad; j++)
+		{
+			threadsLoad[j].join(); //czeka na dokonczenie az wszystkie watki czytajace sie skoncza
+		}
+		for (int j = 0; j < stalaLiczbaWatkowSave; j++)
+		{
+			threadsSave[j].join(); //czeka na dokonczenie az wszystkie watki zapisujace sie skoncza
+		}
+		
+		Assert.assertEquals(stalaLiczbaWatkowSave*stalaLiczbaRekordowSave+rekordyZapisaneOdRazu, dao.getLogsAmount());
+	}
+	
+	private void saveTemporaryData(int amount)
+	{
+		LogInformation log = new LogInformation();
+		for (int i=0;i<amount;i++)
+		{
+		log.setDateTime(new GregorianCalendar().getTime());
+		log.setFunctionality("test");
+		log.setParameters("test");
+		log.setTool("test");
+		log.setUser("test");
+		dao.saveLog(log);
+		}
+		
 	}
 
 }
