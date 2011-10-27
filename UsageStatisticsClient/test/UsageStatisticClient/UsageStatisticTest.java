@@ -528,6 +528,23 @@ public class UsageStatisticTest {
 	Assert.assertTrue(com.success);
 	}
 	
+	@Test
+	public void AT91_Proper_create_local_database_for_each_configuration() throws IOException, UsageStatisticException, NoSuchFieldException
+	{
+		System.setProperty("user.dir","D:\\JAVA\\Repo\\UsageStatisticsClient\\baza1");
+		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		TestUtils.getLocalDao(instance).closeDatabase();
+		System.setProperty("user.dir","D:\\JAVA\\Repo\\UsageStatisticsClient\\baza2");
+		instance = UsageStatistic.getInstance("aplikacja", null); //TODO dalej wczytuje z UsageStatisticClient zamiast z BazaX client-configa..
+		TestUtils.getLocalDao(instance).closeDatabase();
+		Assert.assertTrue(new File("baza1/db.h2.db").exists());
+		Assert.assertTrue(new File("baza2/db.h2.db").exists());
+		Assert.assertTrue(TestUtils.deleteDir(new File("baza1")));
+		Assert.assertTrue(TestUtils.deleteDir(new File("baza2")));
+
+	}
+	
+	 
 	
 	
 	@Test
@@ -543,7 +560,6 @@ public class UsageStatisticTest {
 		Assert.assertEquals("tool92", (String) PrivateAccessor.getField(instance, "tool"));		
 		instance = UsageStatistic.getInstance();
 		Assert.assertEquals("AT92tool", (String) PrivateAccessor.getField(instance, "tool"));
-
 	}	
 	
 	@Test
