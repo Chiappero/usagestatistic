@@ -113,6 +113,48 @@ public class DaoServerDatabaseH2Test {
 	}
 	
 	@Test
+	public void AT72_Empty_server_database() throws SQLException, InterruptedException, NoSuchFieldException
+	{
+		usunWszystkieLogi();
+		Assert.assertTrue(dao.getFunctionalities().isEmpty());
+		Assert.assertTrue(dao.getTools().isEmpty());
+		Assert.assertTrue(dao.getUsers().isEmpty());
+		Assert.assertTrue(dao.getAllLogs().isEmpty());
+		//TODO na poziomie widoku ma zwracac "ze nie ma logow zadnych"
+	}
+	
+	public static void dropTable(DaoServerDatabaseH2 dao) throws NoSuchFieldException, SQLException
+	{
+		String sql="DROP TABLE Log";
+		Connection conn=(Connection) PrivateAccessor.getField(dao, "conn");
+		conn.createStatement().execute(sql);
+	}
+	
+	@Test
+	public void AT73_Invalid_readout_from_server_database() throws SQLException, InterruptedException, NoSuchFieldException
+	{
+		dao.closeDatabase();
+		Assert.assertNotNull(dao.getAllLogs());
+		
+		usunWszystkieLogi();
+		saveTemporaryData(10);
+		PrivateAccessor.setField(dao, "conn", null);
+		Assert.assertNotNull(dao.getAllLogs());
+		Assert.assertEquals(dao.getLogsAmount(),10);
+		
+		
+		dao.closeDatabase();
+		Assert.assertNotNull(dao.getLogsWithWhereClausure(new LogFilter(null, null, null, null, null), new LinkedList<String>(), 1, 1));
+		
+		usunWszystkieLogi();
+		saveTemporaryData(10);
+		PrivateAccessor.setField(dao, "conn", null);
+		Assert.assertNotNull(dao.getLogsWithWhereClausure(new LogFilter(null, null, null, null, null), new LinkedList<String>(), 1, 1));
+		Assert.assertEquals(dao.getLogsAmount(),10);
+		
+	}
+	
+	@Test
 	public void AT75_Concurrent_read_and_save_to_server_database() throws SQLException, InterruptedException, NoSuchFieldException
 	{
 		usunWszystkieLogi();
