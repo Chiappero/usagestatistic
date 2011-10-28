@@ -113,6 +113,48 @@ public class DaoServerDatabaseH2Test {
 	}
 	
 	@Test
+	public void AT72_Empty_server_database() throws SQLException, InterruptedException, NoSuchFieldException
+	{
+		usunWszystkieLogi();
+		Assert.assertTrue(dao.getFunctionalities().isEmpty());
+		Assert.assertTrue(dao.getTools().isEmpty());
+		Assert.assertTrue(dao.getUsers().isEmpty());
+		Assert.assertTrue(dao.getAllLogs().isEmpty());
+		//TODO na poziomie widoku ma zwracac "ze nie ma logow zadnych"
+	}
+	
+	public static void dropTable(DaoServerDatabaseH2 dao) throws NoSuchFieldException, SQLException
+	{
+		String sql="DROP TABLE Log";
+		Connection conn=(Connection) PrivateAccessor.getField(dao, "conn");
+		conn.createStatement().execute(sql);
+	}
+	
+	@Test
+	public void AT73_Invalid_readout_from_server_database() throws SQLException, InterruptedException, NoSuchFieldException
+	{
+		dao.closeDatabase();
+		Assert.assertNotNull(dao.getAllLogs());
+		
+		usunWszystkieLogi();
+		saveTemporaryData(10);
+		PrivateAccessor.setField(dao, "conn", null);
+		Assert.assertNotNull(dao.getAllLogs());
+		Assert.assertEquals(dao.getLogsAmount(),10);
+		
+		
+		dao.closeDatabase();
+		Assert.assertNotNull(dao.getLogsWithWhereClausure(new LogFilter(null, null, null, null, null), new LinkedList<String>(), 1, 1));
+		
+		usunWszystkieLogi();
+		saveTemporaryData(10);
+		PrivateAccessor.setField(dao, "conn", null);
+		Assert.assertNotNull(dao.getLogsWithWhereClausure(new LogFilter(null, null, null, null, null), new LinkedList<String>(), 1, 1));
+		Assert.assertEquals(dao.getLogsAmount(),10);
+		
+	}
+	
+	@Test
 	public void AT75_Concurrent_read_and_save_to_server_database() throws SQLException, InterruptedException, NoSuchFieldException
 	{
 		usunWszystkieLogi();
@@ -363,7 +405,42 @@ public class DaoServerDatabaseH2Test {
 	
 	
 	}
+
 	
+	@Test
+	public void AT82_Proper_show_agregated_data() throws SQLException, NoSuchFieldException
+	{
+		usunWszystkieLogi();
+		saveTemporaryData(25);
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SEL2","SELENIUM3","SELENIUM4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-60000),"SELA","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SEL3","SEL4"));
+		ArrayList<String> groupby=new ArrayList<String>();
+		groupby.add("functionality");
+		ArrayList<Pair<LogInformation, Integer>> list2=dao.agregate(groupby);
+		Assert.assertEquals(4, list2.size());
+		groupby=new ArrayList<String>();
+		groupby.add("parameters");
+		list2=dao.agregate(groupby);
+		Assert.assertEquals(3, list2.size());
+		groupby.add("functionality");
+		list2=dao.agregate(groupby);
+		Assert.assertEquals(4, list2.size());
+		list2=dao.agregate(groupby,3,2);
+		Assert.assertEquals(2, list2.size());
+		Assert.assertEquals("SELENIUM", list2.get(0).getLewy().getFunctionality());
+		Assert.assertEquals("test", list2.get(1).getLewy().getFunctionality());
+		Assert.assertEquals(null, list2.get(0).getLewy().getUser());
+		groupby=new ArrayList<String>();
+		groupby.add("user");
+		list2=dao.agregateOverTime(groupby, 30000);
+		Assert.assertEquals(4, list2.size());	
+		for (int i=1;i<list2.size();i++)
+		Assert.assertTrue(list2.get(i).getLewy().getDateTime().getTime()-list2.get(i-1).getLewy().getDateTime().getTime()==30000);
+		
+		
+	
+	}
 	
 
 }
