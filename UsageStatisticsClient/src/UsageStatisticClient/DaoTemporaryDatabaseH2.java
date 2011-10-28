@@ -289,6 +289,10 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			resetDatabase();
 		}
 	}
+	
+	public boolean isOpen() throws SQLException{
+		return !conn.isClosed();
+	}
 		
 
 }

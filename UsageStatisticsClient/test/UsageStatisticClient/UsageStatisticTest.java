@@ -523,6 +523,19 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
+	public void AT54_Test_proper_closed_of_local_database() throws Throwable
+	{
+		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
+		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
+		instance.used("func", "param");
+		Assert.assertFalse(localDao.isOpen());
+		instance.commit();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertFalse(localDao.isOpen());
+		
+	}
+	
+	@Test
 	public void AT61_Proper_flow_of_usage_commit_interface() throws Throwable
 	{
 		CommitingDetailsTestImp4 com = new CommitingDetailsTestImp4();
