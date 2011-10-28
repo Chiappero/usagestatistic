@@ -26,7 +26,7 @@ public class MainWindow extends javax.swing.JFrame {
     /** Creates new form MainWindow */
     public MainWindow() {
         try {
-            us = UsageStatistic.getInstance("TestApp", null);
+            us = UsageStatistic.getInstance("TestApp", new CommitingDetails());
         } catch (UsageStatisticException ex) {
             Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -215,7 +215,7 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
     us.commit();
-    us.commitWait();
+
 }//GEN-LAST:event_jButton7ActionPerformed
 
 private void jPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseMoved
