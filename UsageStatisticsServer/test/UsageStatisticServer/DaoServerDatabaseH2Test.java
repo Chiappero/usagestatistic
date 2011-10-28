@@ -363,7 +363,42 @@ public class DaoServerDatabaseH2Test {
 	
 	
 	}
+
 	
+	@Test
+	public void AT82_Proper_show_agregated_data() throws SQLException, NoSuchFieldException
+	{
+		usunWszystkieLogi();
+		saveTemporaryData(25);
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SEL2","SELENIUM3","SELENIUM4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-60000),"SELA","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SEL3","SEL4"));
+		ArrayList<String> groupby=new ArrayList<String>();
+		groupby.add("functionality");
+		ArrayList<Pair<LogInformation, Integer>> list2=dao.agregate(groupby);
+		Assert.assertEquals(4, list2.size());
+		groupby=new ArrayList<String>();
+		groupby.add("parameters");
+		list2=dao.agregate(groupby);
+		Assert.assertEquals(3, list2.size());
+		groupby.add("functionality");
+		list2=dao.agregate(groupby);
+		Assert.assertEquals(4, list2.size());
+		list2=dao.agregate(groupby,3,2);
+		Assert.assertEquals(2, list2.size());
+		Assert.assertEquals("SELENIUM", list2.get(0).getLewy().getFunctionality());
+		Assert.assertEquals("test", list2.get(1).getLewy().getFunctionality());
+		Assert.assertEquals(null, list2.get(0).getLewy().getUser());
+		groupby=new ArrayList<String>();
+		groupby.add("user");
+		list2=dao.agregateOverTime(groupby, 30000);
+		Assert.assertEquals(4, list2.size());	
+		for (int i=1;i<list2.size();i++)
+		Assert.assertTrue(list2.get(i).getLewy().getDateTime().getTime()-list2.get(i-1).getLewy().getDateTime().getTime()==30000);
+		
+		
+	
+	}
 	
 
 }

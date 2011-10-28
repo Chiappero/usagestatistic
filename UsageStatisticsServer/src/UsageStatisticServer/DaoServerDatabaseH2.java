@@ -472,13 +472,27 @@ public class DaoServerDatabaseH2
 	
 	public ArrayList<Pair<LogInformation,Integer>> agregate(ArrayList<String> groupby) throws SQLException
 	{
+		return agregate(groupby, -1,-1);
+	
+	}
+	
+	public ArrayList<Pair<LogInformation,Integer>> agregate(ArrayList<String> groupby, int from, int count) throws SQLException
+	{
 		ArrayList<Pair<LogInformation,Integer>> values=new ArrayList<Pair<LogInformation,Integer>>();
 		checkIfBaseIsOpen();
+		if (from!=-1||count!=-1)
+		{
+			if (from<1)from=1;
+			if (count<1)return new ArrayList<Pair<LogInformation,Integer>>();
+		}
+		
 		if (isEmpty())return values;
 		String columns=getColumnsString(groupby);
 		String sql="SELECT "+columns+", COUNT(*) AS cnt FROM Log";
 		sql+=" GROUP BY "+columns;
 		sql+=getOrderByString(groupby);
+		if (from!=-1||count!=-1)
+		sql+=" LIMIT "+count+" OFFSET "+(from-1);
 		ResultSet rs = null;
 		
 		try
@@ -497,11 +511,74 @@ public class DaoServerDatabaseH2
 				throw e;
 			}	
 			else throw e;
-		}
+		}		
+	}
+
+	public ArrayList<Pair<LogInformation,Integer>> agregateOverTime(ArrayList<String> groupby, int timeinterval) throws SQLException
+	{
+		return agregateOverTime(groupby,timeinterval,-1,-1);
+	}
 	
+//unchecked
+	public ArrayList<Pair<LogInformation,Integer>> agregateOverTime(ArrayList<String> groupby, int timeinterval, int from, int count) throws SQLException
+	{
+		boolean flag=true;
+		for (int i=0;i<groupby.size()&&flag;i++)
+		{
+			if (groupby.get(i).equals("timestamp"))
+			{
+				groupby.remove(i);
+				flag=false;
+			}
+		}
+		groupby.add(groupby.size(), "timestamp");
+		
+		ArrayList<Pair<LogInformation,Integer>> array=agregate(groupby, from, count);
+		if (array==null||array.size()<2)return new ArrayList<Pair<LogInformation,Integer>>();
+		long time=array.get(0).getLewy().getDateTime().getTime();
+		long timeround=(time/timeinterval)*timeinterval;
+		LogInformation log=array.get(0).getLewy();
+		log.setDateTime(new java.util.Date(timeround));
+		array.get(0).setLewy(log);
+		for (int i=1;i<array.size();)
+		{
+			if (compareType(array.get(i).getLewy(),array.get(i-1).getLewy())&&array.get(i).getLewy().getDateTime().getTime()<=timeround+timeinterval)
+			{
+				array.get(i-1).setPrawy(array.get(i-1).getPrawy()+1);
+				array.remove(i);
+			}
+			else
+			{
+				timeround+=timeinterval;
+				log=array.get(i).getLewy();
+				log.setDateTime(new java.util.Date(timeround));
+				array.get(i).setLewy(log);
+				i++;
+				
+			}
+		}
+		return array;
+		
 	}
 	
 	
+	private boolean compareType(LogInformation lewy, LogInformation lewy2) 
+	{
+		try
+		{
+		return 
+				((lewy.getFunctionality()==null&&lewy2.getFunctionality()==null)||lewy.getFunctionality().equals(lewy2.getFunctionality()))
+			  &&((lewy.getTool()==null&&lewy2.getTool()==null)||lewy.getTool().equals(lewy2.getTool()))
+			  &&((lewy.getUser()==null&&lewy2.getUser()==null)||lewy.getUser().equals(lewy2.getUser()))
+			  &&((lewy.getParameters()==null&&lewy2.getParameters()==null)||(lewy.getParameters().equals(lewy2.getParameters())));
+		}
+		catch (NullPointerException e)
+		{
+			return false;
+		}
+	}
+
+
 	private ArrayList<Pair<LogInformation,Integer>> agregate(ResultSet rs, ArrayList<String> groupby) throws SQLException 
 	{
 		ArrayList<Pair<LogInformation,Integer>> pairlist=new ArrayList<Pair<LogInformation,Integer>>();
@@ -510,6 +587,7 @@ public class DaoServerDatabaseH2
 		{
 			int count=rs.getInt("cnt");
 			String[] str=new String[4];
+			java.util.Date date = null;
 			for (String s:groupby)
 			{
 				if (s.equals("functionality"))
@@ -520,8 +598,10 @@ public class DaoServerDatabaseH2
 					str[2]=rs.getString(s);
 				else if (s.equals("parameters"))
 					str[3]=rs.getString(s);
+				else if (s.equals("timestamp"))
+					date=rs.getTimestamp(s);
 			}
-		LogInformation logInformation = new LogInformation(null,str[0],str[1],str[2],str[3]);
+		LogInformation logInformation = new LogInformation(date,str[0],str[1],str[2],str[3]);
 		pairlist.add(new Pair<LogInformation,Integer>(logInformation,count));
 		rs.next();
 		}
