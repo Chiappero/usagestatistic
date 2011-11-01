@@ -7,20 +7,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.sql.SQLException;
 
 import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selenium.WebDriverCommandProcessor;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.web.client.RestTemplate;
 
 import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
-import com.thoughtworks.selenium.DefaultSelenium;
 
 public class UsageStatisticTest {
 
