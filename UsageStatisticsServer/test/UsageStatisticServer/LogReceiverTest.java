@@ -30,8 +30,9 @@ public class LogReceiverTest {
 	@Test
 	public void AT23_Server_database_offline_or_error_on_save() throws NoSuchFieldException, SQLException 
 	{
-		ApplicationContext ctx = new FileSystemXmlApplicationContext("WebContent/WEB-INF/dispatcher-servlet.xml"); 
-        DaoServerDatabaseH2 dao = (DaoServerDatabaseH2) ctx.getBean("DaoServerDatabaseH2"); 
+		/*ApplicationContext ctx = new FileSystemXmlApplicationContext("WebContent/WEB-INF/dispatcher-servlet.xml"); 
+        DaoServerDatabaseH2 dao = (DaoServerDatabaseH2) ctx.getBean("DaoServerDatabaseH2"); */
+		DaoServerDatabaseH2 dao = new DaoServerDatabaseH2();
 		LogInformation log=getExampleLog();
 		dao.closeDatabase();
 		Assert.assertTrue(dao.saveLog(log));
