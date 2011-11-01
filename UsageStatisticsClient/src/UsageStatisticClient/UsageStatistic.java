@@ -117,7 +117,7 @@ final public class UsageStatistic {
 		log.setTool(tool);
 		log.setUser(user);*/
 		boolean savesucc = dao.saveLog(log);
-		dao.closeDatabase();
+		//dao.closeDatabase();
 		return savesucc;
 	}
 	
