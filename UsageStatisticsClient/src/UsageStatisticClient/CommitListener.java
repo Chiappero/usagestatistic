@@ -1,6 +1,6 @@
 package UsageStatisticClient;
 
-public interface CommitingDetailsInterface {
+public interface CommitListener {
 void commitingStart();
 void commitingFinishedSuccesful();
 void commitingFailureWithError(String error);
