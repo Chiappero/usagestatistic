@@ -448,13 +448,13 @@ public class DaoServerDatabaseH2
 		try
 		{
 		rs=conn.createStatement().executeQuery(sql);
-		rs.first();
-		do
+		if(!rs.first())return values;
+		while (!rs.isAfterLast())
 		{
 			values.add(rs.getString(column));
 			rs.next();
 		}
-		while (!rs.isAfterLast());
+
 		return values;
 		}
 		catch (SQLException e)
@@ -626,6 +626,39 @@ public class DaoServerDatabaseH2
 		
 	}
 	
+	public ArrayList<String> getFunctionalities(String tool) throws SQLException
+	{
+		ArrayList<String> values=new ArrayList<String>();
+		checkIfBaseIsOpen();
+		if (isEmpty())return values;
+		String sql="SELECT DISTINCT functionality FROM Log WHERE tool=\'"+tool+"\' ORDER BY functionality";
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		if(!rs.first())return values;
+		
+		while (!rs.isAfterLast())
+		{
+			values.add(rs.getString("functionality"));
+			rs.next();
+		}
+		
+		return values;
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
+				throw e;
+				
+			}	
+			else throw e;
+		}		
+	}
 	
 	
 	
