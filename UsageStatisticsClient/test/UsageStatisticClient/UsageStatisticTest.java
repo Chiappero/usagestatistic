@@ -455,23 +455,49 @@ public class UsageStatisticTest {
 	
 	@Test
 	public void AT91_Proper_create_local_database_for_each_configuration() throws IOException, UsageStatisticException, NoSuchFieldException
-	{
+	{/*
 		String url=this.getClass().getResource(this.getClass().getSimpleName() + ".class").toString();
+		System.out.println(url + "=url - na poczatku");
 		url=url.substring(url.indexOf("/")+1, url.lastIndexOf("/"));
 		url=url.substring(0, url.lastIndexOf("/"));
 		url=url.substring(0, url.lastIndexOf("/"));
 		url=url.replace("/","\\\\");
 		//System.out.println(url);
-		System.setProperty("user.dir",url+"\\baza1");
-		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
+		System.out.println(url + "=url - po zmianie");*/
+		
+		String oryginal = System.getProperty("user.dir");
+		
+		System.setProperty("user.dir",oryginal+"\\baza1");
+		
+		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance(); //stworz baze w:	 baza1/db.h2.db
 		TestUtils.getLocalDao(instance).closeDatabase();
-		System.setProperty("user.dir",url+"\\baza2");
-		instance = (UsageStatistic) UsageStatistic.getInstance();
+		Assert.assertTrue(new File("db.h2.db").exists());
+		
+		System.setProperty("user.dir",oryginal+"\\baza2");
+		
+		instance = (UsageStatistic) UsageStatistic.getInstance(); 				//stworz baze w:	 baza2/db.h2.db
 		TestUtils.getLocalDao(instance).closeDatabase();
+		Assert.assertTrue(new File("db.h2.db").exists());
+		
+		System.setProperty("user.dir", oryginal);
+		
 		Assert.assertTrue(new File("baza1\\db.h2.db").exists());
 		Assert.assertTrue(new File("baza2\\db.h2.db").exists());
 		Assert.assertTrue(TestUtils.deleteDir(new File("baza1")));
 		Assert.assertTrue(TestUtils.deleteDir(new File("baza2")));
+		
+		Assert.assertFalse(new File("baza1\\db.h2.db").exists());
+		Assert.assertFalse(new File("baza2\\db.h2.db").exists());
+		
+		/*System.out.println(file.getAbsolutePath() + "=file.getAbsolutePath()");
+		System.out.println(file.getPath() + "=file.getPath()");
+		System.out.println(file.exists() + "=file.exists()");*/
+		//file = new File("baza2\\db.h2.db");
+		//System.out.println(file.getAbsolutePath() + "=file.getAbsolutePath()");
+		//System.out.println(file.getPath() + "=file.getPath()");
+		
+		
+		
 
 	}
 	
