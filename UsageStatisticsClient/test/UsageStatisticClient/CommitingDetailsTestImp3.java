@@ -2,7 +2,7 @@ package UsageStatisticClient;
 
 import junit.framework.Assert;
 
-public class CommitingDetailsTestImp3 implements CommitingDetailsInterface
+public class CommitingDetailsTestImp3 implements CommitListener
 {	
 	String msg;
 	boolean success=false;

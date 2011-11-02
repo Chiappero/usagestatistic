@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import junit.framework.Assert;
 
-public class CommitingDetailsTestImp4 implements CommitingDetailsInterface
+public class CommitingDetailsTestImp4 implements CommitListener
 {	//TYLKO dla 5 logow to dziala;
 	boolean commitingStart=false;
 	boolean commitingFinishedSuccesful=false;
