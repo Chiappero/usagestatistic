@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 
-final class LogInformation{
+public final class LogInformation{
 /**
 	 * 
 	 */
@@ -21,31 +21,31 @@ private String tool;
 public String getUser() {
 	return user;
 }
-public void setUser(String user) {
+void setUser(String user) {
 	this.user = user;
 }
 public String getTool() {
 	return tool;
 }
-public void setTool(String tool) {
+ void setTool(String tool) {
 	this.tool = tool;
 }
 public Date getDateTime() {
 	return dateTime;
 }
-public void setDateTime(Date dateTime) {
+void setDateTime(Date dateTime) {
 	this.dateTime = dateTime;
 }
 public String getFunctionality() {
 	return functionality;
 }
-public void setFunctionality(String functionality) {
+void setFunctionality(String functionality) {
 	this.functionality = functionality;
 }
 public String getParameters() {
 	return parameters;
 }
-public void setParameters(String parameters) {
+void setParameters(String parameters) {
 	this.parameters = parameters;
 }
 @Override

@@ -11,7 +11,9 @@ import java.sql.SQLException;
 
 import junitx.util.PrivateAccessor;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,6 +21,13 @@ import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 
 public class UsageStatisticTest {
+	
+	@Before
+	public void przed() throws IOException
+	{
+		TestUtils.createExampleConfigFile();
+	}
+	
 	
 	@Test
 	public void AT21_Proper_commit() throws Throwable
@@ -266,14 +275,13 @@ public class UsageStatisticTest {
 		Assert.assertEquals("password", password);
 		String tool = (String) PrivateAccessor.getField(instance, "tool");
 		Assert.assertEquals("tool", tool);
-		TestUtils.createExampleConfigFile();
 	}
 	
 	@Test
 	public void AT42ANDAT94_Handle_invalid_load_or_no_configuration_fileANDSuitable_exceptions_thrown_by_each_invalid_case() throws NoSuchFieldException, IOException
 	{	
 		
-		TestUtils.createExampleConfigFile();
+		
 		File f = new File("client-config.cfg");
 		f.delete();
 		UsageLogger ul=UsageStatistic.getInstance();
@@ -341,7 +349,6 @@ public class UsageStatisticTest {
 		ul=UsageStatistic.getInstance();
 		Assert.assertTrue(ul instanceof UsageLoggerEmpty);
 		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.INVALID_CONFIGURATION_TOOL));
-		TestUtils.createExampleConfigFile();
 	}
 	
 
@@ -374,18 +381,6 @@ public class UsageStatisticTest {
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertTrue(localDao.isEmpty());
 		
-		for(int i=0; i<1000; i++){
-			instance.log("test"+i, "paremtry"+i);
-			if(i==480 || i==999){
-				instance.commit();
-				//PrivateAccessor.invoke(instance, "commitWait", null, null);
-			}
-			if(i%100==0){
-				Assert.assertFalse(localDao.isEmpty());
-			}
-		}
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
-		Assert.assertTrue(localDao.isEmpty());
 	}
 	
 	
@@ -395,8 +390,8 @@ public class UsageStatisticTest {
 	{
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
-		instance.log("func", "param");
-		Assert.assertFalse(localDao.isOpen());
+		/*instance.log("func", "param");
+		Assert.assertFalse(localDao.isOpen());*/
 		instance.commit();
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertFalse(localDao.isOpen());
@@ -473,8 +468,8 @@ public class UsageStatisticTest {
 		System.setProperty("user.dir",url+"\\baza2");
 		instance = (UsageStatistic) UsageStatistic.getInstance();
 		TestUtils.getLocalDao(instance).closeDatabase();
-		Assert.assertTrue(new File("baza1/db.h2.db").exists());
-		Assert.assertTrue(new File("baza2/db.h2.db").exists());
+		Assert.assertTrue(new File("baza1\\db.h2.db").exists());
+		Assert.assertTrue(new File("baza2\\db.h2.db").exists());
 		Assert.assertTrue(TestUtils.deleteDir(new File("baza1")));
 		Assert.assertTrue(TestUtils.deleteDir(new File("baza2")));
 
@@ -486,7 +481,6 @@ public class UsageStatisticTest {
 	@Test
 	public void AT92_Proper_load_of_new_configuration_file_when_creating_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
 	{
-		TestUtils.createExampleConfigFile();
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		Assert.assertEquals("matuszek", (String) PrivateAccessor.getField(instance, "user"));
 		Assert.assertEquals("password", (String) PrivateAccessor.getField(instance, "password"));
@@ -499,7 +493,6 @@ public class UsageStatisticTest {
 	@Test
 	public void AT93_Proper_load_of_new_initiation_parameters_Commiting_Details_and_Tool_when_create_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
 	{
-		TestUtils.createExampleConfigFile();
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		CommitingDetailsEmpty empty=(CommitingDetailsEmpty)PrivateAccessor.getField(instance, "committingDetails");
 		CommitingDetailsTestImp4 com = new CommitingDetailsTestImp4();
