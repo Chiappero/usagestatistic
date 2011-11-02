@@ -376,11 +376,11 @@ public class UsageStatisticTest {
 		
 		for(int i=0; i<1000; i++){
 			instance.log("test"+i, "paremtry"+i);
-			if(i==480 || i==999){
+			if(i==380 || i==999){
 				instance.commit();
 				//PrivateAccessor.invoke(instance, "commitWait", null, null);
 			}
-			if(i%100==0){
+			if(i%300==0){
 				Assert.assertFalse(localDao.isEmpty());
 			}
 		}
