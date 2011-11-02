@@ -1,7 +1,9 @@
 package UsageStatisticClient;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 
@@ -317,6 +319,48 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			return null;			
 		}
 		
+	}
+	
+	public List<LogInformation> getAllLogs()
+	{
+		
+		checkIfBaseIsOpen();
+		try
+		{
+			if (isEmpty())return new ArrayList<LogInformation>();
+		} catch (SQLException e1)
+		{
+			return new ArrayList<LogInformation>();
+		}
+		String sql="SELECT * FROM Log";
+		ResultSet rs = null;
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				createTables();
+			}	
+			return new ArrayList<LogInformation>();
+		}		
+	}
+	
+	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs) throws SQLException {
+		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
+		if (!rs.first())return new ArrayList<LogInformation>();
+		do
+		{
+		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
+		if (LogInformation.validateLog(logInformation))
+			loglist.add(logInformation);
+		rs.next();
+		}
+		while (!rs.isAfterLast());
+		return loglist;
 	}
 	
 	

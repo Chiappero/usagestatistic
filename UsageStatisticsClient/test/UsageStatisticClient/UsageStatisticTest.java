@@ -11,6 +11,7 @@ import java.sql.SQLException;
 
 import junitx.util.PrivateAccessor;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +28,10 @@ public class UsageStatisticTest {
 		TestUtils.createExampleConfigFile();
 	}
 	
+	
 	@Test
 	public void AT21_Proper_commit() throws Throwable
 	{
-		
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		TestUtils.removeAllLogsFromDao(instance);
 		instance.log("funkcjonalnosc", "parametry");
@@ -479,8 +480,8 @@ public class UsageStatisticTest {
 		System.setProperty("user.dir",url+"\\baza2");
 		instance = (UsageStatistic) UsageStatistic.getInstance();
 		TestUtils.getLocalDao(instance).closeDatabase();
-		Assert.assertTrue(new File("baza1/db.h2.db").exists());
-		Assert.assertTrue(new File("baza2/db.h2.db").exists());
+		Assert.assertTrue(new File("baza1\\db.h2.db").exists());
+		Assert.assertTrue(new File("baza2\\db.h2.db").exists());
 		Assert.assertTrue(TestUtils.deleteDir(new File("baza1")));
 		Assert.assertTrue(TestUtils.deleteDir(new File("baza2")));
 
