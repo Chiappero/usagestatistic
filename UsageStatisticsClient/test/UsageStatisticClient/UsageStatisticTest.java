@@ -391,7 +391,7 @@ public class UsageStatisticTest {
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
 		/*instance.log("func", "param");
-		Assert.assertFalse(localDao.isOpen());*/
+		Assert.assertFalse(localDao.isOpen());*/ //TODO testy z zamknieciem bazy
 		instance.commit();
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertFalse(localDao.isOpen());
