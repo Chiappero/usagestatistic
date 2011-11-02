@@ -1,38 +1,41 @@
 package UsageStatisticClient;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Date;
 
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-final public class UsageStatistic {
+final public class UsageStatistic implements UsageLogger{
 	private URI serverURL;
 	private String user;
 	private String password;
 	private String tool;
-	private static UsageStatistic instance;
+	private static UsageLogger instance;
 	private RestTemplate restTemplate;
 	private DaoTemporaryDatabaseInterface dao;
 	private CommitListener committingDetails;
 	private CommitThread commitThread;
+	private static boolean debuglog;
 
-	private void init(String toolInstance) throws UsageStatisticException {
+	private void init() throws UsageStatisticException {
 		user=null;
 		password=null;
 		serverURL=null;
 		tool=null;
+		debuglog=false;
 		dao = new DaoTemporaryDatabaseH2(); 													// throwsa
+		committingDetails = new CommitingDetailsEmpty();
 		restTemplate = new RestTemplate();
-		File file = new File("client-config.cfg"); // TODO2 - zakoduj to i dodaj
-													// obsluge wyjatkow
+		File file = new File("client-config.cfg"); // TODO2 - zakoduj to
 		BufferedReader bufferedReader;
 		try
 		{
@@ -51,17 +54,6 @@ final public class UsageStatistic {
 			}
 			bufferedReader.close();
 			areFieldsSetCorrectly();
-			
-			if (toolInstance!=null&&!toolInstance.isEmpty())
-			{
-				tool = toolInstance;
-			} 
-			else if (tool==null||tool.isEmpty())
-				{
-				
-				tool = "Default Application";
-				} //else zostaje domyslny tool wczytany przez loadera
-			
 		}
 			catch (URISyntaxException e)
 			{
@@ -78,10 +70,15 @@ final public class UsageStatistic {
 
 	private void areFieldsSetCorrectly() throws UsageStatisticException 
 	{
-		if (user==null||user.equals("")||password==null||password.equals(""))
-			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION);
+		if (user==null||user.equals(""))
+			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION_USERNAME);
+		if (password==null||password.equals(""))
+			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION_PASSWORD);
+		if (tool==null||tool.equals(""))
+			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION_TOOL);
 		if (serverURL==null||serverURL.toString().equals("/post"))
 			throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URL);
+
 
 	}
 
@@ -95,45 +92,43 @@ final public class UsageStatistic {
 			password=field[1];
 		if (field[0].equals("tool"))
 			tool=field[1];
-		
+		if (field[0].equals("debug"))
+			{
 
-		
-	}
-
-	private UsageStatistic(String tool,
-			CommitListener committingDetails) throws UsageStatisticException {
+			if (field[1].equals("on"))
+				try
+				{
+					BufferedWriter out=new BufferedWriter(new FileWriter("debuglog.txt",true));
+					out.close();
+				debuglog=true;
+				}
+				catch (IOException e)
+				{
+					debuglog=false;
+				}
+			else debuglog=false;
+			}
+			
+			
 			
 		
+
 		
-		setCommittingDetails(committingDetails);
-		init(tool);
 	}
 
-	public boolean log(String functionality, String parameters) { 
+	private UsageStatistic() throws UsageStatisticException {
+		init();
+	}
+
+	public void log(String functionality, String parameters) 
+	{ 
 		LogInformation log = new LogInformation(Calendar.getInstance().getTime(), functionality, user, tool, parameters);
-		/*log.setDate(Calendar.getInstance().getTime());
-		log.setFunctionality(functionality);
-		log.setParameters(parameters);
-		log.setTool(tool);
-		log.setUser(user);*/
-		boolean savesucc = dao.saveLog(log);
+		dao.saveLog(log);
 		//dao.closeDatabase();
-		return savesucc;
 	}
 	
 	
-	public void setCommittingDetails(CommitListener committingDetails)
-	{
-		if (committingDetails==null)
-		{
-		this.committingDetails = new CommitingDetailsEmpty();
-		}
-		else
-		{
-		this.committingDetails=committingDetails;
-		}
-	}
-	
+	@Override	
 	public synchronized void commit()
 	{
 		if(commitThread==null || !commitThread.isAlive()){
@@ -218,51 +213,43 @@ final public class UsageStatistic {
 			committingDetails
 			.commitingFailureWithError(Errors.CANNOT_EXTRACT_RESPONSE);
 		}
-		
-		/*catch (Exception e)
-		{
-			try
-			{
-			committingDetails.commitingFailureWithError(Errors.FATAL_EXCEPTION);
-			}
-			catch (Exception e2)
-			{}
-		}*/
-
-
-
 	}
 
 	
 
-	public static UsageStatistic getInstance(String tool, CommitListener committingDetails) throws UsageStatisticException 
+	public static UsageLogger getInstance()
 	{
-		
-		if (instance == null) 
+		try 
 		{
-			instance = new UsageStatistic(tool, committingDetails);
-			return instance;
+			if (instance == null||instance instanceof UsageLoggerEmpty)
+				instance=new UsageStatistic();
+			else
+				((UsageStatistic)instance).init();
 		} 
-		else
+		catch (UsageStatisticException e) 
 		{
-			instance.init(tool);
-			instance.setCommittingDetails(committingDetails);
-			return instance;
+			instance=new UsageLoggerEmpty();
+			errorlog(e);
 		}
-
+		return instance;
+	}
+	
+private static void errorlog(UsageStatisticException e) 
+{
+		if (debuglog)
+		{
+			BufferedWriter out;
+			try {
+				out = new BufferedWriter(new FileWriter("debuglog.txt",true));
+				out.write(Calendar.getInstance().getTime()+": "+e.getMessage()+"\n");
+				out.close();
+			} catch (IOException e1) 
+			{}
+		}
 		
 	}
-	
-	public static UsageStatistic getInstance(String tool) throws UsageStatisticException
-	{
-		return getInstance(tool,null);
-	}
-	
-	public static UsageStatistic getInstance() throws UsageStatisticException{
-		return getInstance(null,null);
-	}
-	
-	public void commitWait(){
+
+	private void commitWait(){
 		try {
 			commitThread.join();
 		} catch (InterruptedException e) {
@@ -279,7 +266,7 @@ final public class UsageStatistic {
 		}
 	}
 	
-	public void closeInstance()
+	public void closeInstance() //po co to??
 	{
 		commitThread.interrupt();//TODO czy to jest bezpieczne?
 		commitThread=null;
@@ -293,6 +280,32 @@ final public class UsageStatistic {
 		serverURL=null;
 		tool=null;
 		
+	}
+
+	@Override
+	public void setCommitListener(CommitListener cl) 
+	{
+		if (committingDetails==null)
+		{
+		committingDetails = new CommitingDetailsEmpty();
+		}
+		else
+		{
+		committingDetails=cl;
+		}
+	}
+
+	@Override
+	public int getLogsCount() 
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Date getOldestLogDate() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

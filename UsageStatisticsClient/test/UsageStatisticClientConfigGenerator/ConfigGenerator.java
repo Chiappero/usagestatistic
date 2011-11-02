@@ -16,6 +16,7 @@ public static void createConfigFile(String fileName, String serverURL, String us
 	 if (user!=null)out.println("user = "+user);
 	 if (password!=null)out.println("password = "+password);
 	 if (tool!=null)out.println("tool = "+tool);
+	 out.println("debug = on");
 	 out.close();
 }
 }
