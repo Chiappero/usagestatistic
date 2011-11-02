@@ -1,6 +1,9 @@
 package UsageStatisticClient;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 
@@ -213,6 +216,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	
 	private void createTables()
 	{
+		checkIfBaseIsOpen();
 		String query="CREATE TABLE IF NOT EXISTS Log (id int NOT NULL AUTO_INCREMENT, timestamp timestamp, functionality varchar(50), user varchar(50), tool varchar(50),parameters varchar(200))";
 		try {
 				
@@ -225,6 +229,15 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				conn.createStatement().execute(query);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
+				String cn="";
+				try {
+					cn = conn.isClosed()?"nie":"tak";
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+					System.out.println("lol");
+				}
+				System.out.println("conn_null " + conn==null?"tak":"nie" + " otwarte " + cn);
 			}
 		}
 	}
@@ -293,6 +306,74 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	public boolean isOpen() throws SQLException{
 		return !conn.isClosed();
 	}
+
+	@Override
+	public Date getOldestLogDate()
+	{
+		checkIfBaseIsOpen();
+		String sql="SELECT TOP 1 FROM Log"; //TODO test trzeba napisac czy napewno zwraca najstarszy rekord a nie tylko 'pierwszy'
+		try
+		{
+		ResultSet rs=conn.createStatement().executeQuery(sql);
+		rs.first();
+		return rs.getTimestamp("timestamp");
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				createTables();
+					
+			}
+			
+			return null;			
+		}
+		
+	}
+	
+	public List<LogInformation> getAllLogs()
+	{
+		
+		checkIfBaseIsOpen();
+		try
+		{
+			if (isEmpty())return new ArrayList<LogInformation>();
+		} catch (SQLException e1)
+		{
+			return new ArrayList<LogInformation>();
+		}
+		String sql="SELECT * FROM Log";
+		ResultSet rs = null;
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		return getLogsFromResultSet(rs);
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				createTables();
+			}	
+			return new ArrayList<LogInformation>();
+		}		
+	}
+	
+	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs) throws SQLException {
+		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
+		if (!rs.first())return new ArrayList<LogInformation>();
+		do
+		{
+		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
+		if (LogInformation.validateLog(logInformation))
+			loglist.add(logInformation);
+		rs.next();
+		}
+		while (!rs.isAfterLast());
+		return loglist;
+	}
+	
+	
 		
 
 }

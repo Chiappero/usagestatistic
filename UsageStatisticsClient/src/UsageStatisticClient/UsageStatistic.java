@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.web.client.RestTemplate;
 
@@ -298,14 +299,24 @@ private static void errorlog(UsageStatisticException e)
 	@Override
 	public int getLogsCount() 
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		try
+		{
+			return dao.getLogsAmount();
+		} catch (SQLException e)
+		{ 
+			return 0;
+		}
 	}
 
 	@Override
 	public Date getOldestLogDate() {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getOldestLogDate();
+	}
+
+	@Override
+	public List<LogInformation> getAllLogs()
+	{
+		return dao.getAllLogs();
 	}
 	
 }

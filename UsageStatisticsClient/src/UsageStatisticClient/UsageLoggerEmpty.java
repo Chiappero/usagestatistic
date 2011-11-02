@@ -1,6 +1,7 @@
 package UsageStatisticClient;
 
 import java.util.Date;
+import java.util.List;
 
 public class UsageLoggerEmpty implements UsageLogger{
 
@@ -20,6 +21,12 @@ public class UsageLoggerEmpty implements UsageLogger{
 
 	@Override
 	public Date getOldestLogDate() {
+		return null;
+	}
+
+	@Override
+	public List<LogInformation> getAllLogs()
+	{
 		return null;
 	}
 

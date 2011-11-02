@@ -1,6 +1,7 @@
 package UsageStatisticClient;
 
 import java.sql.SQLException;
+import java.util.List;
 
 interface DaoTemporaryDatabaseInterface {
 
@@ -12,5 +13,6 @@ int getLogsAmount() throws SQLException;
 void openDatabase();
 void closeDatabase();
 void resetDatabase();
-
+java.util.Date getOldestLogDate();
+List<LogInformation> getAllLogs();
 }
