@@ -381,18 +381,6 @@ public class UsageStatisticTest {
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertTrue(localDao.isEmpty());
 		
-		for(int i=0; i<1000; i++){
-			instance.log("test"+i, "paremtry"+i);
-			if(i==480 || i==999){
-				instance.commit();
-				//PrivateAccessor.invoke(instance, "commitWait", null, null);
-			}
-			if(i%100==0){
-				Assert.assertFalse(localDao.isEmpty());
-			}
-		}
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
-		Assert.assertTrue(localDao.isEmpty());
 	}
 	
 	
@@ -402,8 +390,8 @@ public class UsageStatisticTest {
 	{
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
-		instance.log("func", "param");
-		Assert.assertFalse(localDao.isOpen());
+		/*instance.log("func", "param");
+		Assert.assertFalse(localDao.isOpen());*/
 		instance.commit();
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertFalse(localDao.isOpen());
