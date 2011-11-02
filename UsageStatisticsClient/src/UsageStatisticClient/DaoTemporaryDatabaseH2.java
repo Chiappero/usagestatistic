@@ -1,6 +1,7 @@
 package UsageStatisticClient;
 
 import java.sql.*;
+import java.util.Date;
 
 
 
@@ -293,6 +294,32 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	public boolean isOpen() throws SQLException{
 		return !conn.isClosed();
 	}
+
+	@Override
+	public Date getOldestLogDate()
+	{
+		checkIfBaseIsOpen();
+		String sql="SELECT TOP 1 FROM Log"; //TODO test trzeba napisac czy napewno zwraca najstarszy rekord a nie tylko 'pierwszy'
+		try
+		{
+		ResultSet rs=conn.createStatement().executeQuery(sql);
+		rs.first();
+		return rs.getTimestamp("timestamp");
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				createTables();
+					
+			}
+			
+			return null;			
+		}
+		
+	}
+	
+	
 		
 
 }

@@ -12,5 +12,6 @@ int getLogsAmount() throws SQLException;
 void openDatabase();
 void closeDatabase();
 void resetDatabase();
+java.util.Date getOldestLogDate();
 
 }

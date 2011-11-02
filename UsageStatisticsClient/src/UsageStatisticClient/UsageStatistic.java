@@ -298,14 +298,18 @@ private static void errorlog(UsageStatisticException e)
 	@Override
 	public int getLogsCount() 
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		try
+		{
+			return dao.getLogsAmount();
+		} catch (SQLException e)
+		{ 
+			return 0;
+		}
 	}
 
 	@Override
 	public Date getOldestLogDate() {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.getOldestLogDate();
 	}
 	
 }

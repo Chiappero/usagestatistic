@@ -1,6 +1,7 @@
 package UsageStatisticClient;
 
 import java.sql.SQLException;
+import java.util.Date;
 
 public class DaoTemporaryDatabaseH2TestImp implements DaoTemporaryDatabaseInterface
 {	
@@ -47,5 +48,11 @@ public class DaoTemporaryDatabaseH2TestImp implements DaoTemporaryDatabaseInterf
 	public void resetDatabase()
 	{
 		
+	}
+	@Override
+	public Date getOldestLogDate()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
