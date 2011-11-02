@@ -213,6 +213,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	
 	private void createTables()
 	{
+		checkIfBaseIsOpen();
 		String query="CREATE TABLE IF NOT EXISTS Log (id int NOT NULL AUTO_INCREMENT, timestamp timestamp, functionality varchar(50), user varchar(50), tool varchar(50),parameters varchar(200))";
 		try {
 				
@@ -225,6 +226,15 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				conn.createStatement().execute(query);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
+				String cn="";
+				try {
+					cn = conn.isClosed()?"nie":"tak";
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+					System.out.println("lol");
+				}
+				System.out.println("conn_null " + conn==null?"tak":"nie" + " otwarte " + cn);
 			}
 		}
 	}

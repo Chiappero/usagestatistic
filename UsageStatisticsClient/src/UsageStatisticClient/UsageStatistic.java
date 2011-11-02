@@ -208,6 +208,7 @@ final public class UsageStatistic {
 		} 
 		catch (SQLException e)
 		{	
+			System.out.println(e.getMessage());
 			dao.resetDatabase();
 			committingDetails
 			.commitingFailureWithError(Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
@@ -219,15 +220,6 @@ final public class UsageStatistic {
 			.commitingFailureWithError(Errors.CANNOT_EXTRACT_RESPONSE);
 		}
 		
-		/*catch (Exception e)
-		{
-			try
-			{
-			committingDetails.commitingFailureWithError(Errors.FATAL_EXCEPTION);
-			}
-			catch (Exception e2)
-			{}
-		}*/
 
 
 
