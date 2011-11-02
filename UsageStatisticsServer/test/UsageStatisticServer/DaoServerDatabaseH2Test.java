@@ -307,6 +307,7 @@ public class DaoServerDatabaseH2Test {
 	Assert.assertEquals( "SELA",list2.get(0).getFunctionality());
 	Assert.assertEquals("SEL2",list2.get(0).getUser());
 	Assert.assertEquals("test",list2.get(4).getFunctionality());	
+
 	
 	
 	
@@ -344,8 +345,14 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertEquals(4, list2.size());	
 		for (int i=1;i<list2.size();i++)
 		Assert.assertTrue(list2.get(i).getLewy().getDateTime().getTime()-list2.get(i-1).getLewy().getDateTime().getTime()==30000);
-		
-		
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SELENIUM2","SELA","SELENIUM4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"SELA","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"function","SEL2","SELA","SEL4"));	
+		ArrayList<String> fun=dao.getFunctionalities("SELA");
+		Assert.assertEquals(3,fun.size());
+		Assert.assertEquals("function", fun.get(2));		
+		fun=dao.getFunctionalities("SELZ");
+		Assert.assertEquals(0,fun.size());
 	
 	}
 	
