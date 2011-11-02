@@ -27,7 +27,7 @@ public class UsageStatisticTest {
 	{
 		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", new CommitingDetailsTestImp(1));
 		TestUtils.removeAllLogsFromDao(instance);
-		instance.used("funkcjonalnosc", "parametry");
+		instance.log("funkcjonalnosc", "parametry");
 		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
 		Assert.assertEquals(localDao.getLogsAmount(),1);
 		instance.commit();
@@ -459,18 +459,18 @@ public class UsageStatisticTest {
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
 		for(int i=0; i<1000; i++){
-			instance.used("test"+i, "paremtry"+i);
+			instance.log("test"+i, "paremtry"+i);
 		}
 		instance.commit();
 		Assert.assertFalse(localDao.isEmpty());
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertTrue(localDao.isEmpty());
 		for(int i=0; i<300; i++){
-			instance.used("test"+i, "paremtry"+i);
+			instance.log("test"+i, "paremtry"+i);
 		}
 		instance.commit();
 		for(int i=0; i<100; i++){
-			instance.used("test"+i, "paremtry"+i);
+			instance.log("test"+i, "paremtry"+i);
 		}
 		Assert.assertFalse(localDao.isEmpty());
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
@@ -481,7 +481,7 @@ public class UsageStatisticTest {
 		Assert.assertTrue(localDao.isEmpty());
 		
 		for(int i=0; i<1000; i++){
-			instance.used("test"+i, "paremtry"+i);
+			instance.log("test"+i, "paremtry"+i);
 			if(i==480 || i==999){
 				instance.commit();
 				//PrivateAccessor.invoke(instance, "commitWait", null, null);
@@ -503,7 +503,7 @@ public class UsageStatisticTest {
 		PrivateAccessor.setField(localDao, "conn", null);
 		try
 		{
-		instance.used("test", "test");
+		instance.log("test", "test");
 		instance.commit();
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		}
@@ -523,7 +523,7 @@ public class UsageStatisticTest {
 	{
 		final UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
 		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
-		instance.used("func", "param");
+		instance.log("func", "param");
 		Assert.assertFalse(localDao.isOpen());
 		instance.commit();
 		PrivateAccessor.invoke(instance, "commitWait", null, null);

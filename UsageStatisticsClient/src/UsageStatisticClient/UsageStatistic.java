@@ -21,7 +21,7 @@ final public class UsageStatistic {
 	private static UsageStatistic instance;
 	private RestTemplate restTemplate;
 	private DaoTemporaryDatabaseInterface dao;
-	private CommitingDetailsInterface committingDetails;
+	private CommitListener committingDetails;
 	private CommitThread commitThread;
 
 	private void init(String toolInstance) throws UsageStatisticException {
@@ -101,7 +101,7 @@ final public class UsageStatistic {
 	}
 
 	private UsageStatistic(String tool,
-			CommitingDetailsInterface committingDetails) throws UsageStatisticException {
+			CommitListener committingDetails) throws UsageStatisticException {
 			
 		
 		
@@ -109,7 +109,7 @@ final public class UsageStatistic {
 		init(tool);
 	}
 
-	public boolean used(String functionality, String parameters) { 
+	public boolean log(String functionality, String parameters) { 
 		LogInformation log = new LogInformation(Calendar.getInstance().getTime(), functionality, user, tool, parameters);
 		/*log.setDate(Calendar.getInstance().getTime());
 		log.setFunctionality(functionality);
@@ -122,7 +122,7 @@ final public class UsageStatistic {
 	}
 	
 	
-	public void setCommittingDetails(CommitingDetailsInterface committingDetails)
+	public void setCommittingDetails(CommitListener committingDetails)
 	{
 		if (committingDetails==null)
 		{
@@ -235,7 +235,7 @@ final public class UsageStatistic {
 
 	
 
-	public static UsageStatistic getInstance(String tool, CommitingDetailsInterface committingDetails) throws UsageStatisticException 
+	public static UsageStatistic getInstance(String tool, CommitListener committingDetails) throws UsageStatisticException 
 	{
 		
 		if (instance == null) 
