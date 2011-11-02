@@ -12,7 +12,7 @@
           <tr><td>Userzy</td><td><form:checkboxes path="users" items="${users}" /></td></tr>
           <tr><td>Funkcjonalnosci</td><td><form:checkboxes path="functionalities" items="${functionalities}"/></td></tr>
           <tr><td>Sortowanie1</td><td>
-       	  <form:select path="sortChoose1"  onchange="change1();" id="columns1" name="columns1">
+       	  <form:select path="sortChoose1"  onchange="ajax();" id="columns1" name="columns1">
 		   	<c:forEach var="col" items="${columns}">
 	 		  <option value="${col}">${col}</option>
 	 		</c:forEach>
@@ -49,6 +49,61 @@
 	drop1.disabled = false;
 	drop2.disabled = true;
 	drop3.disabled = true;
+	
+	function ajax()
+	{
+		alert('start');
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp=new XMLHttpRequest();
+		  }
+		else
+		  {// code for IE6, IE5
+		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		var handlerFunction = getReadyStateHandler(xmlhttp, updateDropdown);
+		xmlhttp.onreadystatechange = handlerFunction;
+		var toolName = document.getElementById("columns1").value;
+		xmlhttp.open("GET","ajax?tool="+toolName,true);
+		xmlhttp.send();
+		alert('koniec');
+	}
+	
+	function updateDropdown(funsXML){
+		 var funs = funsXML.getElementsByTagName("funs")[0];
+		 var items = funs.getElementsByTagName("fun");
+		 for (var I = 0 ; I < items.length ; I++) {
+			 var item = items[I];
+			 var name = item.getAttribute("name");
+			 drop2.options.add(name);
+		 }
+	}
+	
+	function getReadyStateHandler(req, responseXmlHandler) {
+
+		  // Return an anonymous function that listens to the 
+		  // XMLHttpRequest instance
+		  return function () {
+
+		    // If the request's status is "complete"
+		    if (req.readyState == 4) {
+		      
+		      // Check that a successful server response was received
+		      if (req.status == 200) {
+
+		        // Pass the XML payload of the response to the 
+		        // handler function
+		        responseXmlHandler(req.responseXML);
+
+		      } else {
+
+		        // An HTTP problem has occurred
+		        alert("HTTP error: "+req.status);
+		      }
+		    }
+		  }
+		}
 	
 	function change1()
 	{

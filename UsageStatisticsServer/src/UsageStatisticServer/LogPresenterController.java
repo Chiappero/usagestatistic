@@ -1,5 +1,6 @@
 package UsageStatisticServer;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,6 +51,21 @@ public class LogPresenterController{
 		columns.add("parameters");
 		mav.addObject("columns", columns);
 		return mav;
+	}
+	
+	@RequestMapping(value = "/ajax", method = RequestMethod.GET)
+	protected void ajax(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException{
+		String selectedTool = httpServletRequest.getParameter("tool");
+		//httpServletResponse.setContentType("application/xml");
+		httpServletResponse.setContentType("application/xml");
+		//DAO
+		FunsXML funs=new FunsXML( dao.getFunctionalities(selectedTool) );
+		String funsXML=funs.toXml();		
+		try {
+			httpServletResponse.getWriter().write(funsXML);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@RequestMapping(value = "/results", method = RequestMethod.POST)
