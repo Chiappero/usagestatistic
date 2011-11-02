@@ -1,8 +1,8 @@
 package UsageStatisticApplicationTest;
 
-import UsageStatisticClient.CommitingDetailsInterface;
+import UsageStatisticClient.CommitListener;
 
-public class CommitingDetails implements CommitingDetailsInterface
+public class CommitingDetails implements CommitListener
 {
 	int logsammount=0;
 	int current=0;
