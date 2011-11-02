@@ -203,7 +203,6 @@ final public class UsageStatistic implements UsageLogger{
 		} 
 		catch (SQLException e)
 		{	
-			System.out.println(e.getMessage());
 			dao.resetDatabase();
 			committingDetails
 			.commitingFailureWithError(Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
