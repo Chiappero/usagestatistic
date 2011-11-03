@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <LINK rel="stylesheet" href="style.css">
+<a href="j_spring_security_logout">Logout</a>
 <div>
 <form:form method="post" action="results">
       <table style="border:2px solid grey; ">
