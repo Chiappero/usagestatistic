@@ -1,7 +1,5 @@
 package UsageStatisticServer;
 
-import static org.junit.Assert.*;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
@@ -10,10 +8,6 @@ import junit.framework.Assert;
 import junitx.util.PrivateAccessor;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.stereotype.Controller;
 
 
 public class LogReceiverTest {

@@ -1,18 +1,14 @@
 package UsageStatisticServer;
 
-import static org.junit.Assert.*;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
 import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class DaoServerDatabaseH2Test {

@@ -221,7 +221,7 @@ public class UsageStatisticTest {
 	
 	
 	@Test
-	public void AT210_Paralell_Commits() throws Throwable
+	public void AT210_Paralell_Commits() throws Throwable //TODO rzadko bo rzadko, ale czasem tu nie wyrabia
 	{
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		TestUtils.removeAllLogsFromDao(instance);
