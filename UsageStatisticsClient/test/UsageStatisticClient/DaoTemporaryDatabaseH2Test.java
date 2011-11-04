@@ -77,7 +77,7 @@ public class DaoTemporaryDatabaseH2Test
 		usunWszystkieLogi();
 		tempSaveManyLogsAtOneTime(10, 15, 20);
 		usunWszystkieLogi();
-		tempSaveManyLogsAtOneTime(10, 5, 3);
+		tempSaveManyLogsAtOneTime(10, 5, 6);
 	}
 	
 	private void tempSaveManyLogsAtOneTime(final int stalaLiczbaWatkow, final int stalaLiczbaRekordow, final int stalaLiczbaCzasuDoSpania) throws SQLException

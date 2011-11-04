@@ -12,6 +12,8 @@ import org.h2.tools.Server;
 
 final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 {
+	String user="localdb";
+	String pass="localpass";
 	Server server=null;
 	Connection conn=null;
 	
@@ -184,7 +186,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
         	if (server==null||server.getStatus().equals("Not started"))
         		server = Server.createTcpServer(new String[] { "-tcpAllowOthers" }).start();
 			Class.forName("org.h2.Driver");
-	        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", "user", "");
+	        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", user,pass);
 	        createTables();
 		} 
         	catch (ClassNotFoundException e) 
@@ -193,7 +195,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		}
         catch (SQLException e) {
 	        try {
-	        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", "user", "");
+	        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", user,pass);
 	        createTables();
 			} catch (SQLException e1) {
 				e1.printStackTrace();
@@ -243,11 +245,10 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				try {
 					cn = conn.isClosed()?"nie":"tak";
 				} catch (SQLException e2) {
-					// TODO Auto-generated catch block
 					e2.printStackTrace();
 					System.out.println("lol");
 				}
-				System.out.println("conn_null " + conn==null?"tak":"nie" + " otwarte " + cn);
+			//	System.out.println("conn_null " + conn==null?"tak":"nie" + " otwarte " + cn);
 			}
 		}
 	}
@@ -261,7 +262,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
         		server = Server.createTcpServer(new String[] { "-tcpAllowOthers" }).start();
 			try {
 				Class.forName("org.h2.Driver");
-		        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", "user", "");
+		        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", user,pass);
 		        if(conn!=null){
 		        	String query="DROP TABLE IF EXISTS Log";
 		        	conn.createStatement().execute(query);
@@ -323,11 +324,11 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	public Date getOldestLogDate()
 	{
 		checkIfBaseIsOpen();
-		String sql="SELECT TOP 1 FROM Log"; //TODO test trzeba napisac czy napewno zwraca najstarszy rekord a nie tylko 'pierwszy'
+		String sql="SELECT TOP 1 timestamp FROM Log"; //TODO test trzeba napisac czy napewno zwraca najstarszy rekord a nie tylko 'pierwszy'
 		try
 		{
 		ResultSet rs=conn.createStatement().executeQuery(sql);
-		rs.first();
+		if (!rs.first())return null;
 		return rs.getTimestamp("timestamp");
 		}
 		catch (SQLException e)
