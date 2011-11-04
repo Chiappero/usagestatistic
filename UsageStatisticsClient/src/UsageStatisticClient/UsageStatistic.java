@@ -185,7 +185,6 @@ final public class UsageStatistic implements UsageLogger{
 			}
 				committingDetails.setInfo("Commiting finised succesful");
 				committingDetails.commitingFinishedSuccesful();
-				dao.closeDatabase();
 		} 
 		
 		
@@ -267,22 +266,6 @@ private static void errorlog(UsageStatisticException e)
 		}
 	}
 	
-	public void closeInstance() //po co to??
-	{
-		commitThread.interrupt();//TODO czy to jest bezpieczne?
-		commitThread=null;
-		dao.closeDatabase();
-		dao=null;
-		restTemplate=null;
-		commitThread=null;
-		committingDetails=null;
-		instance=null;
-		password=null;
-		serverURL=null;
-		tool=null;
-		
-	}
-
 	@Override
 	public void setCommitListener(CommitListener cl) 
 	{

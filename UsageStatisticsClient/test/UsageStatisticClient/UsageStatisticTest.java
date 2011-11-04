@@ -8,6 +8,9 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import junitx.util.PrivateAccessor;
 
@@ -383,20 +386,20 @@ public class UsageStatisticTest {
 		
 	}
 	
-	
-	
-	@Test
-	public void AT54_Test_proper_closed_of_local_database() throws Throwable
-	{
-		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
-		/*instance.log("func", "param");
-		Assert.assertFalse(localDao.isOpen());*/ //TODO testy z zamknieciem bazy
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
-		Assert.assertFalse(localDao.isOpen());
-		
-	}
+//	
+//	
+//	@Test
+//	public void AT54_Test_proper_closed_of_local_database() throws Throwable
+//	{
+//		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
+//		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
+//		/*instance.log("func", "param");
+//		Assert.assertFalse(localDao.isOpen());*/ //TODO testy z zamknieciem bazy
+//		instance.commit();
+//		PrivateAccessor.invoke(instance, "commitWait", null, null);
+//		Assert.assertFalse(localDao.isOpen());
+//		
+//	}
 	
 	@Test
 	public void AT61_Proper_flow_of_usage_commit_interface() throws Throwable
@@ -536,6 +539,50 @@ public class UsageStatisticTest {
 		instance = (UsageStatistic) UsageStatistic.getInstance();
 
 	}		
+
+	@Test
+	public void AT201_Log_Count() throws Throwable
+	{
+		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
+		TestUtils.removeAllLogsFromDao(instance);
+		Assert.assertEquals(0,instance.getLogsCount());
+		TestUtils.addSomeLogsToDao(instance, 100);
+		Assert.assertEquals(100,instance.getLogsCount());
+		instance.commit();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertEquals(0,instance.getLogsCount());
+	}	
+	
+	@Test
+	public void AT202_Date_of_oldest_commit() throws Throwable
+	{
+		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
+		TestUtils.removeAllLogsFromDao(instance);
+		Assert.assertNull(instance.getOldestLogDate());
+		java.util.Date date=Calendar.getInstance().getTime();
+		TestUtils.addSomeLogsToDao(instance, 100);
+		Assert.assertEquals(date,instance.getOldestLogDate());
+		instance.commit();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertNull(instance.getOldestLogDate());
+	}	
+	
+	@Test
+	public void AT203_List_of_stored_logs() throws Throwable
+	{
+		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
+		TestUtils.removeAllLogsFromDao(instance);
+		Assert.assertEquals(0,instance.getAllLogs().size());
+		for (int i=0;i<10;i++)
+			instance.log(""+i, "");
+		List<LogInformation> logs=instance.getAllLogs();
+		Assert.assertEquals(10,instance.getAllLogs().size());
+		for (int i=0;i<10;i++)		
+			Assert.assertEquals(""+i, logs.get(i).getFunctionality());
+		instance.commit();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		Assert.assertEquals(0,instance.getAllLogs().size());
+	}	
 	
 	@Test
 	public void AT29_Large_Data() throws Throwable
@@ -547,6 +594,8 @@ public class UsageStatisticTest {
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 	}
+	
+
 	
 	
 }
