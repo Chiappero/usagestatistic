@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.h2.tools.Server;
+
 
 
 
 final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 {
-
+	Server server=null;
 	Connection conn=null;
 	
 	DaoTemporaryDatabaseH2()
@@ -174,24 +176,30 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	}
 	
 	@Override
-	public void openDatabase()
+	public void openDatabase() 
 	{
+		
+		
         try {
+        	if (server==null||server.getStatus().equals("Not started"))
+        		server = Server.createTcpServer(new String[] { "-tcpAllowOthers" }).start();
 			Class.forName("org.h2.Driver");
-	        conn= DriverManager.getConnection("jdbc:h2:db", "user", "");
+	        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", "user", "");
 	        createTables();
-		} catch (ClassNotFoundException e) 
+		} 
+        	catch (ClassNotFoundException e) 
 		{
 			e.printStackTrace();
 		}
         catch (SQLException e) {
 	        try {
-				conn= DriverManager.getConnection("jdbc:h2:db", "user", "");
-				createTables();
+	        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", "user", "");
+	        createTables();
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
 	        
+        	System.out.println(e.getMessage());
 		}
 
 	}
@@ -205,6 +213,8 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				{
 					conn.close();
 				}
+				if (server!=null&&!server.getStatus().equals("Not started"))
+					server.stop();
 			} catch (SQLException e) {
 				try {
 					conn.close();
@@ -246,23 +256,25 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	
 	private void recreateTable() throws SQLException
 	{
-		try
-		{
-			Class.forName("org.h2.Driver");
-		} catch (ClassNotFoundException e)
-		{
-			throw new SQLException("Cannot load database driver");
-		}
-        conn= DriverManager.getConnection("jdbc:h2:db", "user", "");
-        if(conn!=null){
-        	String query="DROP TABLE IF EXISTS Log";
-        	conn.createStatement().execute(query);
-        	createTables();
-        }
-        else{
-        	throw new SQLException(Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
-        	
-        }
+
+        	if (server==null||server.getStatus().equals("Not started"))
+        		server = Server.createTcpServer(new String[] { "-tcpAllowOthers" }).start();
+			try {
+				Class.forName("org.h2.Driver");
+		        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", "user", "");
+		        if(conn!=null){
+		        	String query="DROP TABLE IF EXISTS Log";
+		        	conn.createStatement().execute(query);
+		        	createTables();
+		        }
+		        else{
+		        	throw new SQLException(Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
+		        	}
+			} catch (ClassNotFoundException e) {
+
+			}
+
+
       
 	}
 
