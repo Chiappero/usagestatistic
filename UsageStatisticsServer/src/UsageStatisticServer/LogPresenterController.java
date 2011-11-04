@@ -56,8 +56,7 @@ public class LogPresenterController{
 	@RequestMapping(value = "/ajax", method = RequestMethod.GET)
 	protected void ajax(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException{
 		String selectedTool = httpServletRequest.getParameter("tool");
-		//httpServletResponse.setContentType("application/xml");
-		httpServletResponse.setContentType("application/xml");
+		httpServletResponse.setContentType("text/xml");
 		//DAO
 		FunsXML funs=new FunsXML( dao.getFunctionalities(selectedTool) );
 		String funsXML=funs.toXml();		
@@ -71,16 +70,13 @@ public class LogPresenterController{
 	@RequestMapping(value = "/results", method = RequestMethod.POST)
 	protected ModelAndView wyswietlWyniki(@ModelAttribute("Results")Results results, BindingResult result) {
 		ArrayList<String> functionalities = new ArrayList<String>();
-		ArrayList<String> tools = new ArrayList<String>();
+		ArrayList<String> tool = new ArrayList<String>();
 		ArrayList<String> users = new ArrayList<String>();
 		for (int i = 0; i < results.getFunctionalities().length; i++)
 		{
 			functionalities.add(results.getFunctionalities()[i]);
 		}
-		for (int i = 0; i < results.getTools().length; i++)
-		{
-			tools.add(results.getTools()[i]);
-		}
+		tool.add(results.getTool());
 		for (int i = 0; i < results.getUsers().length; i++)
 		{
 			users.add(results.getUsers()[i]);
@@ -90,7 +86,7 @@ public class LogPresenterController{
 		try
 		{
 			LinkedList<String> linked = new LinkedList<String>();
-			if (isValidNameColumn(results.getSortChoose1()))
+/*			if (isValidNameColumn(results.getSortChoose1()))
 			{
 			linked.add(results.getSortChoose1());
 			}
@@ -101,8 +97,8 @@ public class LogPresenterController{
 			if (isValidNameColumn(results.getSortChoose3()))
 			{
 			linked.add(results.getSortChoose3());
-			}
-			logsWithWhereClausure = dao.getLogsWithWhereClausure(new LogFilter(null,null,functionalities,users,tools),linked);
+			}*/
+			logsWithWhereClausure = dao.getLogsWithWhereClausure(new LogFilter(null,null,functionalities,users,tool),linked);
 		} catch (SQLException e)
 		{
 			return new ModelAndView("ERROR");
