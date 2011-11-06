@@ -2,7 +2,9 @@ package UsageStatisticServer;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
@@ -349,8 +351,43 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertEquals("function", fun.get(2));		
 		fun=dao.getFunctionalities("SELZ");
 		Assert.assertEquals(0,fun.size());
+		
+		
+		usunWszystkieLogi();
+		saveTemporaryData(25);
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SEL2","SELENIUM3","SELENIUM4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-60000),"SELA","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SEL3","SEL4"));
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SELENIUM2","SELA","SELENIUM4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"SELA","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"function","SEL2","SELA","SEL4"));		
+		ArrayList<String> func=dao.getFunctionalities("SELA");
+		Assert.assertEquals(3, func.size());
+		ArrayList<Pair<String,Integer>> res=dao.getFunctionalities("SELA", null, null);
+		Assert.assertEquals(func.size(), res.size());
+		for (int i=0;i<func.size();i++)
+			Assert.assertEquals(func.get(i),res.get(i).getLewy());
+		Assert.assertEquals(new Integer(2),res.get(0).getPrawy());
+		Assert.assertEquals(new Integer(1),res.get(1).getPrawy());
+		Assert.assertEquals(new Integer(1),res.get(2).getPrawy());
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+1000*3600*24),"SEL1","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+2*1000*3600*24),"SEL2","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+3*1000*3600*24),"SEL3","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-1000*3600*24),"SEL-1","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-2*1000*3600*24),"SEL-2","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-3*1000*3600*24),"SEL-3","SEL2","SELA","SEL4"));
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		String today=sdf.format(Calendar.getInstance().getTime());
+		String next=sdf.format(new java.util.Date(Calendar.getInstance().getTimeInMillis()+2*1000*3600*24));
+		res=dao.getFunctionalities("SELA", today, next);
+		System.out.println(res);
+		Assert.assertEquals(5, res.size());		
+		res=dao.getFunctionalities("SELA", null, next);
+		Assert.assertEquals(8, res.size());
+		res=dao.getFunctionalities("SELA", today, null);
+		Assert.assertEquals(6, res.size());	
 	
 	}
-	
+
 
 }
