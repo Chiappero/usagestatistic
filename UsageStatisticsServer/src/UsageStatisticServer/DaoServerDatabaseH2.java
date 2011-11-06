@@ -1,9 +1,12 @@
 package UsageStatisticServer;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 
 
 
@@ -642,6 +645,59 @@ public class DaoServerDatabaseH2
 		while (!rs.isAfterLast())
 		{
 			values.add(rs.getString("functionality"));
+			rs.next();
+		}
+		
+		return values;
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
+				throw e;
+				
+			}	
+			else throw e;
+		}		
+	}
+	
+	public ArrayList<Pair<String,Integer>> getFunctionalities(String tool, String datefrom, String dateto) throws SQLException
+	{
+		ArrayList<Pair<String,Integer>> values=new ArrayList<Pair<String,Integer>>();
+		checkIfBaseIsOpen();
+		if (isEmpty())return values;
+		
+		
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		java.sql.Timestamp sqlfrom=null,sqlto=null;
+		
+		
+		try {
+			if (datefrom!=null&&!datefrom.isEmpty())
+				sqlfrom =new java.sql.Timestamp(sdf.parse(datefrom).getTime());
+			if (dateto!=null&&!dateto.isEmpty())
+			sqlto =new java.sql.Timestamp(sdf.parse(dateto).getTime()+1000*3600*24);
+		} catch (ParseException e1) {
+			return values;
+		}
+		
+		
+		String sql="SELECT DISTINCT functionality, COUNT(*) AS cnt FROM Log WHERE ";
+		if (sqlfrom!=null)  sql+=("timestamp>=\'"+sqlfrom+"\' AND ");
+		if (sqlto!=null)	sql+=("timestamp<\'"+sqlto+"\' AND ");
+		sql+=("tool=\'"+tool+"\' GROUP BY functionality ORDER BY functionality");
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		if(!rs.first())return values;
+		
+		while (!rs.isAfterLast())
+		{
+			values.add(new Pair<String,Integer>(rs.getString("functionality"),rs.getInt("cnt")));
 			rs.next();
 		}
 		
