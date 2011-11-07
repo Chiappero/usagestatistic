@@ -1,14 +1,9 @@
 package UsageStatisticServer;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.xml.bind.annotation.XmlRootElement;
 
 
 
-
-@XmlRootElement
-@Entity
 public
 final class LogInformation {
 Date dateTime;

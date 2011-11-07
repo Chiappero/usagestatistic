@@ -7,21 +7,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import junitx.util.PrivateAccessor;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
 import UsageStatisticClientConfigGenerator.ConfigGenerator;
-
 
 public class UsageStatisticTest {
 	
@@ -45,25 +42,19 @@ public class UsageStatisticTest {
 		Assert.assertTrue(localDao.isEmpty());
 	}
 	
-	
-//	private void commitLogs(int amountRecord) throws Throwable
-//	{	
-//		UsageStatistic instance = UsageStatistic.getInstance("aplikacja", null);
-//		
-//		System.out.println("INSTANCE");
-//		instance.setCommittingDetails(new CommitingDetailsTestImp(amountRecord)); //przypisz na nowo za kazdym razem implementacje testujaca z podana iloscia
-//		System.out.println("setCommiting");
-//		TestUtils.removeAllLogsFromDao(instance);
-//		System.out.println("remove");
-//		TestUtils.addSomeLogsToDao(instance, amountRecord);
-//		System.out.println("addSomeLogs");
-//		instance.commit(); //<-- tutaj jest test ilosci oraz tego czy nie wyrzuca bledu
-//		PrivateAccessor.invoke(instance, "commitWait", null, null);
-//		System.out.println("commit");
-//		TestUtils.removeAllLogsFromDao(instance);
-//		System.out.println("removeAllLogs2");
-//	}
-//	
+	@Test
+	public void AT11_1_Check_credentials() throws Throwable //UWAGA - test wymaga dodania uzytkownia user/user do bazy
+	{
+		LogInformation log = new LogInformation(new Date(), "funkcjonalnosc", "user", "narzedzie", "parametry");
+		PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log, "user");
+		 RestTemplate restTemplate = new RestTemplate();
+		Assert.assertEquals(restTemplate.postForObject("http://localhost:8080/UsageStatisticsServer/post",pair,String.class),"OK");
+		pair = new PairLogInformationAndPassword(log, "bledneHaslo");
+		Assert.assertEquals(restTemplate.postForObject("http://localhost:8080/UsageStatisticsServer/post",pair,String.class),"CANNOT_AUTHENTICATE");
+		log.setUser("blednyUser");
+		pair = new PairLogInformationAndPassword(log, "user");
+		Assert.assertEquals(restTemplate.postForObject("http://localhost:8080/UsageStatisticsServer/post",pair,String.class),"CANNOT_AUTHENTICATE");
+	}
 	@Test
 	public void AT22_Server_doesnt_receive_data() throws Throwable
 	{
@@ -386,20 +377,9 @@ public class UsageStatisticTest {
 		
 	}
 	
-//	
-//	
-//	@Test
-//	public void AT54_Test_proper_closed_of_local_database() throws Throwable
-//	{
-//		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-//		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
-//		/*instance.log("func", "param");
-//		Assert.assertFalse(localDao.isOpen());*/ //TODO testy z zamknieciem bazy
-//		instance.commit();
-//		PrivateAccessor.invoke(instance, "commitWait", null, null);
-//		Assert.assertFalse(localDao.isOpen());
-//		
-//	}
+	
+	
+	
 	
 	@Test
 	public void AT61_Proper_flow_of_usage_commit_interface() throws Throwable
@@ -436,7 +416,8 @@ public class UsageStatisticTest {
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		RestTemplate rest = (RestTemplate) PrivateAccessor.getField(instance, "restTemplate");
 		URI serverURL = (URI) PrivateAccessor.getField(instance, "serverURL");
-		Assert.assertEquals(rest.postForObject(serverURL, new LogInformation(null, null, null, null, null), String.class),"ERROR");
+		PairLogInformationAndPassword pair = new PairLogInformationAndPassword(new LogInformation(null, null, "user", null, null), "user"); //dodane credentiale celowo
+		Assert.assertEquals(rest.postForObject(serverURL, pair , String.class),"ERROR");
 	}
 	
 	
@@ -511,8 +492,8 @@ public class UsageStatisticTest {
 	public void AT92_Proper_load_of_new_configuration_file_when_creating_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
 	{
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-		Assert.assertEquals("matuszek", (String) PrivateAccessor.getField(instance, "user"));
-		Assert.assertEquals("password", (String) PrivateAccessor.getField(instance, "password"));
+		Assert.assertEquals("user", (String) PrivateAccessor.getField(instance, "user"));
+		Assert.assertEquals("user", (String) PrivateAccessor.getField(instance, "password"));
 		Assert.assertEquals("tool", (String) PrivateAccessor.getField(instance, "tool"));
 		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "AT92user", "AT92pass", "AT92tool");
 		instance = (UsageStatistic) UsageStatistic.getInstance();
@@ -523,13 +504,10 @@ public class UsageStatisticTest {
 	public void AT93_Proper_load_of_new_initiation_parameters_Commiting_Details_and_Tool_when_create_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
 	{
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-		CommitingDetailsEmpty empty=(CommitingDetailsEmpty)PrivateAccessor.getField(instance, "committingDetails");
 		CommitingDetailsTestImp4 com = new CommitingDetailsTestImp4();
 		instance = (UsageStatistic) UsageStatistic.getInstance();
 		instance.setCommitListener(com);
-		CommitingDetailsTestImp4 notempty=(CommitingDetailsTestImp4)PrivateAccessor.getField(instance, "committingDetails");
 		instance = (UsageStatistic) UsageStatistic.getInstance();
-		empty=(CommitingDetailsEmpty)PrivateAccessor.getField(instance, "committingDetails");
 		//if interface not changed it should throw "cannot cast" exception and fail the test
 		Assert.assertEquals("tool", (String) PrivateAccessor.getField(instance, "tool"));	
 		TestUtils.createExampleConfigFile();
@@ -539,7 +517,7 @@ public class UsageStatisticTest {
 		instance = (UsageStatistic) UsageStatistic.getInstance();
 
 	}		
-
+	
 	@Test
 	public void AT201_Log_Count() throws Throwable
 	{
@@ -584,18 +562,17 @@ public class UsageStatisticTest {
 		Assert.assertEquals(0,instance.getAllLogs().size());
 	}	
 	
+	
 	@Test
 	public void AT29_Large_Data() throws Throwable
 	{
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		TestUtils.removeAllLogsFromDao(instance);
-		TestUtils.addSomeLogsToDao(instance, 10000);
+		TestUtils.addSomeLogsToDao(instance, 1000);
 		instance.commit();
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 	}
-	
-
 	
 	
 }
