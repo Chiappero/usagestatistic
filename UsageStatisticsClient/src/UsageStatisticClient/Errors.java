@@ -10,4 +10,5 @@ static final String CANNOT_SAVE_LOG="Cannot save log on database server";
 static final String LOG_WAS_NULL="Log was null";
 static final String ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE="Error with connection to local database";
 static final String FATAL_EXCEPTION="Fatal Exception";
+static final String CANNOT_AUTHENTICATE="Cannot authenticate";
 }
