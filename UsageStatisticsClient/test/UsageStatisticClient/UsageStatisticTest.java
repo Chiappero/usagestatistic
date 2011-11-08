@@ -269,6 +269,7 @@ public class UsageStatisticTest {
 	public void AT41_Proper_load_configuration_from_file() throws UsageStatisticException, NoSuchFieldException, URISyntaxException, IOException
 	{
 		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "matuszek", "password", "tool");
+		//TestUtils.createExampleConfigFile();
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		URI serverURL = (URI) PrivateAccessor.getField(instance, "serverURL");
 		Assert.assertEquals(new URI("http://localhost:8080/UsageStatisticsServer/post"), serverURL);
@@ -299,59 +300,15 @@ public class UsageStatisticTest {
 		
 		File err = new File("debuglog.txt");
 		err.delete();
-		ConfigGenerator.createConfigFile("client-config.cfg", "", "matuszek", "password", "tool");
+		ConfigGenerator.createConfigFile("client-config.cfg", "", "", "", "");
 		ul=UsageStatistic.getInstance();
 		Assert.assertTrue(ul instanceof UsageLoggerEmpty);
-		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.INVALID_SERVER_URL));
-
-		err = new File("debuglog.txt");
-		err.delete();
-		ConfigGenerator.createConfigFile("client-config.cfg", null, "matuszek", "password", "tool");
-		ul=UsageStatistic.getInstance();
-		Assert.assertTrue(ul instanceof UsageLoggerEmpty);
-		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.INVALID_SERVER_URL));
-
-		err = new File("debuglog.txt");
-		err.delete();	
-		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", null, "password", "tool");
-		ul=UsageStatistic.getInstance();
-		Assert.assertTrue(ul instanceof UsageLoggerEmpty);
-		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.INVALID_CONFIGURATION_USERNAME));
-
-		err = new File("debuglog.txt");
-		err.delete();	
-		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "", "password", "tool");
-		ul=UsageStatistic.getInstance();
-		Assert.assertTrue(ul instanceof UsageLoggerEmpty);
-		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.INVALID_CONFIGURATION_USERNAME));
+		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.CONFIG_ERROR));
+		//jeden typ bledu dla blednej konfiguracji, skoro i tak jest zaszyfrowane a sprawdzanie jest tylko pustosci
 		
-		err = new File("debuglog.txt");
-		err.delete();	
-		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "matuszek", null, "tool");
-		ul=UsageStatistic.getInstance();
-		Assert.assertTrue(ul instanceof UsageLoggerEmpty);
-		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.INVALID_CONFIGURATION_PASSWORD));
-	
-		err = new File("debuglog.txt");
-		err.delete();	
-		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "matuszek", "", "tool");
-		ul=UsageStatistic.getInstance();
-		Assert.assertTrue(ul instanceof UsageLoggerEmpty);
-		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.INVALID_CONFIGURATION_PASSWORD));
 		
-		err = new File("debuglog.txt");
-		err.delete();	
-		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "matuszek", "password", null);
-		ul=UsageStatistic.getInstance();
-		Assert.assertTrue(ul instanceof UsageLoggerEmpty);
-		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.INVALID_CONFIGURATION_TOOL));
-	
-		err = new File("debuglog.txt");
-		err.delete();	
-		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "matuszek", "password", "");
-		ul=UsageStatistic.getInstance();
-		Assert.assertTrue(ul instanceof UsageLoggerEmpty);
-		Assert.assertTrue(TestUtils.readLineFromDebugLog().contains(UsageStatisticException.INVALID_CONFIGURATION_TOOL));
+		
+		
 	}
 	
 
@@ -515,6 +472,7 @@ public class UsageStatisticTest {
 		Assert.assertEquals("password", (String) PrivateAccessor.getField(instance, "password"));
 		Assert.assertEquals("tool", (String) PrivateAccessor.getField(instance, "tool"));
 		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "AT92user", "AT92pass", "AT92tool");
+		//TestUtils.createExampleConfigFile();
 		instance = (UsageStatistic) UsageStatistic.getInstance();
 		Assert.assertEquals("AT92tool", (String) PrivateAccessor.getField(instance, "tool"));
 	}	
