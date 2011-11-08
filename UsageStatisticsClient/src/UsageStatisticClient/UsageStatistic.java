@@ -24,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 final public class UsageStatistic implements UsageLogger{
 	private URI serverURL;
 	private String user;
-	private String password;
+	private String password; 
 	private String tool;
 	private static UsageLogger instance;
 	private RestTemplate restTemplate;
@@ -153,7 +153,8 @@ final public class UsageStatistic implements UsageLogger{
 
 				if (log!=null)
 				{
-					String postForObject = restTemplate.postForObject(serverURL, log, String.class);
+					PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log,password);
+					String postForObject = restTemplate.postForObject(serverURL, pair, String.class);
 					if ("OK".equals(postForObject)) 
 					{
 						dao.clearFirstLog();
@@ -163,7 +164,11 @@ final public class UsageStatistic implements UsageLogger{
 					else if ("ERROR".equals(postForObject))
 					{
 						committingDetails.stepInvalid(Errors.CANNOT_SAVE_LOG);
-					} 
+					} else if ("CANNOT_AUTHENTICATE".equals(postForObject))
+					{
+						committingDetails
+						.commitingFailureWithError(Errors.CANNOT_AUTHENTICATE);
+					}
 					else
 					{
 						committingDetails

@@ -1,7 +1,5 @@
 package UsageStatisticClient;
 
-import java.util.LinkedList;
-
 import junit.framework.Assert;
 
 public class CommitingDetailsTestImp4 implements CommitListener

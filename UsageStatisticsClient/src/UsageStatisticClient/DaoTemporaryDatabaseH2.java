@@ -230,27 +230,33 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	{
 		checkIfBaseIsOpen();
 		String query="CREATE TABLE IF NOT EXISTS Log (id int NOT NULL AUTO_INCREMENT, timestamp timestamp, functionality varchar(50), user varchar(50), tool varchar(50),parameters varchar(200))";
-		try {
+		
 				
 			if(conn!=null){
-				conn.createStatement().execute(query);
-			}
+				try
+				{
+					conn.createStatement().execute(query);
+				} catch (SQLException e)
+				{
+				}
 			
+			
+		
+	}
+		
+		query="CREATE TABLE IF NOT EXISTS Credentials (username varchar(50) PRIMARY KEY, password varchar(50))";
+		try {
+			if(conn!=null){
+				conn.createStatement().execute(query);
+			}		
 		} catch (SQLException e) {
 			try {
 				conn.createStatement().execute(query);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
-				String cn="";
-				try {
-					cn = conn.isClosed()?"nie":"tak";
-				} catch (SQLException e2) {
-					e2.printStackTrace();
-					System.out.println("lol");
-				}
-			//	System.out.println("conn_null " + conn==null?"tak":"nie" + " otwarte " + cn);
 			}
 		}
+
 	}
 	
 	
