@@ -1,7 +1,8 @@
-package UsageStatisticServer;
+package UsageStatisticClient;
 
 import junit.framework.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverCommandProcessor;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -9,16 +10,25 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.SeleniumException;
 
-public class ResultsTest {
 
-	DefaultSelenium selenium;
+
+public class InterfaceSeleniumTests
+{
+	static DefaultSelenium selenium;
 	
-	@Test
-	public void test() 
+	@Before
+	public static void initBeforeClass() 
 	{
 		FirefoxDriver firefoxDriver = new FirefoxDriver();
 		WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);
 		selenium = new DefaultSelenium(webDriverCommandProcessor);
+	}
+	
+	@Test
+	public void AT12_1_Authentication() 
+	{
+		
+		
 		selenium.open("/results");
 		selenium.waitForPageToLoad("3000");
 		Assert.assertFalse(isLogged());		
@@ -40,6 +50,7 @@ public class ResultsTest {
 		selenium.open("j_spring_security_logout");
 		selenium.waitForPageToLoad("3000");
 		Assert.assertFalse(isLogged());		
+		selenium.close();
 
 	}
 	
@@ -55,5 +66,4 @@ public class ResultsTest {
 			return false;
 		}		
 	}
-
 }
