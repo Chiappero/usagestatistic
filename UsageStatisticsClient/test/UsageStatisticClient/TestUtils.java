@@ -80,7 +80,7 @@ public static void createExampleConfigFile() throws IOException
 {
 	//ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password", "tool");
 	try {
-		new CipherAES().writeCiphered(new File("client-config.cfg"), "serverURL= http://localhost:8080/UsageStatisticsServer user= matuszek password= password tool= tool debug= on");
+		new Ciphers().writeCiphered(new File("client-config.cfg"), "serverURL= http://localhost:8080/UsageStatisticsServer user= matuszek password= password tool= tool debug= on");
 	} catch (InvalidKeyException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
