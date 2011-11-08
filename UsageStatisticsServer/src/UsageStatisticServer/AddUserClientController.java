@@ -10,8 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class AddUserClientController
-{
-
+{	
 	@Autowired
 	DaoServerDatabaseH2 dao;
 	
@@ -32,10 +31,15 @@ public class AddUserClientController
 			String user = userClient.getUser();
 			String password = userClient.getPassword();
 			if (user!=null&&password!=null)
-			{
-				
+			{		
+					password = EncryptInstance.SHA256(password);
+					if (password==null)
+					{
+						modelAndView.addObject("message","Blad przy szyfrowaniu hasla");
+						return modelAndView;
+					}
 					boolean done = dao.addUserClient(user, password); //TODO zaszyfruj haslo kluczem krzyska
-				
+					
 					if (done)
 					{
 					modelAndView.addObject("message","Udalo sie dodac uzytkownika");
