@@ -15,9 +15,73 @@ public class DaoServerDatabaseH2
 {
 	private Connection conn=null;
 	
+	
+	
+	
 	public DaoServerDatabaseH2()
 	{
 		openDatabase();
+	}
+	
+	public boolean addUserClient(String username, String password)
+	{	
+			checkIfBaseIsOpen();
+			String sql = "INSERT INTO Credentials (username, password) VALUES ('"+username+"', '"+password+"')";
+			
+			try
+			{
+				conn.createStatement().execute(sql);
+				 return true;
+				
+			} catch (SQLException e)
+			{
+				if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+				{
+					createTables();
+					try
+					{
+						conn.createStatement().execute(sql);
+						return true;
+					} catch (SQLException e1)
+					{
+						//COS ZLEGO
+						return false; //
+					}
+				} else //juz byl taki rekord
+				{
+				try
+				{
+
+					sql = "UPDATE Credentials SET password='"+password+"' WHERE username='"+username+"'";
+					conn.createStatement().execute(sql);
+					return true;
+				} catch (SQLException e2)
+				{
+					return false;
+				}
+				}
+			}
+	}
+	
+	public boolean isValidCredential(String user, String password) throws SQLException
+	{
+		checkIfBaseIsOpen();
+		String sql="SELECT username, password FROM Credentials WHERE username='"+user+"' AND password='"+password+"'";
+		
+		try
+		{
+			ResultSet rs=conn.createStatement().executeQuery(sql);
+			return rs.first();
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"CREDENTIALS\" nie istnieje"))
+			{
+				createTables();
+				return false;
+			}	
+			else throw e;
+		}		
 	}
 	
 	
@@ -108,7 +172,22 @@ public class DaoServerDatabaseH2
 			}
 		}
 		
+		query="CREATE TABLE IF NOT EXISTS Credentials (username varchar(50) PRIMARY KEY, password varchar(50))";
+		try {
+			if(conn!=null){
+				conn.createStatement().execute(query);
+			}		
+		} catch (SQLException e) {
+			try {
+				conn.createStatement().execute(query);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 	}
+	
+	
 	
 	private void checkIfBaseIsOpen()
 	{

@@ -2,7 +2,6 @@ package UsageStatisticClient;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -14,9 +13,8 @@ import java.util.GregorianCalendar;
 
 import javax.crypto.NoSuchPaddingException;
 
-import UsageStatisticClientConfigGenerator.ConfigGenerator;
-
 import junitx.util.PrivateAccessor;
+import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 public class TestUtils
 {
@@ -61,7 +59,7 @@ public static void corruptFile(UsageStatistic instance) throws NoSuchFieldExcept
 
 public static LogInformation getExampleLog()
 {
-	return new LogInformation(new GregorianCalendar().getTime(), "test", "test", "test", "test");
+	return new LogInformation(new GregorianCalendar().getTime(), "test", "user", "test", "test");
 }
 
 public static void dropTable(DaoTemporaryDatabaseH2 dao) throws NoSuchFieldException, SQLException
