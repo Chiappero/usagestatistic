@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.NoSuchPaddingException;
 
-import UsageStatisticClient.CipherAES;
+import UsageStatisticClient.Ciphers;
 
 public class ConfigGenerator
 {
@@ -26,7 +26,7 @@ public static void createConfigFile(String fileName, String serverURL, String us
 	 out.println("debug = on");
 	 out.close();*/
 	try {
-		new CipherAES().writeCiphered(new File(fileName), "serverURL= "+ serverURL +" user= "+user+" password= "+password+" tool= "+tool+" debug= on");
+		new Ciphers().writeCiphered(new File(fileName), "serverURL= "+ serverURL +" user= "+user+" password= "+password+" tool= "+tool+" debug= on");
 	} catch (InvalidKeyException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

@@ -65,7 +65,7 @@ final public class UsageStatistic implements UsageLogger{
 	
 	private void readFromCipheredFile() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, URISyntaxException, UsageStatisticException{
 		File file = new File("client-config.cfg");
-		CipherAES cipher = new CipherAES();
+		Ciphers cipher = new Ciphers();
 		String config=cipher.readCiphered(file); 
         validateAndSetConfig(config);
 	}
