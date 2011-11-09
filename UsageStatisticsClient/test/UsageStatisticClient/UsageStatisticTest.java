@@ -70,7 +70,7 @@ public class UsageStatisticTest {
 	public void AT11_1_Check_credentials() throws Throwable //UWAGA - test wymaga dodania uzytkownia user/user do bazy
 	{
 		LogInformation log = new LogInformation(new Date(), "funkcjonalnosc", "user", "narzedzie", "parametry");
-		PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log, "user");
+		PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log, Ciphers.SHA256("user"));
 		 RestTemplate restTemplate = new RestTemplate();
 		Assert.assertEquals(restTemplate.postForObject("http://localhost:8080/UsageStatisticsServer/post",pair,String.class),"OK");
 		pair = new PairLogInformationAndPassword(log, "bledneHaslo");
@@ -291,7 +291,7 @@ public class UsageStatisticTest {
 		String user = (String) PrivateAccessor.getField(instance, "user");
 		Assert.assertEquals("matuszek", user);
 		String password = (String) PrivateAccessor.getField(instance, "password");
-		Assert.assertEquals("password", password);
+		Assert.assertEquals(Ciphers.SHA256("password"), password);
 		String tool = (String) PrivateAccessor.getField(instance, "tool");
 		Assert.assertEquals("tool", tool);
 	}
@@ -397,7 +397,7 @@ public class UsageStatisticTest {
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		RestTemplate rest = (RestTemplate) PrivateAccessor.getField(instance, "restTemplate");
 		URI serverURL = (URI) PrivateAccessor.getField(instance, "serverURL");
-		PairLogInformationAndPassword pair = new PairLogInformationAndPassword(new LogInformation(null, null, "user", null, null), "user"); //dodane credentiale celowo
+		PairLogInformationAndPassword pair = new PairLogInformationAndPassword(new LogInformation(null, null, "user", null, null), Ciphers.SHA256("user")); //dodane credentiale celowo
 		Assert.assertEquals(rest.postForObject(serverURL, pair , String.class),"ERROR");
 	}
 	
@@ -456,7 +456,7 @@ public class UsageStatisticTest {
 	{
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		Assert.assertEquals("user", (String) PrivateAccessor.getField(instance, "user"));
-		Assert.assertEquals("user", (String) PrivateAccessor.getField(instance, "password"));
+		Assert.assertEquals(Ciphers.SHA256("user"), (String) PrivateAccessor.getField(instance, "password"));
 		Assert.assertEquals("tool", (String) PrivateAccessor.getField(instance, "tool"));
 		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "AT92user", "AT92pass", "AT92tool");
 		//TestUtils.createExampleConfigFile();
