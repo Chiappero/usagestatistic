@@ -326,7 +326,7 @@ public class DaoTemporaryDatabaseH2Test
 	public void AT131_Secure_local_database() throws SQLException, InterruptedException, ClassNotFoundException
 	{
 		Server server=null;
-		Connection conn;
+		Connection conn=null;
 		if (server==null||server.getStatus().equals("Not started"))
     		server = Server.createTcpServer(new String[] { "-tcpAllowOthers" }).start();
 		Class.forName("org.h2.Driver");

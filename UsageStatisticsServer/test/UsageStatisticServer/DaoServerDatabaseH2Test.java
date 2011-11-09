@@ -380,7 +380,6 @@ public class DaoServerDatabaseH2Test {
 		String today=sdf.format(Calendar.getInstance().getTime());
 		String next=sdf.format(new java.util.Date(Calendar.getInstance().getTimeInMillis()+2*1000*3600*24));
 		res=dao.getFunctionalities("SELA", today, next);
-//		System.out.println(res);
 		Assert.assertEquals(5, res.size());		
 		res=dao.getFunctionalities("SELA", null, next);
 		Assert.assertEquals(8, res.size());
@@ -393,22 +392,22 @@ public class DaoServerDatabaseH2Test {
 	public void AT82_Proper_cache_of_credentials_on_server() throws SQLException, NoSuchFieldException
 	{	
 		String u,p;
-		dao.isValidCredential("user", "user");
+		dao.isValidCredential("user", EncryptInstance.SHA256("user"));
 		u=(String) PrivateAccessor.getField(dao, "user");
 		p=(String) PrivateAccessor.getField(dao,"pass");	
 		Assert.assertEquals(u,"user");
-		Assert.assertEquals(p,"user");
-		dao.isValidCredential("user", "fakepass");
+		Assert.assertEquals(p,EncryptInstance.SHA256("user"));
+		dao.isValidCredential("user", EncryptInstance.SHA256("fakepass"));
 		u=(String) PrivateAccessor.getField(dao, "user");
 		p=(String) PrivateAccessor.getField(dao,"pass");
 		Assert.assertEquals(u,"user");
-		Assert.assertEquals(p,"user");
-		dao.addUserClient("uuser", "upass");
-		dao.isValidCredential("uuser", "upass");
+		Assert.assertEquals(p,EncryptInstance.SHA256("user"));
+		dao.addUserClient("uuser", EncryptInstance.SHA256("upass"));
+		dao.isValidCredential("uuser", EncryptInstance.SHA256("upass"));
 		u=(String) PrivateAccessor.getField(dao, "user");
 		p=(String) PrivateAccessor.getField(dao,"pass");
 		Assert.assertEquals(u,"uuser");
-		Assert.assertEquals(p,"upass");
+		Assert.assertEquals(p,EncryptInstance.SHA256("upass"));
 		
 	}
 
