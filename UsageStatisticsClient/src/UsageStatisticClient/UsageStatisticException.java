@@ -12,6 +12,8 @@ final class UsageStatisticException extends Exception
 	static final String INVALID_CONFIGURATION_USERNAME="Invalid configuration: user not specified";
 	static final String INVALID_CONFIGURATION_PASSWORD="Invalid configuration: password not specified";
 	static final String INVALID_CONFIGURATION_TOOL="Invalid configuration: tool not specified";
+	static final String CONFIG_ERROR="Invalid configuration: File corrupted";
+	static final String CIPHER_ERROR="Cannot decode configutation file";
 public UsageStatisticException(String error)
 {
 	super(error);

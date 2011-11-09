@@ -29,4 +29,10 @@ public Pair(Lewy l, Prawy p)
 	lewy=l;
 	prawy=p;
 }
+
+public String toString()
+{
+	return "["+lewy.toString()+" "+prawy.toString()+"]";
+
+}
 }

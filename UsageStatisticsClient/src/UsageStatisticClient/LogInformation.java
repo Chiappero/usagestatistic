@@ -2,10 +2,9 @@ package UsageStatisticClient;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 
-@XmlRootElement
+
 
 public final class LogInformation{
 /**
@@ -21,31 +20,31 @@ private String tool;
 public String getUser() {
 	return user;
 }
-void setUser(String user) {
+public void setUser(String user) {
 	this.user = user;
 }
 public String getTool() {
 	return tool;
 }
- void setTool(String tool) {
+public void setTool(String tool) {
 	this.tool = tool;
 }
 public Date getDateTime() {
 	return dateTime;
 }
-void setDateTime(Date dateTime) {
+public void setDateTime(Date dateTime) {
 	this.dateTime = dateTime;
 }
 public String getFunctionality() {
 	return functionality;
 }
-void setFunctionality(String functionality) {
+public void setFunctionality(String functionality) {
 	this.functionality = functionality;
 }
 public String getParameters() {
 	return parameters;
 }
-void setParameters(String parameters) {
+public void setParameters(String parameters) {
 	this.parameters = parameters;
 }
 @Override

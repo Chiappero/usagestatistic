@@ -1,6 +1,9 @@
 package UsageStatisticServer;
 
+import java.lang.reflect.Array;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,13 +11,87 @@ import java.util.List;
 
 
 
+
 public class DaoServerDatabaseH2
 {
 	private Connection conn=null;
+	private String user=null,pass=null;
+	
+	
 	
 	public DaoServerDatabaseH2()
 	{
 		openDatabase();
+	}
+	
+	public boolean addUserClient(String username, String password)
+	{	
+			checkIfBaseIsOpen();
+			String sql = "INSERT INTO Credentials (username, password) VALUES ('"+username+"', '"+password+"')";
+			
+			try
+			{
+				conn.createStatement().execute(sql);
+				 return true;
+				
+			} catch (SQLException e)
+			{
+				if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+				{
+					createTables();
+					try
+					{
+						conn.createStatement().execute(sql);
+						return true;
+					} catch (SQLException e1)
+					{
+						//COS ZLEGO
+						return false; //
+					}
+				} else //juz byl taki rekord
+				{
+				try
+				{
+
+					sql = "UPDATE Credentials SET password='"+password+"' WHERE username='"+username+"'";
+					conn.createStatement().execute(sql);
+					return true;
+				} catch (SQLException e2)
+				{
+					return false;
+				}
+				}
+			}
+	}
+	
+	public boolean isValidCredential(String user, String password) throws SQLException
+	{
+		checkIfBaseIsOpen();
+		if (this.user!=null&&!this.user.isEmpty()&&this.user.equals(user)
+		  &&this.pass!=null&&!this.pass.isEmpty()&&this.pass.equals(user))
+			return true;
+		String sql="SELECT username, password FROM Credentials WHERE username='"+user+"' AND password='"+password+"'";
+		
+		try
+		{
+			ResultSet rs=conn.createStatement().executeQuery(sql);
+			if (rs.first())
+			{
+				this.user=user;
+				this.pass=password;
+				return true;
+			}
+			return false;
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"CREDENTIALS\" nie istnieje"))
+			{
+				createTables();
+				return false;
+			}	
+			else throw e;
+		}		
 	}
 	
 	
@@ -105,7 +182,22 @@ public class DaoServerDatabaseH2
 			}
 		}
 		
+		query="CREATE TABLE IF NOT EXISTS Credentials (username varchar(50) PRIMARY KEY, password varchar(64))";
+		try {
+			if(conn!=null){
+				conn.createStatement().execute(query);
+			}		
+		} catch (SQLException e) {
+			try {
+				conn.createStatement().execute(query);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 	}
+	
+	
 	
 	private void checkIfBaseIsOpen()
 	{
@@ -660,7 +752,73 @@ public class DaoServerDatabaseH2
 		}		
 	}
 	
+
 	
+	public ArrayList<StandardFilter> getFunctionalities(String tool, String datefrom, String dateto) throws SQLException
+	{
+		ArrayList<StandardFilter> values=new ArrayList<StandardFilter>();
+		checkIfBaseIsOpen();
+		if (isEmpty())return values;
+		
+		
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		java.sql.Timestamp sqlfrom=null,sqlto=null;
+		
+		
+		try {
+			if (datefrom!=null&&!datefrom.isEmpty())
+				sqlfrom =new java.sql.Timestamp(sdf.parse(datefrom).getTime());
+			if (dateto!=null&&!dateto.isEmpty())
+			sqlto =new java.sql.Timestamp(sdf.parse(dateto).getTime()+1000*3600*24);
+		} catch (ParseException e1) {
+			return values;
+		}
+		
+		
+		String sql="SELECT DISTINCT functionality, timestamp, COUNT(*) AS cnt FROM Log WHERE ";
+		if (sqlfrom!=null)  sql+=("timestamp>=\'"+sqlfrom+"\' AND ");
+		if (sqlto!=null)	sql+=("timestamp<\'"+sqlto+"\' AND ");
+		sql+=("tool=\'"+tool+"\' GROUP BY functionality, timestamp ORDER BY functionality, timestamp");
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		if(!rs.first())return values;
+		java.util.Date start=rs.getTimestamp("timestamp");		
+		int i=0;
+		values.add(new StandardFilter(rs.getString("functionality"),sdf.format(start),rs.getInt("cnt")));
+		rs.next();
+
+		while (!rs.isAfterLast())
+		{
+			if(rs.getString("functionality").equals(values.get(i).getFunctionality())&&sdf.format(rs.getTimestamp("timestamp")).equals(values.get(i).getDate()))
+					{
+						values.get(i).setCount(values.get(i).getCount()+1);
+						
+					}
+			else
+			{
+				values.add(new StandardFilter(rs.getString("functionality"),sdf.format(rs.getTimestamp("timestamp")),rs.getInt("cnt")));
+				i++;
+			}
+			rs.next();
+		}
+		
+		return values;
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
+				throw e;
+				
+			}	
+			else throw e;
+		}		
+	}	
 	
 	
 	

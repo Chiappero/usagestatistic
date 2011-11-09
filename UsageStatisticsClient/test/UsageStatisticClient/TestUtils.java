@@ -2,16 +2,19 @@ package UsageStatisticClient;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
 
-import UsageStatisticClientConfigGenerator.ConfigGenerator;
+import javax.crypto.NoSuchPaddingException;
 
 import junitx.util.PrivateAccessor;
+import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 public class TestUtils
 {
@@ -56,7 +59,7 @@ public static void corruptFile(UsageStatistic instance) throws NoSuchFieldExcept
 
 public static LogInformation getExampleLog()
 {
-	return new LogInformation(new GregorianCalendar().getTime(), "test", "test", "test", "test");
+	return new LogInformation(new GregorianCalendar().getTime(), "test", "user", "test", "test");
 }
 
 public static void dropTable(DaoTemporaryDatabaseH2 dao) throws NoSuchFieldException, SQLException
@@ -75,7 +78,22 @@ public static void makeConnectionNull(DaoTemporaryDatabaseH2 dao)
 
 public static void createExampleConfigFile() throws IOException
 {
-	ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password", "tool");
+	//ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password", "tool");
+	try {
+		new Ciphers().writeCiphered(new File("client-config.cfg"), "serverURL= http://localhost:8080/UsageStatisticsServer user= user password= "+Ciphers.SHA256("user")+" tool= tool debug= on");
+	} catch (InvalidKeyException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (InvalidAlgorithmParameterException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (NoSuchAlgorithmException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (NoSuchPaddingException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 }
 
 

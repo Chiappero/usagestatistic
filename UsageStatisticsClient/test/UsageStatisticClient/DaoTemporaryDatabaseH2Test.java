@@ -1,18 +1,17 @@
 package UsageStatisticClient;
 
 import java.sql.Connection;
-import java.sql.Date;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
-import junitx.util.PrivateAccessor;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.tools.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.theories.suppliers.TestedOn;
-import org.junit.internal.runners.statements.Fail;
 
 public class DaoTemporaryDatabaseH2Test
 {
@@ -77,7 +76,7 @@ public class DaoTemporaryDatabaseH2Test
 		usunWszystkieLogi();
 		tempSaveManyLogsAtOneTime(10, 15, 20);
 		usunWszystkieLogi();
-		tempSaveManyLogsAtOneTime(10, 5, 3);
+		tempSaveManyLogsAtOneTime(10, 5, 6);
 	}
 	
 	private void tempSaveManyLogsAtOneTime(final int stalaLiczbaWatkow, final int stalaLiczbaRekordow, final int stalaLiczbaCzasuDoSpania) throws SQLException
@@ -323,8 +322,34 @@ public class DaoTemporaryDatabaseH2Test
 		
 	}
 	
-
-	
+	@Test
+	public void AT131_Secure_local_database() throws SQLException, InterruptedException, ClassNotFoundException
+	{
+		Server server=null;
+		Connection conn;
+		if (server==null||server.getStatus().equals("Not started"))
+    		server = Server.createTcpServer(new String[] { "-tcpAllowOthers" }).start();
+		Class.forName("org.h2.Driver");
+		try
+		{
+        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", "fake","fake");
+        Assert.fail();
+		}
+		catch (JdbcSQLException e)
+		{
+			Assert.assertTrue(e.getMessage().contains("Nieprawidlowy uzytkownik/haslo"));
+		}
+		try
+		{
+        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", "localdb","fake");
+        Assert.fail();
+		}
+		catch (JdbcSQLException e)
+		{
+			Assert.assertTrue(e.getMessage().contains("Nieprawidlowy uzytkownik/haslo"));
+		}       
+		
+	}
 	
 
 }

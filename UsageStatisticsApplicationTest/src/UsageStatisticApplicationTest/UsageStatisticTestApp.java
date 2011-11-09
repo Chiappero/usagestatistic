@@ -4,7 +4,6 @@
  */
 package UsageStatisticApplicationTest;
 
-import UsageStatisticClient.UsageStatistic;
 
 /**
  *
