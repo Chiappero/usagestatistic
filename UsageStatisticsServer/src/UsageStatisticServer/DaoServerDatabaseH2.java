@@ -173,7 +173,7 @@ public class DaoServerDatabaseH2
 			}
 		}
 		
-		query="CREATE TABLE IF NOT EXISTS Credentials (username varchar(50) PRIMARY KEY, password varchar(50))";
+		query="CREATE TABLE IF NOT EXISTS Credentials (username varchar(50) PRIMARY KEY, password varchar(64))";
 		try {
 			if(conn!=null){
 				conn.createStatement().execute(query);
