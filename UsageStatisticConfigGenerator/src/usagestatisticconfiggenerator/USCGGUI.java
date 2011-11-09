@@ -264,7 +264,7 @@ private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     }
     
     private String getConfig(){
-        return "serverURL= "+serverURL.getText()+"\nuser=  "+user.getText()+"\npassword= "+password.getText()+"\ntool= "+tool.getText()+"\ndebug= "+(debug.isSelected()?"on":"off");
+        return "serverURL= "+serverURL.getText()+"\nuser=  "+user.getText()+"\npassword= "+CipherAES.SHA256(password.getText())+"\ntool= "+tool.getText()+"\ndebug= "+(debug.isSelected()?"on":"off");
     }
     
     private void saveFile() throws IOException{

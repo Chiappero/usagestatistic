@@ -22,7 +22,7 @@ public class CiphersTest
 {
 
 	@Test
-	public void test() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
+	public void AT10_1_AND_AT10_2_Proper_create_user_config_AND_Proper_decrypt_user_config() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
 	{
 		Ciphers cipher=new Ciphers();
 		File f=new File("cipher.test");
@@ -36,7 +36,7 @@ public class CiphersTest
 		answer=ConfigGenerator.config("localhost:8080/UsageStatisticServer", "user", "password", "tool");
 		cipher.writeCiphered(f, answer);
 		String s2=cipher.readCiphered(f);
-		Assert.assertEquals("serverURL = localhost:8080/UsageStatisticServer\nuser = user\npassword = password\ntool = tool\ndebug = on", s2);
+		Assert.assertEquals("serverURL = localhost:8080/UsageStatisticServer\nuser = user\npassword = "+Ciphers.SHA256("password")+"\ntool = tool\ndebug = on", s2);
 		cipher.writeCiphered(f2, answer);
 		BufferedReader br=new BufferedReader(new FileReader(f));
 		BufferedReader br2=new BufferedReader(new FileReader(f2));
@@ -46,7 +46,7 @@ public class CiphersTest
 		br2.close();
 		ConfigGenerator.createConfigFile(f.getName(), "localhost:8080/UsageStatisticServer", "user", "password", "tool");
 		answer=cipher.readCiphered(f);
-		Assert.assertEquals("serverURL= localhost:8080/UsageStatisticServer user= user password= password tool= tool debug= on", answer);
+		Assert.assertEquals("serverURL= localhost:8080/UsageStatisticServer user= user password= "+Ciphers.SHA256("password")+" tool= tool debug= on", answer);
 		ConfigGenerator.createConfigFile("client-config.cfg", "localhost:8080/UsageStatisticServer", "user", "password", "tool");
 		UsageLogger us=UsageStatistic.getInstance();
 		Assert.assertTrue(us instanceof UsageStatistic);
@@ -56,7 +56,7 @@ public class CiphersTest
 	}
 	
 	@Test
-	public void test2()
+	public void AT103_Proper_Encrypt_Password_When_Creating_User_Config()
 	{
 		String sha=Ciphers.SHA256("pasword123?\n");
 		String sha2=Ciphers.SHA256("pasword123?\n");

@@ -8,9 +8,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -90,4 +92,50 @@ public class CipherAES {
         cin.close();
         return new String( reconstitutedBytes, CHARSET );
         }
+    
+    static MessageDigest md;
+	static
+	{
+	try
+	{
+		md = MessageDigest.getInstance("SHA-256");
+	} catch (NoSuchAlgorithmException e)
+	{
+	}
+	}
+    private static String convertToHex(byte[] data) { 
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < data.length; i++) { 
+            int halfbyte = (data[i] >>> 4) & 0x0F;
+            int two_halfs = 0;
+            do { 
+                if ((0 <= halfbyte) && (halfbyte <= 9)) 
+                    buf.append((char) ('0' + halfbyte));
+                else 
+                    buf.append((char) ('a' + (halfbyte - 10)));
+                halfbyte = data[i] & 0x0F;
+            } while(two_halfs++ < 1);
+        } 
+        return buf.toString();
+    } 
+ 
+    
+    /**
+     * @param text - text do zaszyfrowania
+     * @return null jezeli nie powiod³o sie szyfrowanie
+     */
+    public static String SHA256(String text) 
+    { 
+    if (text==null||md==null)
+    {
+    	return null;
+    }
+		try
+		{
+			md.update(text.getBytes("UTF8"), 0, text.length());
+		} catch (UnsupportedEncodingException e)
+		{
+		}
+    return convertToHex(md.digest());
+    } 
 }

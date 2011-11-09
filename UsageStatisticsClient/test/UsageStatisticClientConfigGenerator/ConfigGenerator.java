@@ -26,7 +26,7 @@ public static void createConfigFile(String fileName, String serverURL, String us
 	 out.println("debug = on");
 	 out.close();*/
 	try {
-		new Ciphers().writeCiphered(new File(fileName), "serverURL= "+ serverURL +" user= "+user+" password= "+password+" tool= "+tool+" debug= on");
+		new Ciphers().writeCiphered(new File(fileName), "serverURL= "+ serverURL +" user= "+user+" password= "+Ciphers.SHA256(password)+" tool= "+tool+" debug= on");
 	} catch (InvalidKeyException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -44,7 +44,7 @@ public static void createConfigFile(String fileName, String serverURL, String us
 
 public static String config(String serverURL, String user, String password, String tool)
 {
-		return "serverURL = "+serverURL+"\nuser = "+user+"\npassword = "+password+"\ntool = "+tool+"\ndebug = on";
+		return "serverURL = "+serverURL+"\nuser = "+user+"\npassword = "+Ciphers.SHA256(password)+"\ntool = "+tool+"\ndebug = on";
 }
 
 
