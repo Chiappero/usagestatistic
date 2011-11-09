@@ -363,13 +363,13 @@ public class DaoServerDatabaseH2Test {
 		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"function","SEL2","SELA","SEL4"));		
 		ArrayList<String> func=dao.getFunctionalities("SELA");
 		Assert.assertEquals(3, func.size());
-		ArrayList<Pair<String,Integer>> res=dao.getFunctionalities("SELA", null, null);
+		ArrayList<StandardFilter> res=dao.getFunctionalities("SELA", null, null);
 		Assert.assertEquals(func.size(), res.size());
 		for (int i=0;i<func.size();i++)
-			Assert.assertEquals(func.get(i),res.get(i).getLewy());
-		Assert.assertEquals(new Integer(2),res.get(0).getPrawy());
-		Assert.assertEquals(new Integer(1),res.get(1).getPrawy());
-		Assert.assertEquals(new Integer(1),res.get(2).getPrawy());
+			Assert.assertEquals(func.get(i),res.get(i).getFunctionality());
+		Assert.assertEquals(2,res.get(0).getCount());
+		Assert.assertEquals(1,res.get(1).getCount());
+		Assert.assertEquals(1,res.get(2).getCount());
 		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+1000*3600*24),"SEL1","SEL2","SELA","SEL4"));
 		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+2*1000*3600*24),"SEL2","SEL2","SELA","SEL4"));
 		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+3*1000*3600*24),"SEL3","SEL2","SELA","SEL4"));
@@ -380,7 +380,7 @@ public class DaoServerDatabaseH2Test {
 		String today=sdf.format(Calendar.getInstance().getTime());
 		String next=sdf.format(new java.util.Date(Calendar.getInstance().getTimeInMillis()+2*1000*3600*24));
 		res=dao.getFunctionalities("SELA", today, next);
-		System.out.println(res);
+//		System.out.println(res);
 		Assert.assertEquals(5, res.size());		
 		res=dao.getFunctionalities("SELA", null, next);
 		Assert.assertEquals(8, res.size());
