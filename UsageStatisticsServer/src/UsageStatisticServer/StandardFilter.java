@@ -1,6 +1,6 @@
 package UsageStatisticServer;
-
-class StandardFilter 
+//Musi zosta public - Pawel Nieradka
+public class StandardFilter 
 {
 	private String functionality;
 	private String date;
