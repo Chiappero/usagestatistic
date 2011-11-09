@@ -30,8 +30,15 @@ public class AddUserClientController
 		{
 			String user = userClient.getUser();
 			String password = userClient.getPassword();
+			
+			
 			if (user!=null&&password!=null)
 			{		
+					if (user.isEmpty()||password.isEmpty())
+					{
+						modelAndView.addObject("message","Nie wypelniono wszystkich pol");
+						return modelAndView;
+					}
 					password = EncryptInstance.SHA256(password);
 					if (password==null)
 					{
