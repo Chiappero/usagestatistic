@@ -3,6 +3,7 @@ package UsageStatisticClient;
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverCommandProcessor;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -16,8 +17,8 @@ public class InterfaceSeleniumTests
 {
 	static DefaultSelenium selenium;
 	
-	@Before
-	public void initBeforeClass() 
+	@BeforeClass
+	public static void initBeforeClass() 
 	{
 		FirefoxDriver firefoxDriver = new FirefoxDriver();
 		WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);
@@ -73,19 +74,19 @@ public class InterfaceSeleniumTests
 		selenium.type("name=user","newuser2");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");		
-		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszytkich pol"));
+		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszystkich pol"));
 		selenium.open("/addUserClient");
 		selenium.waitForPageToLoad("3000");
 		selenium.type("name=user","newuser2");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");	
-		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszytkich pol"));
+		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszystkich pol"));
 		selenium.open("/addUserClient");
 		selenium.waitForPageToLoad("3000");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");	
-		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszytkich pol"));
-		
+		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszystkich pol"));
+		selenium.close();
 	}
 	
 	
