@@ -388,6 +388,28 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertEquals(6, res.size());	
 	
 	}
-
+	
+	@Test
+	public void AT82_Proper_cache_of_credentials_on_server() throws SQLException, NoSuchFieldException
+	{	
+		String u,p;
+		dao.isValidCredential("user", "user");
+		u=(String) PrivateAccessor.getField(dao, "user");
+		p=(String) PrivateAccessor.getField(dao,"pass");	
+		Assert.assertEquals(u,"user");
+		Assert.assertEquals(p,"user");
+		dao.isValidCredential("user", "fakepass");
+		u=(String) PrivateAccessor.getField(dao, "user");
+		p=(String) PrivateAccessor.getField(dao,"pass");
+		Assert.assertEquals(u,"user");
+		Assert.assertEquals(p,"user");
+		dao.addUserClient("uuser", "upass");
+		dao.isValidCredential("uuser", "upass");
+		u=(String) PrivateAccessor.getField(dao, "user");
+		p=(String) PrivateAccessor.getField(dao,"pass");
+		Assert.assertEquals(u,"uuser");
+		Assert.assertEquals(p,"upass");
+		
+	}
 
 }
