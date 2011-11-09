@@ -41,4 +41,11 @@ public static void createConfigFile(String fileName, String serverURL, String us
 		e.printStackTrace();
 	}
 }
+
+public static String config(String serverURL, String user, String password, String tool)
+{
+		return "serverURL = "+serverURL+"\nuser = "+user+"\npassword = "+password+"\ntool = "+tool+"\ndebug = on";
+}
+
+
 }
