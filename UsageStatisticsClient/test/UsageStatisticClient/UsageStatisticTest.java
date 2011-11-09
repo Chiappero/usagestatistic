@@ -15,6 +15,7 @@ import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverCommandProcessor;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -27,8 +28,8 @@ import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 public class UsageStatisticTest {
 	
-	@Before
-	public void initBeforeClass() 
+	@BeforeClass
+	public static void initBeforeClass() 
 	{
 		FirefoxDriver firefoxDriver = new FirefoxDriver();
 		WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);
