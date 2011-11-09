@@ -15,7 +15,7 @@ import java.util.List;
 public class DaoServerDatabaseH2
 {
 	private Connection conn=null;
-	
+	private String user=null,pass=null;
 	
 	
 	
@@ -67,12 +67,21 @@ public class DaoServerDatabaseH2
 	public boolean isValidCredential(String user, String password) throws SQLException
 	{
 		checkIfBaseIsOpen();
+		if (this.user!=null&&!this.user.isEmpty()&&this.user.equals(user)
+		  &&this.pass!=null&&!this.pass.isEmpty()&&this.pass.equals(user))
+			return true;
 		String sql="SELECT username, password FROM Credentials WHERE username='"+user+"' AND password='"+password+"'";
 		
 		try
 		{
 			ResultSet rs=conn.createStatement().executeQuery(sql);
-			return rs.first();
+			if (rs.first())
+			{
+				this.user=user;
+				this.pass=password;
+				return true;
+			}
+			return false;
 		}
 		catch (SQLException e)
 		{
