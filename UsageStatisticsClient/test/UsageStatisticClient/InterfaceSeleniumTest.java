@@ -1,9 +1,7 @@
 package UsageStatisticClient;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverCommandProcessor;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -13,9 +11,9 @@ import com.thoughtworks.selenium.SeleniumException;
 
 
 
-public class InterfaceSeleniumTests
+public class InterfaceSeleniumTest
 {
-	static DefaultSelenium selenium;
+	DefaultSelenium selenium;
 	
 	@Before
 	public void initBeforeClass() 
@@ -48,7 +46,7 @@ public class InterfaceSeleniumTests
 		selenium.click("name=submit");
 		selenium.waitForPageToLoad("3000");
 		Assert.assertTrue(isLogged());
-		selenium.open("j_spring_security_logout");
+		selenium.open("/j_spring_security_logout");
 		selenium.waitForPageToLoad("3000");
 		Assert.assertFalse(isLogged());		
 		selenium.close();
@@ -95,7 +93,7 @@ public class InterfaceSeleniumTests
 	{
 		try
 		{
-		selenium.click("name=tools");
+		selenium.click("name=tool");
 		return true;
 		}
 		catch (SeleniumException e)
