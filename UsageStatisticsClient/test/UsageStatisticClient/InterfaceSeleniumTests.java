@@ -54,6 +54,42 @@ public class InterfaceSeleniumTests
 
 	}
 	
+	@Test
+	public void AT11_2_Proper_and_Invalid_Create_of_credentials() 	
+	{	
+		selenium.open("/addUserClient");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=j_username","nokia");
+		selenium.type("name=j_password", "nokia");
+		selenium.click("name=submit");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=user","newuser");
+		selenium.type("name=password","password");
+		selenium.click("css=input[type=\"submit\"]");
+		selenium.waitForPageToLoad("3000");
+		Assert.assertTrue(selenium.isTextPresent("Udalo sie dodac uzytkownika"));
+		selenium.open("/addUserClient");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=user","newuser2");
+		selenium.click("css=input[type=\"submit\"]");	
+		selenium.waitForPageToLoad("3000");		
+		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszytkich pol"));
+		selenium.open("/addUserClient");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=user","newuser2");
+		selenium.click("css=input[type=\"submit\"]");	
+		selenium.waitForPageToLoad("3000");	
+		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszytkich pol"));
+		selenium.open("/addUserClient");
+		selenium.waitForPageToLoad("3000");
+		selenium.click("css=input[type=\"submit\"]");	
+		selenium.waitForPageToLoad("3000");	
+		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszytkich pol"));
+		
+	}
+	
+	
+	
 	private boolean isLogged()
 	{
 		try
