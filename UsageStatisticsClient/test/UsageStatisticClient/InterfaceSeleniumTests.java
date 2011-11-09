@@ -17,8 +17,8 @@ public class InterfaceSeleniumTests
 {
 	static DefaultSelenium selenium;
 	
-	@BeforeClass
-	public static void initBeforeClass() 
+	@Before
+	public void initBeforeClass() 
 	{
 		FirefoxDriver firefoxDriver = new FirefoxDriver();
 		WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);

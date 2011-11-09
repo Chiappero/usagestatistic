@@ -68,7 +68,7 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT11_1_Check_credentials() throws Throwable //UWAGA - test wymaga dodania uzytkownia user/user do bazy
+	public void AT11_1_Check_credentials() throws Throwable 
 	{
 		LogInformation log = new LogInformation(new Date(), "funkcjonalnosc", "user", "narzedzie", "parametry");
 		PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log, Ciphers.SHA256("user"));
