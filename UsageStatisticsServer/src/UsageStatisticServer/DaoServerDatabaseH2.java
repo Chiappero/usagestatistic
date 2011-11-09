@@ -1,5 +1,6 @@
 package UsageStatisticServer;
 
+import java.lang.reflect.Array;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -742,9 +743,11 @@ public class DaoServerDatabaseH2
 		}		
 	}
 	
-	public ArrayList<Pair<String,Integer>> getFunctionalities(String tool, String datefrom, String dateto) throws SQLException
+
+	
+	public ArrayList<StandardFilter> getFunctionalities(String tool, String datefrom, String dateto) throws SQLException
 	{
-		ArrayList<Pair<String,Integer>> values=new ArrayList<Pair<String,Integer>>();
+		ArrayList<StandardFilter> values=new ArrayList<StandardFilter>();
 		checkIfBaseIsOpen();
 		if (isEmpty())return values;
 		
@@ -763,20 +766,33 @@ public class DaoServerDatabaseH2
 		}
 		
 		
-		String sql="SELECT DISTINCT functionality, COUNT(*) AS cnt FROM Log WHERE ";
+		String sql="SELECT DISTINCT functionality, timestamp, COUNT(*) AS cnt FROM Log WHERE ";
 		if (sqlfrom!=null)  sql+=("timestamp>=\'"+sqlfrom+"\' AND ");
 		if (sqlto!=null)	sql+=("timestamp<\'"+sqlto+"\' AND ");
-		sql+=("tool=\'"+tool+"\' GROUP BY functionality ORDER BY functionality");
+		sql+=("tool=\'"+tool+"\' GROUP BY functionality, timestamp ORDER BY functionality, timestamp");
 		ResultSet rs = null;
 
 		try
 		{
 		rs=conn.createStatement().executeQuery(sql);
 		if(!rs.first())return values;
-		
+		java.util.Date start=rs.getTimestamp("timestamp");		
+		int i=0;
+		values.add(new StandardFilter(rs.getString("functionality"),sdf.format(start),rs.getInt("cnt")));
+		rs.next();
+
 		while (!rs.isAfterLast())
 		{
-			values.add(new Pair<String,Integer>(rs.getString("functionality"),rs.getInt("cnt")));
+			if(rs.getString("functionality").equals(values.get(i).getFunctionality())&&sdf.format(rs.getTimestamp("timestamp")).equals(values.get(i).getDate()))
+					{
+						values.get(i).setCount(values.get(i).getCount()+1);
+						
+					}
+			else
+			{
+				values.add(new StandardFilter(rs.getString("functionality"),sdf.format(rs.getTimestamp("timestamp")),rs.getInt("cnt")));
+				i++;
+			}
 			rs.next();
 		}
 		
@@ -793,9 +809,7 @@ public class DaoServerDatabaseH2
 			}	
 			else throw e;
 		}		
-	}
-	
-	
+	}	
 	
 	
 	
