@@ -1,9 +1,8 @@
 package UsageStatisticServer;
 
-import static org.junit.Assert.*;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -12,7 +11,6 @@ import java.util.LinkedList;
 import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class DaoServerDatabaseH2Test {
@@ -353,8 +351,65 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertEquals("function", fun.get(2));		
 		fun=dao.getFunctionalities("SELZ");
 		Assert.assertEquals(0,fun.size());
+		
+		
+		usunWszystkieLogi();
+		saveTemporaryData(25);
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SEL2","SELENIUM3","SELENIUM4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-60000),"SELA","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SEL3","SEL4"));
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SELENIUM2","SELA","SELENIUM4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"SELA","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"function","SEL2","SELA","SEL4"));		
+		ArrayList<String> func=dao.getFunctionalities("SELA");
+		Assert.assertEquals(3, func.size());
+		ArrayList<StandardFilter> res=dao.getFunctionalities("SELA", null, null);
+		Assert.assertEquals(func.size(), res.size());
+		for (int i=0;i<func.size();i++)
+			Assert.assertEquals(func.get(i),res.get(i).getFunctionality());
+		Assert.assertEquals(2,res.get(0).getCount());
+		Assert.assertEquals(1,res.get(1).getCount());
+		Assert.assertEquals(1,res.get(2).getCount());
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+1000*3600*24),"SEL1","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+2*1000*3600*24),"SEL2","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+3*1000*3600*24),"SEL3","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-1000*3600*24),"SEL-1","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-2*1000*3600*24),"SEL-2","SEL2","SELA","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-3*1000*3600*24),"SEL-3","SEL2","SELA","SEL4"));
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		String today=sdf.format(Calendar.getInstance().getTime());
+		String next=sdf.format(new java.util.Date(Calendar.getInstance().getTimeInMillis()+2*1000*3600*24));
+		res=dao.getFunctionalities("SELA", today, next);
+//		System.out.println(res);
+		Assert.assertEquals(5, res.size());		
+		res=dao.getFunctionalities("SELA", null, next);
+		Assert.assertEquals(8, res.size());
+		res=dao.getFunctionalities("SELA", today, null);
+		Assert.assertEquals(6, res.size());	
 	
 	}
 	
+	@Test
+	public void AT82_Proper_cache_of_credentials_on_server() throws SQLException, NoSuchFieldException
+	{	
+		String u,p;
+		dao.isValidCredential("user", "user");
+		u=(String) PrivateAccessor.getField(dao, "user");
+		p=(String) PrivateAccessor.getField(dao,"pass");	
+		Assert.assertEquals(u,"user");
+		Assert.assertEquals(p,"user");
+		dao.isValidCredential("user", "fakepass");
+		u=(String) PrivateAccessor.getField(dao, "user");
+		p=(String) PrivateAccessor.getField(dao,"pass");
+		Assert.assertEquals(u,"user");
+		Assert.assertEquals(p,"user");
+		dao.addUserClient("uuser", "upass");
+		dao.isValidCredential("uuser", "upass");
+		u=(String) PrivateAccessor.getField(dao, "user");
+		p=(String) PrivateAccessor.getField(dao,"pass");
+		Assert.assertEquals(u,"uuser");
+		Assert.assertEquals(p,"upass");
+		
+	}
 
 }

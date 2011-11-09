@@ -8,17 +8,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
+
+import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.web.client.RestTemplate;
 
 final public class UsageStatistic implements UsageLogger{
 	private URI serverURL;
 	private String user;
-	private String password;
+	private String password; 
 	private String tool;
 	private static UsageLogger instance;
 	private RestTemplate restTemplate;
@@ -32,90 +38,79 @@ final public class UsageStatistic implements UsageLogger{
 		password=null;
 		serverURL=null;
 		tool=null;
-		debuglog=false;
+		debuglog=true;
 		dao = new DaoTemporaryDatabaseH2(); 													// throwsa
 		committingDetails = new CommitingDetailsEmpty();
 		restTemplate = new RestTemplate();
-		File file = new File("client-config.cfg"); // TODO2 - zakoduj to
-		BufferedReader bufferedReader;
-		try
-		{
-			bufferedReader = new BufferedReader(new FileReader(file));
-			
-			String line;
-			while ((line=bufferedReader.readLine())!=null)
-			{
-				String[] field=line.split("=");
-				if (field.length==2)
-				{
-					field[0]=field[0].trim();
-					field[1]=field[1].trim();
-					setField(field);
-				}
-			}
-			bufferedReader.close();
-			areFieldsSetCorrectly();
-		}
-			catch (URISyntaxException e)
-			{
+
+			try {
+				readFromCipheredFile();
+			} catch (InvalidKeyException e) {
+				throw new UsageStatisticException(UsageStatisticException.CIPHER_ERROR);
+			} catch (NoSuchAlgorithmException e) {
+				throw new UsageStatisticException(UsageStatisticException.CIPHER_ERROR);
+			} catch (NoSuchPaddingException e) {
+				throw new UsageStatisticException(UsageStatisticException.CIPHER_ERROR);
+			} catch (InvalidAlgorithmParameterException e) {
+				throw new UsageStatisticException(UsageStatisticException.CIPHER_ERROR);
+			} catch (IOException e) {
+				throw new UsageStatisticException(UsageStatisticException.CANNOT_READ_CONFIGURATION_FILE);
+			} catch (URISyntaxException e) {
 				throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URL);
 			}
-		 catch (IOException e)
-		 	{
-			 throw new UsageStatisticException(UsageStatisticException.CANNOT_READ_CONFIGURATION_FILE);
-		 	}
-
 		
 
 	}
 
-	private void areFieldsSetCorrectly() throws UsageStatisticException 
-	{
-		if (user==null||user.equals(""))
-			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION_USERNAME);
-		if (password==null||password.equals(""))
-			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION_PASSWORD);
-		if (tool==null||tool.equals(""))
-			throw new UsageStatisticException(UsageStatisticException.INVALID_CONFIGURATION_TOOL);
-		if (serverURL==null||serverURL.toString().equals("/post"))
-			throw new UsageStatisticException(UsageStatisticException.INVALID_SERVER_URL);
-
-
+	
+	private void readFromCipheredFile() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, URISyntaxException, UsageStatisticException{
+		File file = new File("client-config.cfg");
+		Ciphers cipher = new Ciphers();
+		String config=cipher.readCiphered(file); 
+        validateAndSetConfig(config);
 	}
+	
+	private void validateAndSetConfig(String config) throws URISyntaxException, UsageStatisticException{
+        StringTokenizer st = new StringTokenizer(config);
+        String url=null, us=null, pass=null, too=null, deb=null;
+        if(st.hasMoreTokens() && st.nextToken().equals("serverURL=") && st.hasMoreTokens()){
+            url=st.nextToken();
+            
+        
+            if(st.hasMoreTokens() && st.nextToken().equals("user=") && st.hasMoreTokens()){
+                us=st.nextToken();
+                
+            
+                if(st.hasMoreTokens() && st.nextToken().equals("password=") && st.hasMoreTokens()){
+                    pass=st.nextToken();
+                    
+                    
+                    if(st.hasMoreTokens() && st.nextToken().equals("tool=") && st.hasMoreTokens()){
+                        too=st.nextToken();
+                       
+                        
+                        if(st.hasMoreTokens() && st.nextToken().equals("debug=") && st.hasMoreTokens()){
+                            deb=st.nextToken();
+                            
+                        }
+                    }
+                }
+            }
+        }
+        if(url!=null && us!=null && pass!=null && too!=null && deb!=null){
+        	serverURL=new URI(url+"/post");
+            this.user = us;
+            this.password = pass;
+            this.tool = too;
+            this.debuglog = deb.equals("on");
+        }
+        else{
+        	throw new UsageStatisticException(UsageStatisticException.CONFIG_ERROR);
+        }
 
-	private void setField(String[] field) throws URISyntaxException 
-	{
-		if (field[0].equals("serverURL"))
-			serverURL=new URI(field[1]+"/post");
-		if (field[0].equals("user"))
-			user=field[1];
-		if (field[0].equals("password"))
-			password=field[1];
-		if (field[0].equals("tool"))
-			tool=field[1];
-		if (field[0].equals("debug"))
-			{
+        
+    }
 
-			if (field[1].equals("on"))
-				try
-				{
-					BufferedWriter out=new BufferedWriter(new FileWriter("debuglog.txt",true));
-					out.close();
-				debuglog=true;
-				}
-				catch (IOException e)
-				{
-					debuglog=false;
-				}
-			else debuglog=false;
-			}
-			
-			
-			
-		
-
-		
-	}
 
 	private UsageStatistic() throws UsageStatisticException {
 		init();
@@ -158,7 +153,8 @@ final public class UsageStatistic implements UsageLogger{
 
 				if (log!=null)
 				{
-					String postForObject = restTemplate.postForObject(serverURL, log, String.class);
+					PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log,password);
+					String postForObject = restTemplate.postForObject(serverURL, pair, String.class);
 					if ("OK".equals(postForObject)) 
 					{
 						dao.clearFirstLog();
@@ -168,7 +164,11 @@ final public class UsageStatistic implements UsageLogger{
 					else if ("ERROR".equals(postForObject))
 					{
 						committingDetails.stepInvalid(Errors.CANNOT_SAVE_LOG);
-					} 
+					} else if ("CANNOT_AUTHENTICATE".equals(postForObject))
+					{
+						committingDetails
+						.commitingFailureWithError(Errors.CANNOT_AUTHENTICATE);
+					}
 					else
 					{
 						committingDetails
@@ -185,7 +185,6 @@ final public class UsageStatistic implements UsageLogger{
 			}
 				committingDetails.setInfo("Commiting finised succesful");
 				committingDetails.commitingFinishedSuccesful();
-				dao.closeDatabase();
 		} 
 		
 		
@@ -267,22 +266,6 @@ private static void errorlog(UsageStatisticException e)
 		}
 	}
 	
-	public void closeInstance() //po co to??
-	{
-		commitThread.interrupt();//TODO czy to jest bezpieczne?
-		commitThread=null;
-		dao.closeDatabase();
-		dao=null;
-		restTemplate=null;
-		commitThread=null;
-		committingDetails=null;
-		instance=null;
-		password=null;
-		serverURL=null;
-		tool=null;
-		
-	}
-
 	@Override
 	public void setCommitListener(CommitListener cl) 
 	{

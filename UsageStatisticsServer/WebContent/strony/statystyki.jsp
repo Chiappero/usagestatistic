@@ -5,7 +5,7 @@
 
 
 <div>
-
+<a href="j_spring_security_logout">Logout</a>
       <table style="border:2px solid grey; ">
           <tr><td>Stan z dnia: <c:out value="${data}"></c:out></td></tr>
           <tr><td>Logi:</td></tr>

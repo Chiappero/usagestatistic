@@ -3,11 +3,7 @@ package UsageStatisticServer;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,14 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-
-import com.sun.net.httpserver.HttpServer;
 
 @Controller
 public class LogPresenterController{
@@ -56,7 +47,8 @@ public class LogPresenterController{
 	@RequestMapping(value = "/ajax", method = RequestMethod.GET)
 	protected void ajax(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException{
 		String selectedTool = httpServletRequest.getParameter("tool");
-		httpServletResponse.setContentType("text/xml");
+		//httpServletResponse.setContentType("application/xml");
+		httpServletResponse.setContentType("application/xml");
 		//DAO
 		FunsXML funs=new FunsXML( dao.getFunctionalities(selectedTool) );
 		String funsXML=funs.toXml();		
@@ -70,13 +62,16 @@ public class LogPresenterController{
 	@RequestMapping(value = "/results", method = RequestMethod.POST)
 	protected ModelAndView wyswietlWyniki(@ModelAttribute("Results")Results results, BindingResult result) {
 		ArrayList<String> functionalities = new ArrayList<String>();
-		ArrayList<String> tool = new ArrayList<String>();
+		ArrayList<String> tools = new ArrayList<String>();
 		ArrayList<String> users = new ArrayList<String>();
 		for (int i = 0; i < results.getFunctionalities().length; i++)
 		{
 			functionalities.add(results.getFunctionalities()[i]);
 		}
-		tool.add(results.getTool());
+		for (int i = 0; i < results.getTools().length; i++)
+		{
+			tools.add(results.getTools()[i]);
+		}
 		for (int i = 0; i < results.getUsers().length; i++)
 		{
 			users.add(results.getUsers()[i]);
@@ -86,7 +81,7 @@ public class LogPresenterController{
 		try
 		{
 			LinkedList<String> linked = new LinkedList<String>();
-/*			if (isValidNameColumn(results.getSortChoose1()))
+			if (isValidNameColumn(results.getSortChoose1()))
 			{
 			linked.add(results.getSortChoose1());
 			}
@@ -97,8 +92,8 @@ public class LogPresenterController{
 			if (isValidNameColumn(results.getSortChoose3()))
 			{
 			linked.add(results.getSortChoose3());
-			}*/
-			logsWithWhereClausure = dao.getLogsWithWhereClausure(new LogFilter(null,null,functionalities,users,tool),linked);
+			}
+			logsWithWhereClausure = dao.getLogsWithWhereClausure(new LogFilter(null,null,functionalities,users,tools),linked);
 		} catch (SQLException e)
 		{
 			return new ModelAndView("ERROR");
