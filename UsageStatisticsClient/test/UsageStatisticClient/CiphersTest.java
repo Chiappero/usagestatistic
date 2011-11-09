@@ -47,7 +47,7 @@ public class CiphersTest
 		ConfigGenerator.createConfigFile(f.getName(), "localhost:8080/UsageStatisticServer", "user", "password", "tool");
 		answer=cipher.readCiphered(f);
 		Assert.assertEquals("serverURL= localhost:8080/UsageStatisticServer user= user password= "+Ciphers.SHA256("password")+" tool= tool debug= on", answer);
-		ConfigGenerator.createConfigFile("client-config.cfg", "localhost:8080/UsageStatisticServer", "user", "password", "tool");
+		ConfigGenerator.createConfigFile("client-config.cfg", "localhost:8080/UsageStatisticServer", "user", "user", "tool");
 		UsageLogger us=UsageStatistic.getInstance();
 		Assert.assertTrue(us instanceof UsageStatistic);
 		f.delete();

@@ -16,11 +16,35 @@ import junitx.util.PrivateAccessor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.WebDriverCommandProcessor;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.springframework.web.client.RestTemplate;
+
+import com.thoughtworks.selenium.DefaultSelenium;
+import com.thoughtworks.selenium.Selenium;
 
 import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 public class UsageStatisticTest {
+	
+	@Before
+	public void initBeforeClass() 
+	{
+		FirefoxDriver firefoxDriver = new FirefoxDriver();
+		WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);
+		Selenium selenium = new DefaultSelenium(webDriverCommandProcessor);
+		selenium.open("/addUserClient");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=j_username","nokia");
+		selenium.type("name=j_password", "nokia");
+		selenium.click("name=submit");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=user","user");
+		selenium.type("name=password","user");
+		selenium.click("css=input[type=\"submit\"]");
+		selenium.close();
+	}
+	
 	
 	@Before
 	public void przed() throws IOException
@@ -396,15 +420,7 @@ public class UsageStatisticTest {
 	
 	@Test
 	public void AT91_Proper_create_local_database_for_each_configuration() throws IOException, UsageStatisticException, NoSuchFieldException
-	{/*
-		String url=this.getClass().getResource(this.getClass().getSimpleName() + ".class").toString();
-		System.out.println(url + "=url - na poczatku");
-		url=url.substring(url.indexOf("/")+1, url.lastIndexOf("/"));
-		url=url.substring(0, url.lastIndexOf("/"));
-		url=url.substring(0, url.lastIndexOf("/"));
-		url=url.replace("/","\\\\");
-		//System.out.println(url);
-		System.out.println(url + "=url - po zmianie");*/
+	{
 		
 		String oryginal = System.getProperty("user.dir");
 		
@@ -429,16 +445,6 @@ public class UsageStatisticTest {
 		
 		Assert.assertFalse(new File("baza1\\db.h2.db").exists());
 		Assert.assertFalse(new File("baza2\\db.h2.db").exists());
-		
-		/*System.out.println(file.getAbsolutePath() + "=file.getAbsolutePath()");
-		System.out.println(file.getPath() + "=file.getPath()");
-		System.out.println(file.exists() + "=file.exists()");*/
-		//file = new File("baza2\\db.h2.db");
-		//System.out.println(file.getAbsolutePath() + "=file.getAbsolutePath()");
-		//System.out.println(file.getPath() + "=file.getPath()");
-		
-		
-		
 
 	}
 	
