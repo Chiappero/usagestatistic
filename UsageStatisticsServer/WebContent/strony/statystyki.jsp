@@ -8,10 +8,11 @@
 <a href="j_spring_security_logout">Logout</a>
       <table style="border:2px solid grey; ">
           <tr><td>Stan z dnia: <c:out value="${data}"></c:out></td></tr>
+          <tr><td>Tool: <c:out value="${tool}"></c:out></td></tr>
           <tr><td>Logi:</td></tr>
-          <tr><td>NARZEDZIE</td><td>FUNKCJONALNOSC</td><td>PARAMETRY</td><td>DATA</td><td>UZYTKOWNIK</td>
+          <tr><td>FUNKCJONALNOSC</td><td>DATA</td><td>ILOŚĆ</td>
           <c:forEach var="log" items="${logi}">
-          <tr><td>${log.tool}</td><td>${log.functionality}</td><td>${log.parameters}</td><td>${log.dateTime}</td><td>${log.user}</td></tr>
+          <tr><td>${log.functionality}</td><td>${log.date}</td><td>${log.count}</td></tr>
           </c:forEach>
       </table>
       <c:if test="${logi.isEmpty()==true}">Niestety nie znaleziono zadnych wynikow dla zadanego kryterium<br></c:if>
