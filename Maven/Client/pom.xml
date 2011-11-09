@@ -67,15 +67,26 @@
 		<groupId>com.h2database</groupId>
 		<artifactId>h2</artifactId>
 		<version>1.3.160</version>
-		<scope>runtime</scope>
+		<scope>compile</scope>
 	</dependency>
+	<dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-java</artifactId>
+        <version>2.11.0</version>
+    </dependency> 
+	 <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-firefox-driver</artifactId>
+        <version>2.11.0</version>
+    </dependency>  
+
 	
 	
 	
   </dependencies>
     <build>
-		<sourceDirectory>..\..\UsageStatisticsClient\src</sourceDirectory>
-		<testSourceDirectory>..\..\UsageStatisticsClient\test</testSourceDirectory>
+		<sourceDirectory>D:\JAVA\Repo\UsageStatisticsClient\src</sourceDirectory>
+		<testSourceDirectory>D:\JAVA\Repo\UsageStatisticsClient\test</testSourceDirectory>
 	</build>
  
   
