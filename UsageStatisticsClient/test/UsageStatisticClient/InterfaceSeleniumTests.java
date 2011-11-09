@@ -1,6 +1,10 @@
 package UsageStatisticClient;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 import junit.framework.Assert;
+import junitx.util.PrivateAccessor;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -28,8 +32,6 @@ public class InterfaceSeleniumTests
 	@Test
 	public void AT12_1_Authentication() 
 	{
-		
-		
 		selenium.open("/results");
 		selenium.waitForPageToLoad("3000");
 		Assert.assertFalse(isLogged());		
@@ -53,6 +55,30 @@ public class InterfaceSeleniumTests
 		Assert.assertFalse(isLogged());		
 		selenium.close();
 
+	}
+	
+	@Test
+	public void AT18_1_Proper_show_of_Ajax_view_per_tool() throws Throwable{
+		selenium.open("/results");
+		selenium.type("name=j_username","nokia");
+		selenium.type("name=j_password", "nokia");
+		selenium.click("name=submit");
+		selenium.waitForPageToLoad("3000");
+		selenium.open("/addUserClient");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=user","user");
+		selenium.type("name=password","user");
+		selenium.click("css=input[type=\"submit\"]");
+		selenium.waitForPageToLoad("3000");
+		TestUtils.createExampleConfigFile();
+		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 20);
+		instance.commit();
+		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		selenium.open("/results");
+		selenium.select("name=tool", "tool");
+		//Assert.assertEquals(selenium.getAttribute("name=functionalities"), "funkcjonalnosc");
 	}
 	
 	@Test
