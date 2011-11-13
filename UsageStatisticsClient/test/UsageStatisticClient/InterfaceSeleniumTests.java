@@ -78,7 +78,8 @@ public class InterfaceSeleniumTests
 		PrivateAccessor.invoke(instance, "commitWait", null, null);
 		selenium.open("/results");
 		selenium.select("name=tool", "tool");
-		//Assert.assertEquals(selenium.getAttribute("name=functionalities"), "funkcjonalnosc");
+		String[] funkcjonalnosci = selenium.getSelectOptions("name=functionalities");
+		Assert.assertEquals(funkcjonalnosci[0], "funkcjonalnosc");
 	}
 	
 	@Test
