@@ -13,6 +13,7 @@ import java.util.List;
 
 import junitx.util.PrivateAccessor;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -53,6 +54,12 @@ public class UsageStatisticTest {
 		TestUtils.createExampleConfigFile();
 	}
 	
+	@After
+	public void po() throws IOException, NoSuchFieldException
+	{
+		PrivateAccessor.setField(UsageStatistic.class, "instance", null);
+	}
+	
 	
 	@Test
 	public void AT21_Proper_commit() throws Throwable
@@ -62,8 +69,7 @@ public class UsageStatisticTest {
 		instance.log("funkcjonalnosc", "parametry");
 		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
 		Assert.assertEquals(localDao.getLogsAmount(),1);
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(new CommitingDetailsEmpty()));
 		Assert.assertTrue(localDao.isEmpty());
 	}
 	
@@ -85,30 +91,24 @@ public class UsageStatisticTest {
 	{
 		CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-		instance.setCommitListener(inter);
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 46);
 		PrivateAccessor.setField(instance, "serverURL", new URI("localhost:8123"));
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(inter));
 		Assert.assertEquals(inter.msg,Errors.ERROR_WITH_CONNECTION_TO_SERVER);
 		
 		PrivateAccessor.setField(instance, "serverURL", new URI("http://fakeaddress.pl"));
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(inter));
 		Assert.assertTrue(inter.msg.equals(Errors.SERVER_DOESNT_RECEIVE_DATA)||inter.msg.equals(Errors.ERROR_WITH_CONNECTION_TO_SERVER)||inter.msg.equals(Errors.CANNOT_EXTRACT_RESPONSE));
 		TestUtils.addSomeLogsToDao(instance, 70);
 		Assert.assertEquals(TestUtils.getLogsAmmount(instance), 46+70);
-		
 	}
 
 	@Test 
 	public void AT24_Connection_Lost() throws Throwable
 	{
-
-		final CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
+		CommitingDetailsTestImp2 inter = new CommitingDetailsTestImp2();
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-		instance.setCommitListener(inter);		
 		final URI original=(URI) PrivateAccessor.getField(instance, "serverURL");
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 500);		
@@ -119,8 +119,7 @@ public class UsageStatisticTest {
 				public void run()
 				{
 					try {
-						Thread.sleep(500);
-
+						Thread.sleep(30);
 							PrivateAccessor.setField(instance, "serverURL", new URI("localhost:8123"));
 
 					} catch (InterruptedException e) {
@@ -135,15 +134,12 @@ public class UsageStatisticTest {
 				}
 			};
 		t.start();
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
-		Assert.assertEquals(Errors.ERROR_WITH_CONNECTION_TO_SERVER,inter.msg);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(inter));
+		Assert.assertTrue(Errors.ERROR_WITH_CONNECTION_TO_SERVER.equals(inter.msg)||Errors.SERVER_DOESNT_RECEIVE_DATA.equals(inter.msg));
 		Assert.assertTrue(TestUtils.getLogsAmmount(instance)<500&&TestUtils.getLogsAmmount(instance)>0);
 			PrivateAccessor.setField(instance, "serverURL", original);
-			instance.commit();
-			PrivateAccessor.invoke(instance, "commitWait", null, null);
+			TestUtils.CommitAndWait(instance.createCommitRunnable(inter));
 			Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
-		
 		
 	}	
 	
@@ -153,12 +149,10 @@ public class UsageStatisticTest {
 	{
 		CommitingDetailsTestImp inter = new CommitingDetailsTestImp(0);
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-		instance.setCommitListener(inter);				
 		TestUtils.removeAllLogsFromDao(instance);//0
 		DaoTemporaryDatabaseInterface localDao = TestUtils.getLocalDao(instance);
 		Assert.assertTrue(localDao.isEmpty());
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(inter));
 		Assert.assertTrue(inter.success);
 		
 		localDao.saveLog(TestUtils.getExampleLog());//1
@@ -200,9 +194,7 @@ public class UsageStatisticTest {
 		localDao=new DaoTemporaryDatabaseH2TestImp2();
 		PrivateAccessor.setField(instance, "dao", localDao);
 		CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
-		instance.setCommitListener(com);
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(com));
 		Assert.assertEquals(com.msg, Errors.LOG_WAS_NULL);
 		
 		
@@ -213,10 +205,8 @@ public class UsageStatisticTest {
 	{
 		CommitingDetailsTestImp inter=new CommitingDetailsTestImp(0);
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-		instance.setCommitListener(inter);
 		TestUtils.removeAllLogsFromDao(instance);
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(inter));
 		Assert.assertTrue(inter.success);
 		TestUtils.addSomeLogsToDao(instance, 50);
 		TestUtils.corruptFile(instance);
@@ -230,11 +220,9 @@ public class UsageStatisticTest {
 	{
 		CommitingDetailsTestImp2 inter=new CommitingDetailsTestImp2();
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-		instance.setCommitListener(inter);		
 		DaoTemporaryDatabaseInterface daoMock = new DaoTemporaryDatabaseH2TestImp();
 		PrivateAccessor.setField(instance, "dao", daoMock);
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(inter));
 		Assert.assertEquals(inter.msg,Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
 	}
 	
@@ -259,23 +247,18 @@ public class UsageStatisticTest {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				instance.commit();
 				try
 				{
-					PrivateAccessor.invoke(instance, "commitWait", null, null);
-				} catch (Throwable e)
+					TestUtils.CommitAndWait(instance.createCommitRunnable(null));
+				} catch (InterruptedException e)
 				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
-				
 			}
 		};
 		}
 		for (int i=0;i<10;i++)
 			tg[i].start();
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 		
 		
@@ -338,23 +321,25 @@ public class UsageStatisticTest {
 		for(int i=0; i<1000; i++){
 			instance.log("test"+i, "paremtry"+i);
 		}
-		instance.commit();
+		Thread t = new Thread(instance.createCommitRunnable(null));
+		t.start();
 		Assert.assertFalse(localDao.isEmpty());
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		t.join();
 		Assert.assertTrue(localDao.isEmpty());
 		for(int i=0; i<300; i++){
 			instance.log("test"+i, "paremtry"+i);
 		}
-		instance.commit();
+		t = new Thread(instance.createCommitRunnable(null));
+		t.start();
 		for(int i=0; i<100; i++){
 			instance.log("test"+i, "paremtry"+i);
 		}
 		Assert.assertFalse(localDao.isEmpty());
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		t.join();
 		Assert.assertFalse(localDao.isEmpty());
-		
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		t = new Thread(instance.createCommitRunnable(null));
+		t.start();
+		t.join();
 		Assert.assertTrue(localDao.isEmpty());
 		
 	}
@@ -368,11 +353,9 @@ public class UsageStatisticTest {
 	{
 		CommitingDetailsTestImp4 com = new CommitingDetailsTestImp4();
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
-		instance.setCommitListener(com);
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 5);
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(com));
 		Assert.assertEquals(com.licznik, 10);
 		Assert.assertEquals(com.amount, 5);
 		Assert.assertTrue(com.commitingFinishedSuccesful);
@@ -385,9 +368,7 @@ public class UsageStatisticTest {
 		final UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		TestUtils.removeAllLogsFromDao(instance);
 		CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
-		instance.setCommitListener(com);
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(com));
 		Assert.assertTrue(com.success);
 	}
 	
@@ -410,9 +391,7 @@ public class UsageStatisticTest {
 	DaoTemporaryDatabaseInterface localDao=new DaoTemporaryDatabaseH2TestImp2();
 	PrivateAccessor.setField(instance, "dao", localDao);
 	CommitingDetailsTestImp3 com = new CommitingDetailsTestImp3();
-	instance.setCommitListener(com);
-	instance.commit();
-	PrivateAccessor.invoke(instance, "commitWait", null, null);
+	TestUtils.CommitAndWait(instance.createCommitRunnable(com));
 	Assert.assertEquals(com.msg, Errors.LOG_WAS_NULL);
 	Assert.assertTrue(com.success);
 	}
@@ -433,6 +412,9 @@ public class UsageStatisticTest {
 		
 		System.setProperty("user.dir",oryginal+"\\baza2");
 		
+		
+		po();
+		
 		instance = (UsageStatistic) UsageStatistic.getInstance(); 				//stworz baze w:	 baza2/db.h2.db
 		TestUtils.getLocalDao(instance).closeDatabase();
 		Assert.assertTrue(new File("db.h2.db").exists());
@@ -451,8 +433,8 @@ public class UsageStatisticTest {
 	
 	 
 	
-	
-	@Test
+	//przyjeta konwencja ze tworzymy raz instancje - bedzie wywolywana statycznie wiele razy u klienta
+	/*@Test
 	public void AT92_Proper_load_of_new_configuration_file_when_creating_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
 	{
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
@@ -463,9 +445,11 @@ public class UsageStatisticTest {
 		//TestUtils.createExampleConfigFile();
 		instance = (UsageStatistic) UsageStatistic.getInstance();
 		Assert.assertEquals("AT92tool", (String) PrivateAccessor.getField(instance, "tool"));
-	}	
+	}	*/ 
 	
-	@Test
+	
+	//przyjeta konwencja ze tworzymy raz instancje - bedzie wywolywana statycznie wiele razy u klienta
+	/*@Test
 	public void AT93_Proper_load_of_new_initiation_parameters_Commiting_Details_and_Tool_when_create_new_instance() throws IOException, UsageStatisticException, NoSuchFieldException
 	{
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
@@ -481,7 +465,8 @@ public class UsageStatisticTest {
 		TestUtils.createExampleConfigFile();
 		instance = (UsageStatistic) UsageStatistic.getInstance();
 
-	}		
+	}		*/  
+	
 	
 	@Test
 	public void AT201_Log_Count() throws Throwable
@@ -491,8 +476,7 @@ public class UsageStatisticTest {
 		Assert.assertEquals(0,instance.getLogsCount());
 		TestUtils.addSomeLogsToDao(instance, 100);
 		Assert.assertEquals(100,instance.getLogsCount());
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
 		Assert.assertEquals(0,instance.getLogsCount());
 	}	
 	
@@ -505,8 +489,7 @@ public class UsageStatisticTest {
 		java.util.Date date=Calendar.getInstance().getTime();
 		TestUtils.addSomeLogsToDao(instance, 100);
 		Assert.assertEquals(date,instance.getOldestLogDate());
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
 		Assert.assertNull(instance.getOldestLogDate());
 	}	
 	
@@ -522,8 +505,7 @@ public class UsageStatisticTest {
 		Assert.assertEquals(10,instance.getAllLogs().size());
 		for (int i=0;i<10;i++)		
 			Assert.assertEquals(""+i, logs.get(i).getFunctionality());
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
 		Assert.assertEquals(0,instance.getAllLogs().size());
 	}	
 	
@@ -534,8 +516,7 @@ public class UsageStatisticTest {
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 1000);
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
 		Assert.assertEquals(0,TestUtils.getLogsAmmount(instance));
 	}
 	

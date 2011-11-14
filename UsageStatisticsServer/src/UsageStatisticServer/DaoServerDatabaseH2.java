@@ -164,7 +164,6 @@ public class DaoServerDatabaseH2
 				try {
 					conn.close();
 				} catch (SQLException e1) {
-					e1.printStackTrace();
 				}
 			}
 	}	
@@ -180,7 +179,6 @@ public class DaoServerDatabaseH2
 			try {
 				conn.createStatement().execute(query);
 			} catch (SQLException e1) {
-				e1.printStackTrace();
 			}
 		}
 		
@@ -193,7 +191,6 @@ public class DaoServerDatabaseH2
 			try {
 				conn.createStatement().execute(query);
 			} catch (SQLException e1) {
-				e1.printStackTrace();
 			}
 		}
 		
@@ -211,7 +208,6 @@ public class DaoServerDatabaseH2
 			}
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
 		}
 	}
 	
