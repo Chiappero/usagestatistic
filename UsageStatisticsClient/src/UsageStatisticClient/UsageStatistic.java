@@ -29,14 +29,28 @@ public final class UsageStatistic implements UsageLogger{
 	private DaoTemporaryDatabaseInterface dao;
 //	private Thread commitThread;
 	private static boolean debuglog;
-
+	
+	
+	private static final String BEGIN_COMMITING = "Begin commiting";
+	private static final String DEBUGLOG_FILE = "debuglog.txt";
+	private static final String CLIENT_CONFIG_FILE = "client-config.cfg";
+	private static final String COMMITING_FINISHED_SUCCESFUL = "Commiting finised succesful";
+	private static final String POST_PATH = "/post";
+	private static final String EQUALS  = "=";
+	private static final String SERVER_URL_PARAMETER  = "serverURL";
+	private static final String USER_PARAMETER  = "user";
+	private static final String PASSWORD_PARAMETER  = "password";
+	private static final String TOOL_PARAMETER  = "tool";
+	private static final String DEBUG_PARAMETER  = "debug";
+	private static final String ON = "on";
+	
 	private void init() throws UsageStatisticException {
 		user=null;
 		password=null;
 		serverURL=null;
 		tool=null;
 		debuglog=true;
-		dao = new DaoTemporaryDatabaseH2(); 													// throwsa
+		dao = new DaoTemporaryDatabaseH2(); 													
 		restTemplate = new RestTemplate();
 
 			try {
@@ -60,7 +74,7 @@ public final class UsageStatistic implements UsageLogger{
 
 	
 	private void readFromCipheredFile() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, URISyntaxException, UsageStatisticException{
-		File file = new File("client-config.cfg");
+		File file = new File(CLIENT_CONFIG_FILE);
 		Ciphers cipher = new Ciphers();
 		String config=cipher.readCiphered(file); 
         validateAndSetConfig(config);
@@ -69,23 +83,23 @@ public final class UsageStatistic implements UsageLogger{
 	private void validateAndSetConfig(final String config) throws URISyntaxException, UsageStatisticException{
         StringTokenizer st = new StringTokenizer(config);
         String url=null, us=null, pass=null, too=null, deb=null;
-        if(st.hasMoreTokens() && st.nextToken().equals("serverURL=") && st.hasMoreTokens()){
+        if(st.hasMoreTokens() && st.nextToken().equals(SERVER_URL_PARAMETER+EQUALS) && st.hasMoreTokens()){
             url=st.nextToken();
             
         
-            if(st.hasMoreTokens() && st.nextToken().equals("user=") && st.hasMoreTokens()){
+            if(st.hasMoreTokens() && st.nextToken().equals(USER_PARAMETER+EQUALS) && st.hasMoreTokens()){
                 us=st.nextToken();
                 
             
-                if(st.hasMoreTokens() && st.nextToken().equals("password=") && st.hasMoreTokens()){
+                if(st.hasMoreTokens() && st.nextToken().equals(PASSWORD_PARAMETER+EQUALS) && st.hasMoreTokens()){
                     pass=st.nextToken();
                     
                     
-                    if(st.hasMoreTokens() && st.nextToken().equals("tool=") && st.hasMoreTokens()){
+                    if(st.hasMoreTokens() && st.nextToken().equals(TOOL_PARAMETER+EQUALS) && st.hasMoreTokens()){
                         too=st.nextToken();
                        
                         
-                        if(st.hasMoreTokens() && st.nextToken().equals("debug=") && st.hasMoreTokens()){
+                        if(st.hasMoreTokens() && st.nextToken().equals(DEBUG_PARAMETER+EQUALS) && st.hasMoreTokens()){
                             deb=st.nextToken();
                             
                         }
@@ -94,11 +108,11 @@ public final class UsageStatistic implements UsageLogger{
             }
         }
         if(url!=null && us!=null && pass!=null && too!=null && deb!=null){
-        	serverURL=new URI(url+"/post");
+        	serverURL=new URI(url+POST_PATH);  
             this.user = us;
             this.password = pass;
             this.tool = too;
-            debuglog = deb.equals("on");
+            debuglog = deb.equals(ON);
         }
         else{
         	throw new UsageStatisticException(UsageStatisticException.CONFIG_ERROR);
@@ -140,7 +154,7 @@ public final class UsageStatistic implements UsageLogger{
 			int logsAmount = dao.getLogsAmount();
 			committingDetails.commitingStart();
 			committingDetails.setLogsAmount(logsAmount);
-			committingDetails.setInfo("Begin commiting");
+			committingDetails.setInfo(BEGIN_COMMITING);
 			int i = 0;
 			
 			while (!dao.isEmpty() &&  i < logsAmount)
@@ -164,11 +178,13 @@ public final class UsageStatistic implements UsageLogger{
 					{
 						committingDetails
 						.commitingFailureWithError(Errors.CANNOT_AUTHENTICATE);
+						return;
 					}
 					else
 					{
 						committingDetails
 						.commitingFailureWithError(Errors.SERVER_DOESNT_RECEIVE_DATA);
+						return;
 					}
 					
 				} else
@@ -178,8 +194,8 @@ public final class UsageStatistic implements UsageLogger{
 				
 				i++;
 				
-			}
-				committingDetails.setInfo("Commiting finised succesful");
+			}	
+				committingDetails.setInfo(COMMITING_FINISHED_SUCCESFUL);
 				committingDetails.commitingFinishedSuccesful();
 		} 
 		
@@ -239,7 +255,7 @@ private static void errorlog(final UsageStatisticException e)
 		{
 			BufferedWriter out;
 			try {
-				out = new BufferedWriter(new FileWriter("debuglog.txt",true));
+				out = new BufferedWriter(new FileWriter(DEBUGLOG_FILE,true));
 				out.write(Calendar.getInstance().getTime()+": "+e.getMessage()+"\n");
 				out.close();
 			} catch (IOException e1) 

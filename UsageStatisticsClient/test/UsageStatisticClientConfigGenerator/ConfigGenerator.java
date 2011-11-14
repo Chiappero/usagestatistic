@@ -28,17 +28,9 @@ public static void createConfigFile(String fileName, String serverURL, String us
 	try {
 		new Ciphers().writeCiphered(new File(fileName), "serverURL= "+ serverURL +" user= "+user+" password= "+Ciphers.sha256(password)+" tool= "+tool+" debug= on");
 	} catch (InvalidKeyException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	} catch (InvalidAlgorithmParameterException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	} catch (NoSuchAlgorithmException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	} catch (NoSuchPaddingException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	}
 }
 

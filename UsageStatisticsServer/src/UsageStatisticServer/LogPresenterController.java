@@ -63,7 +63,6 @@ public class LogPresenterController{
 		try {
 			httpServletResponse.getWriter().write(funsXML);
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	

@@ -196,17 +196,14 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		} 
         	catch (ClassNotFoundException e) 
 		{
-			e.printStackTrace();
 		}
         catch (SQLException e) {
 	        try {
 	        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", user,pass);
 	        createTables();
 			} catch (SQLException e1) {
-				e1.printStackTrace();
 			}
 	        
-        	System.out.println(e.getMessage());
 		}
 
 	}
@@ -222,13 +219,13 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				}
 				if (server!=null&&!server.getStatus().equals("Not started"))
 				{
+					server.shutdown();
 					server.stop();
 				}
 			} catch (SQLException e) {
 				try {
 					conn.close();
 				} catch (SQLException e1) {
-					e1.printStackTrace();
 				}
 			}
 	}	
@@ -260,7 +257,6 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			try {
 				conn.createStatement().execute(query);
 			} catch (SQLException e1) {
-				e1.printStackTrace();
 			}
 		}
 
@@ -313,7 +309,6 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			} 
 			catch (SQLException e)
 			{
-				e.printStackTrace();
 			}
 	}
 	

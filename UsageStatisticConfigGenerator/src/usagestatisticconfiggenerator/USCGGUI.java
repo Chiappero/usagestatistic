@@ -298,7 +298,6 @@ private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             } catch (InvalidAlgorithmParameterException ex) {
                 Logger.getLogger(USCGGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println("config \n"+config);
             validateAndSetConfig(config);
         }
         
@@ -326,23 +325,18 @@ private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         String url=null, us=null, pass=null, too=null, deb=null;
         if(st.nextToken().equals("serverURL=") && st.hasMoreTokens()){
             url=st.nextToken();
-            System.out.println(url);
         
             if(st.nextToken().equals("user=") && st.hasMoreTokens()){
                 us=st.nextToken();
-                System.out.println(us);
             
                 if(st.nextToken().equals("password=") && st.hasMoreTokens()){
                     pass=st.nextToken();
-                    System.out.println(pass);
                     
                     if(st.nextToken().equals("tool=") && st.hasMoreTokens()){
                         too=st.nextToken();
-                        System.out.println(too);
                         
                         if(st.nextToken().equals("debug=") && st.hasMoreTokens()){
                             deb=st.nextToken();
-                            System.out.println(deb);
                         }
                     }
                 }
