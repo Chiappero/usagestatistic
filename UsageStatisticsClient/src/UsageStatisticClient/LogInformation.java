@@ -20,31 +20,36 @@ private String tool;
 public String getUser() {
 	return user;
 }
-public void setUser(String user) {
+public void setUser(final String user) {
 	this.user = user;
 }
 public String getTool() {
 	return tool;
 }
-public void setTool(String tool) {
+public void setTool(final String tool) {
 	this.tool = tool;
-}
-public Date getDateTime() {
-	return dateTime;
-}
-public void setDateTime(Date dateTime) {
-	this.dateTime = dateTime;
 }
 public String getFunctionality() {
 	return functionality;
 }
-public void setFunctionality(String functionality) {
+
+public void setFunctionality(final String functionality) {
 	this.functionality = functionality;
 }
+
+public Date getDateTime()
+{
+	return dateTime;
+}
+public void setDateTime(Date dateTime)
+{
+	this.dateTime = dateTime;
+}
+
 public String getParameters() {
 	return parameters;
 }
-public void setParameters(String parameters) {
+public void setParameters(final String parameters) {
 	this.parameters = parameters;
 }
 @Override

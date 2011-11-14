@@ -10,7 +10,7 @@ public class FunsXML {
 		
 	}
 	
-	public FunsXML(ArrayList<String> funs){
+	public FunsXML(final ArrayList<String> funs){
 		this.funs=funs;
 	}
 	

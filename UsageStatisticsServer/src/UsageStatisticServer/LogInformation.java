@@ -6,11 +6,11 @@ import java.util.Date;
 
 public
 final class LogInformation {
-Date dateTime;
-String functionality;
-String parameters;
-String user;
-String tool;
+private Date dateTime;
+private String functionality;
+private String parameters;
+private String user;
+private String tool;
 public String getUser() {
 	return user;
 }

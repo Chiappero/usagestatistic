@@ -71,16 +71,16 @@ public static void dropTable(DaoTemporaryDatabaseH2 dao) throws NoSuchFieldExcep
 	dao.closeDatabase();
 }
 
-public static void makeConnectionNull(DaoTemporaryDatabaseH2 dao)
+public static void makeConnectionNull(DaoTemporaryDatabaseH2 dao) throws NoSuchFieldException
 {
-	dao.conn=null;
+	PrivateAccessor.setField(dao, "conn", null);
 }
 
 public static void createExampleConfigFile() throws IOException
 {
 	//ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password", "tool");
 	try {
-		new Ciphers().writeCiphered(new File("client-config.cfg"), "serverURL= http://localhost:8080/UsageStatisticsServer user= user password= "+Ciphers.SHA256("user")+" tool= tool debug= on");
+		new Ciphers().writeCiphered(new File("client-config.cfg"), "serverURL= http://localhost:8080/UsageStatisticsServer user= user password= "+Ciphers.sha256("user")+" tool= tool debug= on");
 	} catch (InvalidKeyException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

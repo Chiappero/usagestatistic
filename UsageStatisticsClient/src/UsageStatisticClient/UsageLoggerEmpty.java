@@ -6,28 +6,35 @@ import java.util.List;
 public class UsageLoggerEmpty implements UsageLogger{
 
 	@Override
-	public void log(String functionality, String parameters) {}
+	public final void log(final String functionality,final String parameters) {}
 
+	
 	@Override
-	public void commit() {}
-
-	@Override
-	public void setCommitListener(CommitListener cl) {}
-
-	@Override
-	public int getLogsCount() {
+	public final int getLogsCount() {
 		return 0;
 	}
 
 	@Override
-	public Date getOldestLogDate() {
+	public final Date getOldestLogDate() {
 		return null;
 	}
 
 	@Override
-	public List<LogInformation> getAllLogs()
+	public final List<LogInformation> getAllLogs()
 	{
 		return null;
 	}
 
+
+	@Override
+	public Runnable createCommitRunnable(final CommitListener cl)
+	{
+		return new Runnable()
+		{
+			@Override
+			public void run()
+			{
+			}
+		};
+	}
 }

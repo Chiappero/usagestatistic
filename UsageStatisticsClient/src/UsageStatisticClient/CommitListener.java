@@ -3,9 +3,9 @@ package UsageStatisticClient;
 public interface CommitListener {
 void commitingStart();
 void commitingFinishedSuccesful();
-void commitingFailureWithError(String error);
+void commitingFailureWithError(final String error);
 void step();
-void stepInvalid(String reason);
-void setInfo(String info);
-void setLogsAmount(int amount);
+void stepInvalid(final String reason);
+void setInfo(final String info);
+void setLogsAmount(final int amount);
 }

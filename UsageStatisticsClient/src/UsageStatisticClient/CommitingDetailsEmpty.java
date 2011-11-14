@@ -15,7 +15,7 @@ final class CommitingDetailsEmpty implements CommitListener {
 	}
 
 	@Override
-	public void commitingFailureWithError(String error) {
+	public void commitingFailureWithError(final String error) {
 	}
 
 	@Override
@@ -23,15 +23,15 @@ final class CommitingDetailsEmpty implements CommitListener {
 	}
 
 	@Override
-	public void setInfo(String info) {
+	public void setInfo(final String info) {
 	}
 
 	@Override
-	public void setLogsAmount(int amount) {
+	public void setLogsAmount(final int amount) {
 	}
 
 	@Override
-	public void stepInvalid(String reason)
+	public void stepInvalid(final String reason)
 	{
 	}
 

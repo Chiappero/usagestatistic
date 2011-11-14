@@ -1,9 +1,7 @@
 package UsageStatisticClient;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
@@ -21,7 +19,7 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.web.client.RestTemplate;
 
-final public class UsageStatistic implements UsageLogger{
+public final class UsageStatistic implements UsageLogger{
 	private URI serverURL;
 	private String user;
 	private String password; 
@@ -29,8 +27,7 @@ final public class UsageStatistic implements UsageLogger{
 	private static UsageLogger instance;
 	private RestTemplate restTemplate;
 	private DaoTemporaryDatabaseInterface dao;
-	private CommitListener committingDetails;
-	private CommitThread commitThread;
+//	private Thread commitThread;
 	private static boolean debuglog;
 
 	private void init() throws UsageStatisticException {
@@ -40,7 +37,6 @@ final public class UsageStatistic implements UsageLogger{
 		tool=null;
 		debuglog=true;
 		dao = new DaoTemporaryDatabaseH2(); 													// throwsa
-		committingDetails = new CommitingDetailsEmpty();
 		restTemplate = new RestTemplate();
 
 			try {
@@ -70,7 +66,7 @@ final public class UsageStatistic implements UsageLogger{
         validateAndSetConfig(config);
 	}
 	
-	private void validateAndSetConfig(String config) throws URISyntaxException, UsageStatisticException{
+	private void validateAndSetConfig(final String config) throws URISyntaxException, UsageStatisticException{
         StringTokenizer st = new StringTokenizer(config);
         String url=null, us=null, pass=null, too=null, deb=null;
         if(st.hasMoreTokens() && st.nextToken().equals("serverURL=") && st.hasMoreTokens()){
@@ -102,7 +98,7 @@ final public class UsageStatistic implements UsageLogger{
             this.user = us;
             this.password = pass;
             this.tool = too;
-            this.debuglog = deb.equals("on");
+            debuglog = deb.equals("on");
         }
         else{
         	throw new UsageStatisticException(UsageStatisticException.CONFIG_ERROR);
@@ -116,7 +112,7 @@ final public class UsageStatistic implements UsageLogger{
 		init();
 	}
 
-	public void log(String functionality, String parameters) 
+	public void log(final String functionality, final String parameters) 
 	{ 
 		LogInformation log = new LogInformation(Calendar.getInstance().getTime(), functionality, user, tool, parameters);
 		dao.saveLog(log);
@@ -124,20 +120,20 @@ final public class UsageStatistic implements UsageLogger{
 	}
 	
 	
-	@Override	
-	public synchronized void commit()
+
+	/*public synchronized void commit()
 	{
 		if(commitThread==null || !commitThread.isAlive()){
 			commitThread = null;
-			commitThread = new CommitThread();
+			commitThread = new Thread(new CommitRunnable());
 			commitThread.setDaemon(true);
 			commitThread.start();
 		}
 		
-	}
+	}*/
 	
 
-	private synchronized void commitInCommit()
+	private synchronized void commitInCommit(final CommitListener committingDetails)
 	{
 		try
 		{
@@ -222,9 +218,12 @@ final public class UsageStatistic implements UsageLogger{
 		try 
 		{
 			if (instance == null||instance instanceof UsageLoggerEmpty)
-				instance=new UsageStatistic();
-			else
-				((UsageStatistic)instance).init();
+			{
+			instance=new UsageStatistic();
+			((UsageStatistic) instance).init();
+			}
+			
+			
 		} 
 		catch (UsageStatisticException e) 
 		{
@@ -234,7 +233,7 @@ final public class UsageStatistic implements UsageLogger{
 		return instance;
 	}
 	
-private static void errorlog(UsageStatisticException e) 
+private static void errorlog(final UsageStatisticException e) 
 {
 		if (debuglog)
 		{
@@ -249,35 +248,35 @@ private static void errorlog(UsageStatisticException e)
 		
 	}
 
-	private void commitWait(){
+/*	public void commitWait(){
 		try {
 			commitThread.join();
 		} catch (InterruptedException e) {
 			
 		}
 	}
+*/	
 	
-	
-	private class CommitThread extends Thread{
+	private class CommitRunnable implements Runnable{
 		
+		private CommitListener listener;
+		
+
+		public CommitRunnable(CommitListener listener)
+		{
+			if (listener == null)
+				this.listener = new CommitingDetailsEmpty();
+			else
+				this.listener = listener;
+		}
+
+
 		@Override
 		public void run(){
-			commitInCommit();
+			commitInCommit(listener);
 		}
 	}
 	
-	@Override
-	public void setCommitListener(CommitListener cl) 
-	{
-		if (committingDetails==null)
-		{
-		committingDetails = new CommitingDetailsEmpty();
-		}
-		else
-		{
-		committingDetails=cl;
-		}
-	}
 
 	@Override
 	public int getLogsCount() 
@@ -300,6 +299,13 @@ private static void errorlog(UsageStatisticException e)
 	public List<LogInformation> getAllLogs()
 	{
 		return dao.getAllLogs();
+	}
+
+
+	@Override
+	public Runnable createCommitRunnable(final CommitListener cl)
+	{
+		return new CommitRunnable(cl);
 	}
 	
 }

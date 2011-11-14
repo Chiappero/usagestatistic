@@ -36,7 +36,7 @@ public class CiphersTest
 		answer=ConfigGenerator.config("localhost:8080/UsageStatisticServer", "user", "password", "tool");
 		cipher.writeCiphered(f, answer);
 		String s2=cipher.readCiphered(f);
-		Assert.assertEquals("serverURL = localhost:8080/UsageStatisticServer\nuser = user\npassword = "+Ciphers.SHA256("password")+"\ntool = tool\ndebug = on", s2);
+		Assert.assertEquals("serverURL = localhost:8080/UsageStatisticServer\nuser = user\npassword = "+Ciphers.sha256("password")+"\ntool = tool\ndebug = on", s2);
 		cipher.writeCiphered(f2, answer);
 		BufferedReader br=new BufferedReader(new FileReader(f));
 		BufferedReader br2=new BufferedReader(new FileReader(f2));
@@ -46,7 +46,7 @@ public class CiphersTest
 		br2.close();
 		ConfigGenerator.createConfigFile(f.getName(), "localhost:8080/UsageStatisticServer", "user", "password", "tool");
 		answer=cipher.readCiphered(f);
-		Assert.assertEquals("serverURL= localhost:8080/UsageStatisticServer user= user password= "+Ciphers.SHA256("password")+" tool= tool debug= on", answer);
+		Assert.assertEquals("serverURL= localhost:8080/UsageStatisticServer user= user password= "+Ciphers.sha256("password")+" tool= tool debug= on", answer);
 		ConfigGenerator.createConfigFile("client-config.cfg", "localhost:8080/UsageStatisticServer", "user", "user", "tool");
 		UsageLogger us=UsageStatistic.getInstance();
 		Assert.assertTrue(us instanceof UsageStatistic);
@@ -58,12 +58,12 @@ public class CiphersTest
 	@Test
 	public void AT103_Proper_Encrypt_Password_When_Creating_User_Config()
 	{
-		String sha=Ciphers.SHA256("pasword123?\n");
-		String sha2=Ciphers.SHA256("pasword123?\n");
+		String sha=Ciphers.sha256("pasword123?\n");
+		String sha2=Ciphers.sha256("pasword123?\n");
 		Assert.assertEquals(sha,sha2);
-		sha2=Ciphers.SHA256("passrord123?\n ");
+		sha2=Ciphers.sha256("passrord123?\n ");
 		Assert.assertNotSame(sha,sha2);
-		sha2=Ciphers.SHA256("passrord124?\n");
+		sha2=Ciphers.sha256("passrord124?\n");
 		Assert.assertNotSame(sha,sha2);
 	}
 
