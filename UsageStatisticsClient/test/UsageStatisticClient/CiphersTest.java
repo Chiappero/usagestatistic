@@ -22,7 +22,7 @@ public class CiphersTest
 {
 
 	@Test
-	public void AT10_1_AND_AT10_2_Proper_create_user_config_AND_Proper_decrypt_user_config() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException 
+	public void AT10_1_AND_AT10_2_Proper_create_user_config_AND_Proper_decrypt_user_config() throws Throwable 
 	{
 		Ciphers cipher=new Ciphers();
 		File f=new File("cipher.test");

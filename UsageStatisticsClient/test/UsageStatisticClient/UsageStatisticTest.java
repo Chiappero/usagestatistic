@@ -265,7 +265,7 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT41_Proper_load_configuration_from_file() throws UsageStatisticException, NoSuchFieldException, URISyntaxException, IOException
+	public void AT41_Proper_load_configuration_from_file() throws Throwable
 	{
 		ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer", "matuszek", "password", "tool");
 		//TestUtils.createExampleConfigFile();
@@ -281,7 +281,7 @@ public class UsageStatisticTest {
 	}
 	
 	@Test
-	public void AT42ANDAT94_Handle_invalid_load_or_no_configuration_fileANDSuitable_exceptions_thrown_by_each_invalid_case() throws NoSuchFieldException, IOException
+	public void AT42ANDAT94_Handle_invalid_load_or_no_configuration_fileANDSuitable_exceptions_thrown_by_each_invalid_case() throws Throwable
 	{	
 		
 		
