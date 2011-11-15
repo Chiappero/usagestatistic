@@ -1,19 +1,19 @@
 package UsageStatisticClient;
 
 import org.junit.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverCommandProcessor;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.thoughtworks.selenium.DefaultSelenium;
-import com.thoughtworks.selenium.SeleniumException;
 
 
 
 public class InterfaceSeleniumTest
 {
-	DefaultSelenium selenium;
+	static DefaultSelenium selenium;
 	
 	@Before
 	public void initBeforeClass() 
@@ -26,8 +26,6 @@ public class InterfaceSeleniumTest
 	@Test
 	public void AT12_1_Authentication() 
 	{
-		
-		
 		selenium.open("/results");
 		selenium.waitForPageToLoad("3000");
 		Assert.assertFalse(isLogged());		
@@ -46,11 +44,37 @@ public class InterfaceSeleniumTest
 		selenium.click("name=submit");
 		selenium.waitForPageToLoad("3000");
 		Assert.assertTrue(isLogged());
-		selenium.open("/j_spring_security_logout");
+		selenium.open("j_spring_security_logout");
 		selenium.waitForPageToLoad("3000");
 		Assert.assertFalse(isLogged());		
 		selenium.close();
 
+	}
+	
+	@Test
+	public void AT18_1_Proper_show_of_Ajax_view_per_tool() throws Throwable{
+		selenium.open("/results");
+		selenium.type("name=j_username","nokia");
+		selenium.type("name=j_password", "nokia");
+		selenium.click("name=submit");
+		selenium.waitForPageToLoad("3000");
+		selenium.open("/addUserClient");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=user","user");
+		selenium.type("name=password","user");
+		selenium.click("css=input[type=\"submit\"]");
+		selenium.waitForPageToLoad("3000");
+		TestUtils.createExampleConfigFile();
+		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 20);
+		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
+		selenium.open("/results");
+		selenium.waitForPageToLoad("3000");
+		selenium.select("name=tool", "tool");
+		String[] funkcjonalnosci = selenium.getSelectOptions("name=functionalities");
+		Assert.assertEquals(funkcjonalnosci[0], "funkcjonalnosc");
+		selenium.close();
 	}
 	
 	@Test
@@ -91,14 +115,9 @@ public class InterfaceSeleniumTest
 	
 	private boolean isLogged()
 	{
-		try
-		{
-		selenium.click("name=tool");
-		return true;
-		}
-		catch (SeleniumException e)
-		{
-			return false;
-		}		
+
+		return selenium.isTextPresent("Stan z dnia");
+
+	
 	}
 }
