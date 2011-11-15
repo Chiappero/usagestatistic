@@ -74,8 +74,7 @@ public class InterfaceSeleniumTests
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 20);
-		instance.commit();
-		PrivateAccessor.invoke(instance, "commitWait", null, null);
+		TestUtils.CommitAndWait(null);
 		selenium.open("/results");
 		selenium.select("name=tool", "tool");
 		String[] funkcjonalnosci = selenium.getSelectOptions("name=functionalities");
