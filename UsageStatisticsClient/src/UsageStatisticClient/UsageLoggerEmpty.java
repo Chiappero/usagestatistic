@@ -1,30 +1,34 @@
 package UsageStatisticClient;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class UsageLoggerEmpty implements UsageLogger{
+public class UsageLoggerEmpty implements UsageLogger
+{
 
 	@Override
-	public final void log(final String functionality,final String parameters) {}
+	public final void log(final String functionality, final String parameters)
+	{}
 
-	
 	@Override
-	public final int getLogsCount() {
+	public final int getLogsCount()
+	{
 		return 0;
 	}
 
 	@Override
-	public final Date getOldestLogDate() {
-		return null;
+	public final Date getOldestLogDate()
+	{
+		return Calendar.getInstance().getTime();
 	}
 
 	@Override
 	public final List<LogInformation> getAllLogs()
 	{
-		return null;
+		return new ArrayList<LogInformation>();
 	}
-
 
 	@Override
 	public Runnable createCommitRunnable(final CommitListener cl)
@@ -33,8 +37,7 @@ public class UsageLoggerEmpty implements UsageLogger{
 		{
 			@Override
 			public void run()
-			{
-			}
+			{}
 		};
 	}
 }
