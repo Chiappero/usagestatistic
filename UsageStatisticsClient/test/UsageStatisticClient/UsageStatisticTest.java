@@ -49,16 +49,12 @@ public class UsageStatisticTest {
 	
 	
 	@Before
-	public void przed() throws IOException
+	public void przed() throws IOException, NoSuchFieldException
 	{
 		TestUtils.createExampleConfigFile();
-	}
-	
-	@After
-	public void po() throws IOException, NoSuchFieldException
-	{
 		PrivateAccessor.setField(UsageStatistic.class, "instance", null);
 	}
+	
 	
 	
 	@Test
@@ -413,7 +409,7 @@ public class UsageStatisticTest {
 		System.setProperty("user.dir",oryginal+"\\baza2");
 		
 		
-		po();
+		PrivateAccessor.setField(UsageStatistic.class, "instance", null);
 		
 		instance = (UsageStatistic) UsageStatistic.getInstance(); 				//stworz baze w:	 baza2/db.h2.db
 		TestUtils.getLocalDao(instance).closeDatabase();
