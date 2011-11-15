@@ -1,40 +1,30 @@
 package UsageStatisticClient;
 
-final class CommitingDetailsEmpty implements CommitListener {
+final class CommitingDetailsEmpty implements CommitListener 
+{
 	
 	CommitingDetailsEmpty()
-	{
-	}
+	{}
 	
 	@Override
-	public void commitingStart() {
-	}
+	public void commitingStart() {}
 
 	@Override
-	public void commitingFinishedSuccesful() {
-	}
+	public void commitingFinishedSuccesful() {}
 
 	@Override
-	public void commitingFailureWithError(final String error) {
-	}
+	public void commitingFailureWithError(final String error) {}
 
 	@Override
-	public void step() {
-	}
+	public void step() {}
 
 	@Override
-	public void setInfo(final String info) {
-	}
+	public void setInfo(final String info) {}
 
 	@Override
-	public void setLogsAmount(final int amount) {
-	}
+	public void setLogsAmount(final int amount) {}
 
 	@Override
 	public void stepInvalid(final String reason)
-	{
-	}
-
-	
-
+	{}
 }
