@@ -397,6 +397,8 @@ public class UsageStatisticTest {
 	@Test
 	public void AT91_Proper_create_local_database_for_each_configuration() throws IOException, UsageStatisticException, NoSuchFieldException
 	{
+		TestUtils.deleteDir(new File("baza1"));
+		TestUtils.deleteDir(new File("baza2"));
 		
 		String oryginal = System.getProperty("user.dir");
 		
@@ -419,11 +421,11 @@ public class UsageStatisticTest {
 		
 		Assert.assertTrue(new File("baza1\\db.h2.db").exists());
 		Assert.assertTrue(new File("baza2\\db.h2.db").exists());
-		Assert.assertTrue(TestUtils.deleteDir(new File("baza1")));
-		Assert.assertTrue(TestUtils.deleteDir(new File("baza2")));
+	//	Assert.assertTrue(TestUtils.deleteDir(new File("baza1")));
+	//	Assert.assertTrue(TestUtils.deleteDir(new File("baza2")));
 		
-		Assert.assertFalse(new File("baza1\\db.h2.db").exists());
-		Assert.assertFalse(new File("baza2\\db.h2.db").exists());
+	//	Assert.assertFalse(new File("baza1\\db.h2.db").exists());
+	//	Assert.assertFalse(new File("baza2\\db.h2.db").exists());
 
 	}
 	
