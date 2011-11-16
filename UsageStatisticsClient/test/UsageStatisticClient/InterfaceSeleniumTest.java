@@ -1,5 +1,9 @@
 package UsageStatisticClient;
 
+import java.util.Random;
+
+import junitx.util.PrivateAccessor;
+
 import org.junit.Assert;
 
 import org.junit.Before;
@@ -16,11 +20,12 @@ public class InterfaceSeleniumTest
 	static DefaultSelenium selenium;
 	
 	@Before
-	public void initBeforeClass() 
+	public void initBeforeClass() throws NoSuchFieldException 
 	{
 		FirefoxDriver firefoxDriver = new FirefoxDriver();
 		WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("http://localhost:8080/UsageStatisticsServer", firefoxDriver);
 		selenium = new DefaultSelenium(webDriverCommandProcessor);
+
 	}
 	
 	@Test
@@ -53,28 +58,41 @@ public class InterfaceSeleniumTest
 	
 	@Test
 	public void AT18_1_Proper_show_of_Ajax_view_per_tool() throws Throwable{
-		selenium.open("/results");
+		selenium.open("/addUserClient");
 		selenium.type("name=j_username","nokia");
 		selenium.type("name=j_password", "nokia");
 		selenium.click("name=submit");
-		selenium.waitForPageToLoad("3000");
-		selenium.open("/addUserClient");
 		selenium.waitForPageToLoad("3000");
 		selenium.type("name=user","user");
 		selenium.type("name=password","user");
 		selenium.click("css=input[type=\"submit\"]");
 		selenium.waitForPageToLoad("3000");
 		TestUtils.createExampleConfigFile();
+		PrivateAccessor.setField(UsageStatistic.class, "instance", null);
 		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 20);
-		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
+		Random r=new Random();
+		final int x=r.nextInt()%10000;
+		instance.log("fun"+x, "parameters");
+		TestUtils.CommitAndWait(instance.createCommitRunnable(null)); //ResourceAccessException??
 		selenium.open("/results");
 		selenium.waitForPageToLoad("3000");
 		selenium.select("name=tool", "tool");
-		String[] funkcjonalnosci = selenium.getSelectOptions("name=functionalities");
-		Assert.assertEquals(funkcjonalnosci[0], "funkcjonalnosc");
-		selenium.close();
+		String[] funkcjonalnosci;
+		do
+		{
+		Thread.sleep(1000);
+		funkcjonalnosci=selenium.getSelectOptions("name=functionalities");
+		}
+		while (funkcjonalnosci[0].equals("£adowanie..."));
+		boolean flag=false;
+		for (int i=0;i<funkcjonalnosci.length&&!flag;i++)
+		{
+			flag=(funkcjonalnosci[i].equals("fun"+x));
+		}
+		Assert.assertTrue(flag);
+		selenium.close();		
 	}
 	
 	@Test
