@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.crypto.NoSuchPaddingException;
@@ -77,49 +78,48 @@ public final class UsageStatistic implements UsageLogger{
 		File file = new File(CLIENT_CONFIG_FILE);
 		Ciphers cipher = new Ciphers();
 		String config=cipher.readCiphered(file); 
-        validateAndSetConfig(config);
-	}
-	
-	private void validateAndSetConfig(final String config) throws URISyntaxException, UsageStatisticException{
-        StringTokenizer st = new StringTokenizer(config);
+        //validateAndSetConfig(config);
+		StringTokenizer st = new StringTokenizer(config);
         String url=null, us=null, pass=null, too=null, deb=null;
-        if(st.hasMoreTokens() && st.nextToken().equals(SERVER_URL_PARAMETER+EQUALS) && st.hasMoreTokens()){
-            url=st.nextToken();
-            
-        
-            if(st.hasMoreTokens() && st.nextToken().equals(USER_PARAMETER+EQUALS) && st.hasMoreTokens()){
-                us=st.nextToken();
-                
-            
-                if(st.hasMoreTokens() && st.nextToken().equals(PASSWORD_PARAMETER+EQUALS) && st.hasMoreTokens()){
-                    pass=st.nextToken();
-                    
-                    
-                    if(st.hasMoreTokens() && st.nextToken().equals(TOOL_PARAMETER+EQUALS) && st.hasMoreTokens()){
-                        too=st.nextToken();
-                       
-                        
-                        if(st.hasMoreTokens() && st.nextToken().equals(DEBUG_PARAMETER+EQUALS) && st.hasMoreTokens()){
-                            deb=st.nextToken();
-                            
-                        }
-                    }
-                }
-            }
+
+        try{
+        	st.nextToken();
+        	serverURL=new URI(st.nextToken()+POST_PATH);//url=st.nextToken();
+        	st.nextToken();
+        	user=st.nextToken();
+        	st.nextToken();
+        	password=st.nextToken();
+        	st.nextToken();
+        	tool=st.nextToken();
+        	st.nextToken();
+        	debuglog=st.nextToken().equals(ON);
         }
-        if(url!=null && us!=null && pass!=null && too!=null && deb!=null){
-        	serverURL=new URI(url+POST_PATH);  
-            this.user = us;
-            this.password = pass;
-            this.tool = too;
-            debuglog = deb.equals(ON);
-        }
-        else{
+        catch(NoSuchElementException e){
         	throw new UsageStatisticException(UsageStatisticException.CONFIG_ERROR);
         }
+	}
+	
+	/*private void validateAndSetConfig(final String config) throws URISyntaxException, UsageStatisticException{
+        StringTokenizer st = new StringTokenizer(config);
+        String url=null, us=null, pass=null, too=null, deb=null;
 
-        
-    }
+        try{
+        	st.nextToken();
+        	serverURL=new URI(st.nextToken()+POST_PATH);//url=st.nextToken();
+        	st.nextToken();
+        	user=st.nextToken();
+        	st.nextToken();
+        	password=st.nextToken();
+        	st.nextToken();
+        	tool=st.nextToken();
+        	st.nextToken();
+        	debuglog=st.nextToken().equals(ON);
+        }
+        catch(NoSuchElementException e){
+        	throw new UsageStatisticException(UsageStatisticException.CONFIG_ERROR);
+        }
+      
+    }*/
 
 
 	private UsageStatistic() throws UsageStatisticException {
@@ -161,7 +161,7 @@ public final class UsageStatistic implements UsageLogger{
 			{
 				LogInformation log = dao.getFirstLog();
 
-				if (log!=null)
+				/*if (log!=null)
 				{
 					PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log,password);
 					String postForObject = restTemplate.postForObject(serverURL, pair, String.class);
@@ -174,7 +174,8 @@ public final class UsageStatistic implements UsageLogger{
 					else if ("ERROR".equals(postForObject))
 					{
 						committingDetails.stepInvalid(Errors.CANNOT_SAVE_LOG);
-					} else if ("CANNOT_AUTHENTICATE".equals(postForObject))
+					} 
+					else if ("CANNOT_AUTHENTICATE".equals(postForObject))
 					{
 						committingDetails
 						.commitingFailureWithError(Errors.CANNOT_AUTHENTICATE);
@@ -187,11 +188,12 @@ public final class UsageStatistic implements UsageLogger{
 						return;
 					}
 					
-				} else
+				}
+				else
 				{
 					committingDetails.stepInvalid(Errors.LOG_WAS_NULL);
-				}
-				
+				}*/
+				sendOneLog(committingDetails, log);
 				i++;
 				
 			}	
@@ -225,6 +227,43 @@ public final class UsageStatistic implements UsageLogger{
 			committingDetails
 			.commitingFailureWithError(Errors.CANNOT_EXTRACT_RESPONSE);
 		}
+	}
+	
+	
+	private void sendOneLog(final CommitListener committingDetails, LogInformation log) throws SQLException{
+		if (log!=null)
+		{
+			PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log,password);
+			String postForObject = restTemplate.postForObject(serverURL, pair, String.class);
+			if ("OK".equals(postForObject)) 
+			{
+				dao.clearFirstLog();
+				committingDetails.step();
+				
+			}
+			else if ("ERROR".equals(postForObject))
+			{
+				committingDetails.stepInvalid(Errors.CANNOT_SAVE_LOG);
+			} 
+			else if ("CANNOT_AUTHENTICATE".equals(postForObject))
+			{
+				committingDetails
+				.commitingFailureWithError(Errors.CANNOT_AUTHENTICATE);
+				return;
+			}
+			else
+			{
+				committingDetails
+				.commitingFailureWithError(Errors.SERVER_DOESNT_RECEIVE_DATA);
+				return;
+			}
+			
+		}
+		else
+		{
+			committingDetails.stepInvalid(Errors.LOG_WAS_NULL);
+		}
+		
 	}
 
 	
