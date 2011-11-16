@@ -75,7 +75,7 @@ public class InterfaceSeleniumTest
 		Random r=new Random();
 		final int x=r.nextInt()%10000;
 		instance.log("fun"+x, "parameters");
-		TestUtils.CommitAndWait(instance.createCommitRunnable(null)); //ResourceAccessException??
+		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
 		selenium.open("/results");
 		selenium.waitForPageToLoad("3000");
 		selenium.select("name=tool", "tool");
@@ -117,7 +117,7 @@ public class InterfaceSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszystkich pol"));
 		selenium.open("/addUserClient");
 		selenium.waitForPageToLoad("3000");
-		selenium.type("name=user","newuser2");
+		selenium.type("name=password","newuser2");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");	
 		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszystkich pol"));
