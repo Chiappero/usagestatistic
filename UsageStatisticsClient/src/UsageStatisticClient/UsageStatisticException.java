@@ -1,6 +1,6 @@
 package UsageStatisticClient;
 
-public final class UsageStatisticException extends Exception
+final class UsageStatisticException extends Exception
 {
 	/**
 	 * 

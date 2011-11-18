@@ -1,5 +1,7 @@
 package UsageStatisticClient;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Random;
 
 import junitx.util.PrivateAccessor;
@@ -12,6 +14,7 @@ import org.openqa.selenium.WebDriverCommandProcessor;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.thoughtworks.selenium.DefaultSelenium;
+
 
 
 
@@ -129,7 +132,73 @@ public class InterfaceSeleniumTest
 		selenium.close();
 	}
 	
-	
+	@Test
+	public void AT182_Pararell_Commit_Threads() throws InterruptedException, SQLException, NoSuchFieldException, IOException{
+		TestUtils.createExampleConfigFile();
+		PrivateAccessor.setField(UsageStatistic.class, "instance", null);
+		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
+		DaoTemporaryDatabaseH2 localDao = TestUtils.getLocalDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 100);
+		Thread t = new Thread( instance.createCommitRunnable(null));
+		t.run();
+		t.join();
+		Assert.assertTrue(localDao.isEmpty());
+		
+		TestUtils.addSomeLogsToDao(instance, 100);
+		t.run();
+		t.join();
+		Assert.assertTrue(localDao.isEmpty());
+		
+		TestUtils.addSomeLogsToDao(instance, 100);
+		Thread t1 = new Thread( instance.createCommitRunnable(null));
+		t1.run();
+		t1.join();
+		Assert.assertTrue(localDao.isEmpty());
+		
+		Random r=new Random();
+		final int x=r.nextInt()%10000;
+		
+		TestUtils.addSomeLogsToDao(instance, 500);
+		for(int i=0; i<500; i++){
+			instance.log("Thread"+x, "one, two");
+		}
+		t.run();
+		t1.run();
+		
+		t.join();
+		t1.join();
+		
+		selenium.open("/results");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=j_username","nokia");
+		selenium.type("name=j_password", "nokia");
+		selenium.click("name=submit");
+		selenium.waitForPageToLoad("3000");
+		
+		selenium.select("name=tool", "tool");
+		String[] funkcjonalnosci;
+		do
+		{
+		Thread.sleep(1000);
+		funkcjonalnosci=selenium.getSelectOptions("name=functionalities");
+		}
+		while (funkcjonalnosci[0].equals("£adowanie..."));
+		selenium.select("name=functionalities", "Thread"+x);
+		selenium.click("css=input[type=\"submit\"]");	
+		selenium.waitForPageToLoad("3000");
+		Assert.assertTrue(selenium.isTextPresent("Thread"+x));
+		Assert.assertTrue(selenium.isTextPresent("500"));
+		Assert.assertTrue(localDao.isEmpty());
+		//Thread t2 = new Thread( instance.createCommitRunnable(new CommitingDetails()));
+		TestUtils.addSomeLogsToDao(instance, 100);
+		t.run();
+		TestUtils.addSomeLogsToDao(instance, 100);
+		t1.run();
+		
+		t.join();
+		t1.join();
+		Assert.assertTrue(localDao.isEmpty());
+	}
 	
 	private boolean isLogged()
 	{

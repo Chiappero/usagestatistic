@@ -19,7 +19,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class Ciphers //public for test only
+class Ciphers //public for test only
 {
 	final static private String UTF8 = "UTF8";
 	final static private int FF = 0xff;

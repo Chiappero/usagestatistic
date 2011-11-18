@@ -132,7 +132,8 @@ private void jPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event
 }//GEN-LAST:event_jPanel1MouseMoved
 
 private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-    us.commit();
+    Thread t = new Thread(us.createCommitRunnable(null));
+    t.run();
 }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

@@ -10,7 +10,7 @@ public final class LogInformation{
 /**
 	 * 
 	 */
-	private static final long serialVersionUID = -5844130058939487072L;
+private static final long serialVersionUID = -5844130058939487072L;
 private Date dateTime; //data tworzona przez nas ma format Sun Oct 09 12:19:06 CEST 2011
 			   //data odczytana przez lokalna baze danych ma format 2011-10-09 12:19:06.39
 private String functionality;
@@ -52,12 +52,6 @@ public String getParameters() {
 public void setParameters(final String parameters) {
 	this.parameters = parameters;
 }
-@Override
-public String toString() {
-	return "LogInformation [dateTime=" + dateTime + ", functionality="
-			+ functionality + ", parameters=" + parameters + ", user=" + user
-			+ ", tool=" + tool + "]";
-}
 
 LogInformation()
 {}
@@ -72,7 +66,7 @@ LogInformation(Date date,String functionality,String user,String tool, String pa
 	this.parameters=parameters;
 }
 
-static boolean validateLog(LogInformation log)
+public static boolean validateLog(LogInformation log)
 {
 	Date date = log.getDateTime();
 	String functionality = log.getFunctionality();
