@@ -306,9 +306,6 @@ public class DaoServerDatabaseH2
 		if (isEmpty())return values;
 		String sql="SELECT DISTINCT user FROM Log WHERE tool=\'"+tool+"\' ORDER BY user";
 		ResultSet rs = null;
-
-		try
-		{
 		rs=conn.createStatement().executeQuery(sql);
 		if(!rs.first())return values;
 		
@@ -319,18 +316,6 @@ public class DaoServerDatabaseH2
 		}
 		
 		return values;
-		}
-		catch (SQLException e)
-		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
-				//TODO cos bardzo zlego powinno tu byc
-				somethingVeryBad();
-				throw e;
-				
-			}	
-			else throw e;
-		}		
 	}
 	
 	public ArrayList<StandardFilter> getLogsFromDatabase(ArrayList<String> functionalities, String[] users, String tool, String datefrom, String dateto, boolean param) throws SQLException
