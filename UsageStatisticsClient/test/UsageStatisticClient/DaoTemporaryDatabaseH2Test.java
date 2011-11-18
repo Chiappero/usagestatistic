@@ -115,7 +115,6 @@ public class DaoTemporaryDatabaseH2Test
 				Thread.sleep(stalaLiczbaCzasuDoSpania);
 			} catch (InterruptedException e)
 			{
-				e.printStackTrace();
 			}
 			
 		}
@@ -275,7 +274,6 @@ public class DaoTemporaryDatabaseH2Test
 				Thread.sleep(stalaLiczbaCzasuDoSpania);
 			} catch (InterruptedException e)
 			{
-				e.printStackTrace();
 			}
 			
 		}
@@ -290,7 +288,6 @@ public class DaoTemporaryDatabaseH2Test
 				Thread.sleep(stalaLiczbaCzasuDoSpania);
 			} catch (InterruptedException e)
 			{
-				e.printStackTrace();
 			}
 			
 		}

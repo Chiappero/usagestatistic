@@ -5,10 +5,9 @@ import java.util.List;
 
 public interface UsageLogger 
 {
-	public void log(String functionality, String parameters);
-	public void commit();
-	public void setCommitListener(CommitListener cl);
-	public int getLogsCount();
-	public Date getOldestLogDate();
-	public List<LogInformation> getAllLogs();
+	 void log(String functionality, String parameters);
+	 Runnable createCommitRunnable(final CommitListener cl);
+	 int getLogsCount();
+	 Date getOldestLogDate();
+	 List<LogInformation> getAllLogs();
 }

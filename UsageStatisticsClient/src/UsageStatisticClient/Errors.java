@@ -2,6 +2,9 @@ package UsageStatisticClient;
 
 final class Errors
 {
+private Errors()
+	{
+	}
 static final String SERVER_DOESNT_RECEIVE_DATA="Error with server - server does not receive data";
 static final String SERVER_TURNED_OFF="Error with server - server turned off";
 static final String ERROR_WITH_CONNECTION_TO_SERVER="Error with connection to server";

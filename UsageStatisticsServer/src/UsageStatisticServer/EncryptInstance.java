@@ -15,7 +15,7 @@ public class EncryptInstance
 		{
 		}
 		}
-	    private static String convertToHex(byte[] data) { 
+	    private static String convertToHex(final byte[] data) { 
 	        StringBuffer buf = new StringBuffer();
 	        for (int i = 0; i < data.length; i++) { 
 	            int halfbyte = (data[i] >>> 4) & 0x0F;
@@ -36,7 +36,7 @@ public class EncryptInstance
 	     * @param text - text do zaszyfrowania
 	     * @return null jezeli nie powiod³o sie szyfrowanie
 	     */
-	    public static String SHA256(String text) 
+	    public static String SHA256(final String text) 
 	    { 
 	    if (text==null||md==null)
 	    {

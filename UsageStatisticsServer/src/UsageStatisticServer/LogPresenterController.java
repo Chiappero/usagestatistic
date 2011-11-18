@@ -29,7 +29,7 @@ import com.sun.net.httpserver.HttpServer;
 public class LogPresenterController{
 	
 	@Autowired
-	DaoServerDatabaseH2 dao;
+	private DaoServerDatabaseH2 dao;
 	
 	@RequestMapping(value = "/results", method = RequestMethod.GET)
 	protected ModelAndView wyswietlFormatke(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException{
@@ -54,7 +54,6 @@ public class LogPresenterController{
 		try {
 			httpServletResponse.getWriter().write(funsXML);
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	
