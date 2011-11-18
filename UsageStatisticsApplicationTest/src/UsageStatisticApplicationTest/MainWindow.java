@@ -28,7 +28,8 @@ public class MainWindow extends javax.swing.JFrame {
     /** Creates new form MainWindow */
     public MainWindow() {
             us = UsageStatistic.getInstance();
-            us.setCommitListener(new CommitingDetails());
+            //us.setCommitListener(new CommitingDetails());
+            //us.
         initComponents();
     }
 
@@ -213,7 +214,7 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_jButton5ActionPerformed
 
 private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-    us.commit();
+    new Thread(us.createCommitRunnable(new CommitingDetails())).run();
 
 }//GEN-LAST:event_jButton7ActionPerformed
 
