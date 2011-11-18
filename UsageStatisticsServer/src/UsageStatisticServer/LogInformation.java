@@ -41,12 +41,6 @@ public String getParameters() {
 public void setParameters(String parameters) {
 	this.parameters = parameters;
 }
-@Override
-public String toString() {
-	return "LogInformation [dateTime=" + dateTime + ", functionality="
-			+ functionality + ", parameters=" + parameters + ", user=" + user
-			+ ", tool=" + tool + "]";
-}
 
 public static boolean validateLog(LogInformation log)
 {
