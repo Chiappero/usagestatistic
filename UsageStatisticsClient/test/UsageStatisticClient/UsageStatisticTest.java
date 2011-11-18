@@ -29,7 +29,7 @@ import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 public class UsageStatisticTest {
 	
-	@BeforeClass
+	/*@BeforeClass
 	public static void initBeforeClass() 
 	{
 		FirefoxDriver firefoxDriver = new FirefoxDriver();
@@ -45,7 +45,7 @@ public class UsageStatisticTest {
 		selenium.type("name=password","user");
 		selenium.click("css=input[type=\"submit\"]");
 		selenium.close();
-	}
+	}*/
 	
 	
 	@Before
@@ -506,6 +506,31 @@ public class UsageStatisticTest {
 		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
 		Assert.assertEquals(0,instance.getAllLogs().size());
 	}	
+	
+	@Test
+	public void AT_183_Usage_of_UsageLoggerEmpty() throws InterruptedException
+	{
+		File f = new File("client-config.cfg");
+		f.delete();
+		UsageLogger usage = UsageStatistic.getInstance();
+		Assert.assertTrue(usage instanceof UsageLoggerEmpty);
+		usage.log("funkcjonalnosc", "parametry");
+		Assert.assertEquals(usage.getLogsCount(),0);
+		Date oldestLogDate = usage.getOldestLogDate();
+		Assert.assertNotNull(oldestLogDate);
+		List<LogInformation> allLogs = usage.getAllLogs();
+		Assert.assertNotNull(allLogs);
+		Assert.assertTrue(allLogs.isEmpty());
+		
+		Runnable runnable = usage.createCommitRunnable(null);
+		runnable.run();
+		
+		Runnable runnable2 = usage.createCommitRunnable(null);
+		Thread t = new Thread(runnable2);
+		t.run();
+		t.join();
+		Assert.assertFalse(t.isAlive());
+	}
 	
 	
 	@Test

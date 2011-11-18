@@ -16,13 +16,13 @@ public final void setLogInformation(LogInformation logInformation)
 {
 	this.logInformation = logInformation;
 }
-public final String getPassword()
-{
-	return password;
-}
 public final void setPassword(String password)
 {
 	this.password = password;
+}
+public final String getPassword()
+{
+	return password;
 }
 public PairLogInformationAndPassword(LogInformation logInformation,
 		String password)
@@ -31,9 +31,11 @@ public PairLogInformationAndPassword(LogInformation logInformation,
 	this.logInformation = logInformation;
 	this.password = password;
 }
-public PairLogInformationAndPassword()
+public PairLogInformationAndPassword() //musi byc aby commitowanie zadzialalo!!
 {
 }
+
+
 
 
 
