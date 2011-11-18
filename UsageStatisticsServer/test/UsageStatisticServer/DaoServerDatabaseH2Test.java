@@ -227,7 +227,7 @@ public class DaoServerDatabaseH2Test {
 	
 	
 	@Test
-	public void AT81_Proper_show_filtered_data() throws SQLException, NoSuchFieldException
+	public void AT81_Proper_show_filtered_data() throws SQLException, NoSuchFieldException, InterruptedException
 	{
 	usunWszystkieLogi();
 	saveTemporaryData(25);
@@ -272,6 +272,7 @@ public class DaoServerDatabaseH2Test {
 	Assert.assertEquals(25, list2.size());	
 	list2=dao.getLogsWithWhereClausure(new LogFilter(null,null,testlist , null, testlist));
 	Assert.assertEquals(26, list2.size());	
+	Thread.sleep(50);
 	list2=dao.getLogsWithWhereClausure(new LogFilter(new GregorianCalendar().getTime(),null,testlist , null, null));
 	Assert.assertEquals(0, list2.size());		
 	
