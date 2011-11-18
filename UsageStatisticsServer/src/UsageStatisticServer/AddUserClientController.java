@@ -45,7 +45,7 @@ public class AddUserClientController
 						modelAndView.addObject("message","Blad przy szyfrowaniu hasla");
 						return modelAndView;
 					}
-					boolean done = dao.addUserClient(user, password); //TODO zaszyfruj haslo kluczem krzyska
+					boolean done = dao.addUserClient(user, password);
 					
 					if (done)
 					{

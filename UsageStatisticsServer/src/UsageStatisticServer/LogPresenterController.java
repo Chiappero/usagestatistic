@@ -99,7 +99,6 @@ public class LogPresenterController{
 			linked.add(results.getSortChoose3());
 			}*/
 			logsWithWhereClausure2 = dao.getFunctionalities(tool.get(0), results.getDateFrom(), results.getDateTill());
-			logsWithWhereClausure = dao.getLogsWithWhereClausure(new LogFilter(null,null,functionalities,users,tool),linked);
 		} catch (SQLException e)
 		{
 			return new ModelAndView("ERROR");

@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class LogReceiverTest {
 
-	
+	DaoServerDatabaseH2 dao = new DaoServerDatabaseH2();
 	
 	public static LogInformation getExampleLog()
 	{
@@ -26,9 +26,8 @@ public class LogReceiverTest {
 	{
 		/*ApplicationContext ctx = new FileSystemXmlApplicationContext("WebContent/WEB-INF/dispatcher-servlet.xml"); 
         DaoServerDatabaseH2 dao = (DaoServerDatabaseH2) ctx.getBean("DaoServerDatabaseH2"); */
-		DaoServerDatabaseH2 dao = new DaoServerDatabaseH2();
 		LogInformation log=getExampleLog();
-		dao.closeDatabase();
+		closeDatabase();
 		Assert.assertTrue(dao.saveLog(log));
 		log.setFunctionality(null);
 		Assert.assertFalse(dao.saveLog(log));
@@ -44,5 +43,25 @@ public class LogReceiverTest {
 		
 
 	}
+
+	public void closeDatabase() throws NoSuchFieldException
+	{
+		Connection conn=(Connection)PrivateAccessor.getField(dao, "conn");
+
+			try {
+				if (conn!=null)
+				{
+					conn.close();
+				}
+			} catch (SQLException e) {
+				try {
+					conn.close();
+				} catch (SQLException e1) {
+				}
+			}
+
+	}
+
+
 
 }

@@ -31,8 +31,6 @@ import org.springframework.web.servlet.ModelAndView;
 		    	if (user!=null&&password!=null)
 		    	{
 		    			//System.out.println("user nie jest nullem, ani password nie jest nullem");
-			    	try
-					{
 						if (dao.isValidCredential(user, password))
 						{
 									//System.out.println("udalo mi sie zautentykowac z user="+user+" oraz password="+password);
@@ -47,7 +45,6 @@ import org.springframework.web.servlet.ModelAndView;
 							modelAndView.addObject("message", dao.saveLog(pair.getLogInformation())?"OK":"ERROR");
 							return modelAndView;
 						}
-					} catch (SQLException e){}
 		    	}
 		    	modelAndView.addObject("message", "CANNOT_AUTHENTICATE");
 			    return modelAndView;
