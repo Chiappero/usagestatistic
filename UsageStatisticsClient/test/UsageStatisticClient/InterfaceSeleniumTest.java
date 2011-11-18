@@ -1,5 +1,7 @@
 package UsageStatisticClient;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Random;
 
 import junitx.util.PrivateAccessor;
@@ -181,10 +183,10 @@ public class InterfaceSeleniumTest
 		funkcjonalnosci=selenium.getSelectOptions("name=functionalities");
 		}
 		while (funkcjonalnosci[0].equals("£adowanie..."));
-		selenium.select("name=functionalities", "dupa");
+		selenium.select("name=functionalities", "Thread"+x);
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");
-		Assert.assertTrue(selenium.isTextPresent("dupa"));
+		Assert.assertTrue(selenium.isTextPresent("Thread"+x));
 		Assert.assertTrue(selenium.isTextPresent("500"));
 		Assert.assertTrue(localDao.isEmpty());
 		//Thread t2 = new Thread( instance.createCommitRunnable(new CommitingDetails()));

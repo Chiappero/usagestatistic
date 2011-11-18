@@ -45,6 +45,61 @@ public final class UsageStatistic implements UsageLogger{
 	private static final String DEBUG_PARAMETER  = "debug";
 	private static final String ON = "on";
 	
+	public void log(final String functionality, final String parameters) 
+	{ 
+		LogInformation log = new LogInformation(Calendar.getInstance().getTime(), functionality, user, tool, parameters);
+		dao.saveLog(log);
+	}
+	
+	@Override
+	public int getLogsCount() 
+	{
+		try
+		{
+			return dao.getLogsAmount();
+		} catch (SQLException e)
+		{ 
+			return 0;
+		}
+	}
+
+	@Override
+	public Date getOldestLogDate() {
+		return dao.getOldestLogDate();
+	}
+
+	@Override
+	public List<LogInformation> getAllLogs()
+	{
+		return dao.getAllLogs();
+	}
+
+	@Override
+	public Runnable createCommitRunnable(final CommitListener cl)
+	{
+		return new CommitRunnable(cl);
+	}
+	
+	public static UsageLogger getInstance()
+	{
+		try 
+		{
+			if (instance == null||instance instanceof UsageLoggerEmpty)
+			{
+			instance=new UsageStatistic();
+			((UsageStatistic) instance).init();
+			}
+			
+			
+		} 
+		catch (UsageStatisticException e) 
+		{
+			instance=new UsageLoggerEmpty();
+			errorlog(e);
+		}
+		return instance;
+	}
+
 	private void init() throws UsageStatisticException {
 		user=null;
 		password=null;
@@ -72,15 +127,12 @@ public final class UsageStatistic implements UsageLogger{
 		
 
 	}
-
 	
 	private void readFromCipheredFile() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, URISyntaxException, UsageStatisticException{
 		File file = new File(CLIENT_CONFIG_FILE);
 		Ciphers cipher = new Ciphers();
 		String config=cipher.readCiphered(file); 
-        //validateAndSetConfig(config);
 		StringTokenizer st = new StringTokenizer(config);
-        String url=null, us=null, pass=null, too=null, deb=null;
 
         try{
         	st.nextToken();
@@ -99,53 +151,9 @@ public final class UsageStatistic implements UsageLogger{
         }
 	}
 	
-	/*private void validateAndSetConfig(final String config) throws URISyntaxException, UsageStatisticException{
-        StringTokenizer st = new StringTokenizer(config);
-        String url=null, us=null, pass=null, too=null, deb=null;
-
-        try{
-        	st.nextToken();
-        	serverURL=new URI(st.nextToken()+POST_PATH);//url=st.nextToken();
-        	st.nextToken();
-        	user=st.nextToken();
-        	st.nextToken();
-        	password=st.nextToken();
-        	st.nextToken();
-        	tool=st.nextToken();
-        	st.nextToken();
-        	debuglog=st.nextToken().equals(ON);
-        }
-        catch(NoSuchElementException e){
-        	throw new UsageStatisticException(UsageStatisticException.CONFIG_ERROR);
-        }
-      
-    }*/
-
-
 	private UsageStatistic() throws UsageStatisticException {
 		init();
 	}
-
-	public void log(final String functionality, final String parameters) 
-	{ 
-		LogInformation log = new LogInformation(Calendar.getInstance().getTime(), functionality, user, tool, parameters);
-		dao.saveLog(log);
-		//dao.closeDatabase();
-	}
-	
-	
-
-	/*public synchronized void commit()
-	{
-		if(commitThread==null || !commitThread.isAlive()){
-			commitThread = null;
-			commitThread = new Thread(new CommitRunnable());
-			commitThread.setDaemon(true);
-			commitThread.start();
-		}
-		
-	}*/
-	
 
 	private synchronized void commitInCommit(final CommitListener committingDetails)
 	{
@@ -161,38 +169,6 @@ public final class UsageStatistic implements UsageLogger{
 			{
 				LogInformation log = dao.getFirstLog();
 
-				/*if (log!=null)
-				{
-					PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log,password);
-					String postForObject = restTemplate.postForObject(serverURL, pair, String.class);
-					if ("OK".equals(postForObject)) 
-					{
-						dao.clearFirstLog();
-						committingDetails.step();
-						
-					}
-					else if ("ERROR".equals(postForObject))
-					{
-						committingDetails.stepInvalid(Errors.CANNOT_SAVE_LOG);
-					} 
-					else if ("CANNOT_AUTHENTICATE".equals(postForObject))
-					{
-						committingDetails
-						.commitingFailureWithError(Errors.CANNOT_AUTHENTICATE);
-						return;
-					}
-					else
-					{
-						committingDetails
-						.commitingFailureWithError(Errors.SERVER_DOESNT_RECEIVE_DATA);
-						return;
-					}
-					
-				}
-				else
-				{
-					committingDetails.stepInvalid(Errors.LOG_WAS_NULL);
-				}*/
 				sendOneLog(committingDetails, log);
 				i++;
 				
@@ -228,7 +204,6 @@ public final class UsageStatistic implements UsageLogger{
 			.commitingFailureWithError(Errors.CANNOT_EXTRACT_RESPONSE);
 		}
 	}
-	
 	
 	private void sendOneLog(final CommitListener committingDetails, LogInformation log) throws SQLException{
 		if (log!=null)
@@ -266,29 +241,7 @@ public final class UsageStatistic implements UsageLogger{
 		
 	}
 
-	
-
-	public static UsageLogger getInstance()
-	{
-		try 
-		{
-			if (instance == null||instance instanceof UsageLoggerEmpty)
-			{
-			instance=new UsageStatistic();
-			((UsageStatistic) instance).init();
-			}
-			
-			
-		} 
-		catch (UsageStatisticException e) 
-		{
-			instance=new UsageLoggerEmpty();
-			errorlog(e);
-		}
-		return instance;
-	}
-	
-private static void errorlog(final UsageStatisticException e) 
+	private static void errorlog(final UsageStatisticException e) 
 {
 		if (debuglog)
 		{
@@ -303,15 +256,6 @@ private static void errorlog(final UsageStatisticException e)
 		
 	}
 
-/*	public void commitWait(){
-		try {
-			commitThread.join();
-		} catch (InterruptedException e) {
-			
-		}
-	}
-*/	
-	
 	private class CommitRunnable implements Runnable{
 		
 		private CommitListener listener;
@@ -331,36 +275,4 @@ private static void errorlog(final UsageStatisticException e)
 			commitInCommit(listener);
 		}
 	}
-	
-
-	@Override
-	public int getLogsCount() 
-	{
-		try
-		{
-			return dao.getLogsAmount();
-		} catch (SQLException e)
-		{ 
-			return 0;
-		}
-	}
-
-	@Override
-	public Date getOldestLogDate() {
-		return dao.getOldestLogDate();
-	}
-
-	@Override
-	public List<LogInformation> getAllLogs()
-	{
-		return dao.getAllLogs();
-	}
-
-
-	@Override
-	public Runnable createCommitRunnable(final CommitListener cl)
-	{
-		return new CommitRunnable(cl);
-	}
-	
 }
