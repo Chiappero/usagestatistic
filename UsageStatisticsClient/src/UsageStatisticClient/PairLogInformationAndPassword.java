@@ -6,23 +6,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class PairLogInformationAndPassword
 {
-LogInformation logInformation;
-String password;
-public LogInformation getLogInformation()
+private LogInformation logInformation;
+private String password;
+public final LogInformation getLogInformation()
 {
 	return logInformation;
 }
-public void setLogInformation(LogInformation logInformation)
+public final void setLogInformation(LogInformation logInformation)
 {
 	this.logInformation = logInformation;
 }
-public String getPassword()
-{
-	return password;
-}
-public void setPassword(String password)
+public final void setPassword(String password)
 {
 	this.password = password;
+}
+public final String getPassword()
+{
+	return password;
 }
 public PairLogInformationAndPassword(LogInformation logInformation,
 		String password)
@@ -31,9 +31,11 @@ public PairLogInformationAndPassword(LogInformation logInformation,
 	this.logInformation = logInformation;
 	this.password = password;
 }
-public PairLogInformationAndPassword()
+public PairLogInformationAndPassword() //musi byc aby commitowanie zadzialalo!!
 {
 }
+
+
 
 
 

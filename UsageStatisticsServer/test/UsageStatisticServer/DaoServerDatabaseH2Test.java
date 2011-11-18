@@ -227,7 +227,7 @@ public class DaoServerDatabaseH2Test {
 	
 	
 	@Test
-	public void AT81_Proper_show_filtered_data() throws SQLException, NoSuchFieldException
+	public void AT81_Proper_show_filtered_data() throws SQLException, NoSuchFieldException, InterruptedException
 	{
 	usunWszystkieLogi();
 	saveTemporaryData(25);
@@ -272,6 +272,7 @@ public class DaoServerDatabaseH2Test {
 	Assert.assertEquals(25, list2.size());	
 	list2=dao.getLogsWithWhereClausure(new LogFilter(null,null,testlist , null, testlist));
 	Assert.assertEquals(26, list2.size());	
+	Thread.sleep(50);
 	list2=dao.getLogsWithWhereClausure(new LogFilter(new GregorianCalendar().getTime(),null,testlist , null, null));
 	Assert.assertEquals(0, list2.size());		
 	
@@ -389,9 +390,10 @@ public class DaoServerDatabaseH2Test {
 	}
 	
 	@Test
-	public void AT82_Proper_cache_of_credentials_on_server() throws SQLException, NoSuchFieldException
+	public void A11_3_Proper_cache_of_credentials_on_server() throws SQLException, NoSuchFieldException
 	{	
 		String u,p;
+		dao.addUserClient("user", EncryptInstance.SHA256("user"));
 		dao.isValidCredential("user", EncryptInstance.SHA256("user"));
 		u=(String) PrivateAccessor.getField(dao, "user");
 		p=(String) PrivateAccessor.getField(dao,"pass");	

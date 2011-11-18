@@ -26,32 +26,37 @@ import org.springframework.web.servlet.ModelAndView;
 	    	//System.out.println("otrzymalem user="+pair.getLogInformation().getUser()+" oraz password="+pair.getPassword());
 	    	if (pair!=null)
 	    	{
-	    	String password = pair.getPassword();
-	    	String user = pair.getLogInformation().getUser();
-	    		if (user!=null&&password!=null)
-	    		{
-	    			//System.out.println("user nie jest nullem, ani password nie jest nullem");
-	    		try
-				{
-					if (dao.isValidCredential(user, password))
+		    	String password = pair.getPassword();
+		    	LogInformation logInformation = pair.getLogInformation();
+		    	if (logInformation!=null)
+		    	{
+				String user = logInformation.getUser();
+		    	if (user!=null&&password!=null)
+		    	{
+		    			//System.out.println("user nie jest nullem, ani password nie jest nullem");
+			    	try
+					{
+						if (dao.isValidCredential(user, password))
 						{
-						//System.out.println("udalo mi sie zautentykowac z user="+user+" oraz password="+password);
-						if (dao.saveLog(pair.getLogInformation()))
+									//System.out.println("udalo mi sie zautentykowac z user="+user+" oraz password="+password);
+							/*if (dao.saveLog(pair.getLogInformation()))
 							{
-							modelAndView.addObject("message", "OK");
-							} else
+								modelAndView.addObject("message", "OK");
+							} 
+							else
 							{
-							modelAndView.addObject("message", "ERROR");
-							}
-						return modelAndView;
+								modelAndView.addObject("message", "ERROR");
+							}*/
+							modelAndView.addObject("message", dao.saveLog(logInformation)?"OK":"ERROR");
+							return modelAndView;
 						}
-				} catch (SQLException e)
-				{
-				}
-	    		}
-	    		modelAndView.addObject("message", "CANNOT_AUTHENTICATE");
-		    	return modelAndView;
-	    		
+					} catch (SQLException e){}
+		    	
+		    	
+		    	modelAndView.addObject("message", "CANNOT_AUTHENTICATE");
+			    return modelAndView;
+		    	}
+		    	}
 	    	}
 	    	modelAndView.addObject("message", "ERROR");
 	    	return modelAndView;

@@ -81,12 +81,15 @@
     </dependency>  
 
 	
+   
+	
+	
 	
 	
   </dependencies>
     <build>
-		<sourceDirectory>D:\JAVA\Repo\UsageStatisticsClient\src</sourceDirectory>
-		<testSourceDirectory>D:\JAVA\Repo\UsageStatisticsClient\test</testSourceDirectory>
+		<sourceDirectory>..\..\UsageStatisticsClient\src</sourceDirectory>
+		<testSourceDirectory>..\..\UsageStatisticsClient\test</testSourceDirectory>
 	</build>
  
   

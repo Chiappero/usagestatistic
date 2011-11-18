@@ -1,9 +1,7 @@
 package UsageStatisticClient;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
@@ -15,13 +13,14 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.web.client.RestTemplate;
 
-final public class UsageStatistic implements UsageLogger{
+public final class UsageStatistic implements UsageLogger{
 	private URI serverURL;
 	private String user;
 	private String password; 
@@ -29,9 +28,77 @@ final public class UsageStatistic implements UsageLogger{
 	private static UsageLogger instance;
 	private RestTemplate restTemplate;
 	private DaoTemporaryDatabaseInterface dao;
-	private CommitListener committingDetails;
-	private CommitThread commitThread;
+//	private Thread commitThread;
 	private static boolean debuglog;
+	
+	
+	private static final String BEGIN_COMMITING = "Begin commiting";
+	private static final String DEBUGLOG_FILE = "debuglog.txt";
+	private static final String CLIENT_CONFIG_FILE = "client-config.cfg";
+	private static final String COMMITING_FINISHED_SUCCESFUL = "Commiting finised succesful";
+	private static final String POST_PATH = "/post";
+	private static final String EQUALS  = "=";
+	private static final String SERVER_URL_PARAMETER  = "serverURL";
+	private static final String USER_PARAMETER  = "user";
+	private static final String PASSWORD_PARAMETER  = "password";
+	private static final String TOOL_PARAMETER  = "tool";
+	private static final String DEBUG_PARAMETER  = "debug";
+	private static final String ON = "on";
+	
+	public void log(final String functionality, final String parameters) 
+	{ 
+		LogInformation log = new LogInformation(Calendar.getInstance().getTime(), functionality, user, tool, parameters);
+		dao.saveLog(log);
+	}
+	
+	@Override
+	public int getLogsCount() 
+	{
+		try
+		{
+			return dao.getLogsAmount();
+		} catch (SQLException e)
+		{ 
+			return 0;
+		}
+	}
+
+	@Override
+	public Date getOldestLogDate() {
+		return dao.getOldestLogDate();
+	}
+
+	@Override
+	public List<LogInformation> getAllLogs()
+	{
+		return dao.getAllLogs();
+	}
+
+	@Override
+	public Runnable createCommitRunnable(final CommitListener cl)
+	{
+		return new CommitRunnable(cl);
+	}
+	
+	public static UsageLogger getInstance()
+	{
+		try 
+		{
+			if (instance == null||instance instanceof UsageLoggerEmpty)
+			{
+			instance=new UsageStatistic();
+			((UsageStatistic) instance).init();
+			}
+			
+			
+		} 
+		catch (UsageStatisticException e) 
+		{
+			instance=new UsageLoggerEmpty();
+			errorlog(e);
+		}
+		return instance;
+	}
 
 	private void init() throws UsageStatisticException {
 		user=null;
@@ -39,8 +106,7 @@ final public class UsageStatistic implements UsageLogger{
 		serverURL=null;
 		tool=null;
 		debuglog=true;
-		dao = new DaoTemporaryDatabaseH2(); 													// throwsa
-		committingDetails = new CommitingDetailsEmpty();
+		dao = new DaoTemporaryDatabaseH2(); 													
 		restTemplate = new RestTemplate();
 
 			try {
@@ -61,129 +127,53 @@ final public class UsageStatistic implements UsageLogger{
 		
 
 	}
-
 	
 	private void readFromCipheredFile() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IOException, URISyntaxException, UsageStatisticException{
-		File file = new File("client-config.cfg");
+		File file = new File(CLIENT_CONFIG_FILE);
 		Ciphers cipher = new Ciphers();
 		String config=cipher.readCiphered(file); 
-        validateAndSetConfig(config);
-	}
-	
-	private void validateAndSetConfig(String config) throws URISyntaxException, UsageStatisticException{
-        StringTokenizer st = new StringTokenizer(config);
-        String url=null, us=null, pass=null, too=null, deb=null;
-        if(st.hasMoreTokens() && st.nextToken().equals("serverURL=") && st.hasMoreTokens()){
-            url=st.nextToken();
-            
-        
-            if(st.hasMoreTokens() && st.nextToken().equals("user=") && st.hasMoreTokens()){
-                us=st.nextToken();
-                
-            
-                if(st.hasMoreTokens() && st.nextToken().equals("password=") && st.hasMoreTokens()){
-                    pass=st.nextToken();
-                    
-                    
-                    if(st.hasMoreTokens() && st.nextToken().equals("tool=") && st.hasMoreTokens()){
-                        too=st.nextToken();
-                       
-                        
-                        if(st.hasMoreTokens() && st.nextToken().equals("debug=") && st.hasMoreTokens()){
-                            deb=st.nextToken();
-                            
-                        }
-                    }
-                }
-            }
+		StringTokenizer st = new StringTokenizer(config);
+
+        try{
+        	st.nextToken();
+        	serverURL=new URI(st.nextToken()+POST_PATH);//url=st.nextToken();
+        	st.nextToken();
+        	user=st.nextToken();
+        	st.nextToken();
+        	password=st.nextToken();
+        	st.nextToken();
+        	tool=st.nextToken();
+        	st.nextToken();
+        	debuglog=st.nextToken().equals(ON);
         }
-        if(url!=null && us!=null && pass!=null && too!=null && deb!=null){
-        	serverURL=new URI(url+"/post");
-            this.user = us;
-            this.password = pass;
-            this.tool = too;
-            this.debuglog = deb.equals("on");
-        }
-        else{
+        catch(NoSuchElementException e){
         	throw new UsageStatisticException(UsageStatisticException.CONFIG_ERROR);
         }
-
-        
-    }
-
-
+	}
+	
 	private UsageStatistic() throws UsageStatisticException {
 		init();
 	}
 
-	public void log(String functionality, String parameters) 
-	{ 
-		LogInformation log = new LogInformation(Calendar.getInstance().getTime(), functionality, user, tool, parameters);
-		dao.saveLog(log);
-		//dao.closeDatabase();
-	}
-	
-	
-	@Override	
-	public synchronized void commit()
-	{
-		if(commitThread==null || !commitThread.isAlive()){
-			commitThread = null;
-			commitThread = new CommitThread();
-			commitThread.setDaemon(true);
-			commitThread.start();
-		}
-		
-	}
-	
-
-	private synchronized void commitInCommit()
+	private synchronized void commitInCommit(final CommitListener committingDetails)
 	{
 		try
 		{
 			int logsAmount = dao.getLogsAmount();
 			committingDetails.commitingStart();
 			committingDetails.setLogsAmount(logsAmount);
-			committingDetails.setInfo("Begin commiting");
+			committingDetails.setInfo(BEGIN_COMMITING);
 			int i = 0;
 			
 			while (!dao.isEmpty() &&  i < logsAmount)
 			{
 				LogInformation log = dao.getFirstLog();
 
-				if (log!=null)
-				{
-					PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log,password);
-					String postForObject = restTemplate.postForObject(serverURL, pair, String.class);
-					if ("OK".equals(postForObject)) 
-					{
-						dao.clearFirstLog();
-						committingDetails.step();
-						
-					}
-					else if ("ERROR".equals(postForObject))
-					{
-						committingDetails.stepInvalid(Errors.CANNOT_SAVE_LOG);
-					} else if ("CANNOT_AUTHENTICATE".equals(postForObject))
-					{
-						committingDetails
-						.commitingFailureWithError(Errors.CANNOT_AUTHENTICATE);
-					}
-					else
-					{
-						committingDetails
-						.commitingFailureWithError(Errors.SERVER_DOESNT_RECEIVE_DATA);
-					}
-					
-				} else
-				{
-					committingDetails.stepInvalid(Errors.LOG_WAS_NULL);
-				}
-				
+				sendOneLog(committingDetails, log);
 				i++;
 				
-			}
-				committingDetails.setInfo("Commiting finised succesful");
+			}	
+				committingDetails.setInfo(COMMITING_FINISHED_SUCCESFUL);
 				committingDetails.commitingFinishedSuccesful();
 		} 
 		
@@ -214,33 +204,50 @@ final public class UsageStatistic implements UsageLogger{
 			.commitingFailureWithError(Errors.CANNOT_EXTRACT_RESPONSE);
 		}
 	}
-
 	
-
-	public static UsageLogger getInstance()
-	{
-		try 
+	private void sendOneLog(final CommitListener committingDetails, LogInformation log) throws SQLException{
+		if (log!=null)
 		{
-			if (instance == null||instance instanceof UsageLoggerEmpty)
-				instance=new UsageStatistic();
+			PairLogInformationAndPassword pair = new PairLogInformationAndPassword(log,password);
+			String postForObject = restTemplate.postForObject(serverURL, pair, String.class);
+			if ("OK".equals(postForObject)) 
+			{
+				dao.clearFirstLog();
+				committingDetails.step();
+				
+			}
+			else if ("ERROR".equals(postForObject))
+			{
+				committingDetails.stepInvalid(Errors.CANNOT_SAVE_LOG);
+			} 
+			else if ("CANNOT_AUTHENTICATE".equals(postForObject))
+			{
+				committingDetails
+				.commitingFailureWithError(Errors.CANNOT_AUTHENTICATE);
+				return;
+			}
 			else
-				((UsageStatistic)instance).init();
-		} 
-		catch (UsageStatisticException e) 
-		{
-			instance=new UsageLoggerEmpty();
-			errorlog(e);
+			{
+				committingDetails
+				.commitingFailureWithError(Errors.SERVER_DOESNT_RECEIVE_DATA);
+				return;
+			}
+			
 		}
-		return instance;
+		else
+		{
+			committingDetails.stepInvalid(Errors.LOG_WAS_NULL);
+		}
+		
 	}
-	
-private static void errorlog(UsageStatisticException e) 
+
+	private static void errorlog(final UsageStatisticException e) 
 {
 		if (debuglog)
 		{
 			BufferedWriter out;
 			try {
-				out = new BufferedWriter(new FileWriter("debuglog.txt",true));
+				out = new BufferedWriter(new FileWriter(DEBUGLOG_FILE,true));
 				out.write(Calendar.getInstance().getTime()+": "+e.getMessage()+"\n");
 				out.close();
 			} catch (IOException e1) 
@@ -249,57 +256,23 @@ private static void errorlog(UsageStatisticException e)
 		
 	}
 
-	private void commitWait(){
-		try {
-			commitThread.join();
-		} catch (InterruptedException e) {
-			
-		}
-	}
-	
-	
-	private class CommitThread extends Thread{
+	private class CommitRunnable implements Runnable{
 		
+		private CommitListener listener;
+		
+
+		public CommitRunnable(CommitListener listener)
+		{
+			if (listener == null)
+				this.listener = new CommitingDetailsEmpty();
+			else
+				this.listener = listener;
+		}
+
+
 		@Override
 		public void run(){
-			commitInCommit();
+			commitInCommit(listener);
 		}
 	}
-	
-	@Override
-	public void setCommitListener(CommitListener cl) 
-	{
-		if (committingDetails==null)
-		{
-		committingDetails = new CommitingDetailsEmpty();
-		}
-		else
-		{
-		committingDetails=cl;
-		}
-	}
-
-	@Override
-	public int getLogsCount() 
-	{
-		try
-		{
-			return dao.getLogsAmount();
-		} catch (SQLException e)
-		{ 
-			return 0;
-		}
-	}
-
-	@Override
-	public Date getOldestLogDate() {
-		return dao.getOldestLogDate();
-	}
-
-	@Override
-	public List<LogInformation> getAllLogs()
-	{
-		return dao.getAllLogs();
-	}
-	
 }

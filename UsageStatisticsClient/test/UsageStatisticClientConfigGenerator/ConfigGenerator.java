@@ -11,11 +11,12 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.NoSuchPaddingException;
 
-import UsageStatisticClient.Ciphers;
+import junitx.util.PrivateAccessor;
+
 
 public class ConfigGenerator
 {
-public static void createConfigFile(String fileName, String serverURL, String user, String password, String tool) throws IOException
+public static void createConfigFile(String fileName, String serverURL, String user, String password, String tool) throws Throwable
 {
 	 /*File f = new File(fileName);
 	 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(f)));
@@ -26,25 +27,19 @@ public static void createConfigFile(String fileName, String serverURL, String us
 	 out.println("debug = on");
 	 out.close();*/
 	try {
-		new Ciphers().writeCiphered(new File(fileName), "serverURL= "+ serverURL +" user= "+user+" password= "+Ciphers.SHA256(password)+" tool= "+tool+" debug= on");
+		String pass=(String) PrivateAccessor.invoke(Ciphers.class, "sha256", new Class[] {String.class}, new String[] {password});
+		new Ciphers().writeCiphered(new File(fileName), "serverURL= "+ serverURL +" user= "+user+" password= "+pass+" tool= "+tool+" debug= on");
 	} catch (InvalidKeyException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	} catch (InvalidAlgorithmParameterException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	} catch (NoSuchAlgorithmException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	} catch (NoSuchPaddingException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
 	}
 }
 
-public static String config(String serverURL, String user, String password, String tool)
+public static String config(String serverURL, String user, String password, String tool) throws Throwable
 {
-		return "serverURL = "+serverURL+"\nuser = "+user+"\npassword = "+Ciphers.SHA256(password)+"\ntool = "+tool+"\ndebug = on";
+		String pass=(String) PrivateAccessor.invoke(Ciphers.class, "sha256", new Class[] {String.class}, new String[] {password});
+		return "serverURL = "+serverURL+"\nuser = "+user+"\npassword = "+pass+"\ntool = "+tool+"\ndebug = on";
 }
 
 

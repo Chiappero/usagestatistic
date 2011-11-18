@@ -1,6 +1,9 @@
 package UsageStatisticClient;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,10 +15,10 @@ import org.h2.tools.Server;
 
 final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 {
-	String user="localdb";
-	String pass="localpass";
-	Server server=null;
-	Connection conn=null;
+	private final String user="localdb";
+	private final String pass="localpass";
+	private Server server=null;
+	private Connection conn=null;
 	
 	DaoTemporaryDatabaseH2()
 	{
@@ -23,7 +26,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	}
 	
 	@Override
-	public boolean saveLog(LogInformation log) 
+	public boolean saveLog(final LogInformation log) 
 	{	
 		checkIfBaseIsOpen();
 		if (log==null || conn==null)
@@ -184,24 +187,23 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		
         try {
         	if (server==null||server.getStatus().equals("Not started"))
+        	{
         		server = Server.createTcpServer(new String[] { "-tcpAllowOthers" }).start();
+        	}
 			Class.forName("org.h2.Driver");
 	        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", user,pass);
 	        createTables();
 		} 
         	catch (ClassNotFoundException e) 
 		{
-			e.printStackTrace();
 		}
         catch (SQLException e) {
 	        try {
 	        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", user,pass);
 	        createTables();
 			} catch (SQLException e1) {
-				e1.printStackTrace();
 			}
 	        
-        	System.out.println(e.getMessage());
 		}
 
 	}
@@ -216,12 +218,14 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 					conn.close();
 				}
 				if (server!=null&&!server.getStatus().equals("Not started"))
+				{
+					server.shutdown();
 					server.stop();
+				}
 			} catch (SQLException e) {
 				try {
 					conn.close();
 				} catch (SQLException e1) {
-					e1.printStackTrace();
 				}
 			}
 	}	
@@ -253,7 +257,6 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			try {
 				conn.createStatement().execute(query);
 			} catch (SQLException e1) {
-				e1.printStackTrace();
 			}
 		}
 
@@ -265,7 +268,9 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	{
 
         	if (server==null||server.getStatus().equals("Not started"))
+        	{
         		server = Server.createTcpServer(new String[] { "-tcpAllowOthers" }).start();
+        	}
 			try {
 				Class.forName("org.h2.Driver");
 		        conn= DriverManager.getConnection("jdbc:h2:tcp://localhost/db", user,pass);
@@ -304,7 +309,6 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 			} 
 			catch (SQLException e)
 			{
-				e.printStackTrace();
 			}
 	}
 	
@@ -334,7 +338,10 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		try
 		{
 		ResultSet rs=conn.createStatement().executeQuery(sql);
-		if (!rs.first())return null;
+		if (!rs.first())
+		{
+			return null;
+		}
 		return rs.getTimestamp("timestamp");
 		}
 		catch (SQLException e)
@@ -356,13 +363,16 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		checkIfBaseIsOpen();
 		try
 		{
-			if (isEmpty())return new ArrayList<LogInformation>();
+			if (isEmpty())
+			{
+				return new ArrayList<LogInformation>();
+			}
 		} catch (SQLException e1)
 		{
 			return new ArrayList<LogInformation>();
 		}
 		String sql="SELECT * FROM Log";
-		ResultSet rs = null;
+		final ResultSet rs;
 		try
 		{
 		rs=conn.createStatement().executeQuery(sql);
@@ -380,12 +390,18 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	
 	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs) throws SQLException {
 		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
-		if (!rs.first())return new ArrayList<LogInformation>();
+		if (!rs.first())
+		{
+			return new ArrayList<LogInformation>();
+		}
+		
 		do
 		{
 		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
 		if (LogInformation.validateLog(logInformation))
+		{
 			loglist.add(logInformation);
+		}
 		rs.next();
 		}
 		while (!rs.isAfterLast());

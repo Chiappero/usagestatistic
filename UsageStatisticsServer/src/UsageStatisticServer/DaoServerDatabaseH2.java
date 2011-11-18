@@ -1,7 +1,9 @@
 package UsageStatisticServer;
 
-import java.lang.reflect.Array;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class DaoServerDatabaseH2
 		openDatabase();
 	}
 	
-	public boolean addUserClient(String username, String password)
+	public boolean addUserClient(final String username, final String password)
 	{	
 			checkIfBaseIsOpen();
 			String sql = "INSERT INTO Credentials (username, password) VALUES ('"+username+"', '"+password+"')";
@@ -64,7 +66,7 @@ public class DaoServerDatabaseH2
 			}
 	}
 	
-	public boolean isValidCredential(String user, String password) throws SQLException
+	public boolean isValidCredential(final String user, final String password) throws SQLException
 	{
 		checkIfBaseIsOpen();
 		if (this.user!=null&&!this.user.isEmpty()&&this.user.equals(user)
@@ -95,7 +97,7 @@ public class DaoServerDatabaseH2
 	}
 	
 	
-	public boolean saveLog(LogInformation log) 
+	public boolean saveLog(final LogInformation log) 
 	{
 		checkIfBaseIsOpen();
 		if (log!=null&&LogInformation.validateLog(log) && conn!=null)
@@ -162,7 +164,6 @@ public class DaoServerDatabaseH2
 				try {
 					conn.close();
 				} catch (SQLException e1) {
-					e1.printStackTrace();
 				}
 			}
 	}	
@@ -178,7 +179,6 @@ public class DaoServerDatabaseH2
 			try {
 				conn.createStatement().execute(query);
 			} catch (SQLException e1) {
-				e1.printStackTrace();
 			}
 		}
 		
@@ -191,7 +191,6 @@ public class DaoServerDatabaseH2
 			try {
 				conn.createStatement().execute(query);
 			} catch (SQLException e1) {
-				e1.printStackTrace();
 			}
 		}
 		
@@ -209,7 +208,6 @@ public class DaoServerDatabaseH2
 			}
 		} catch (SQLException e)
 		{
-			e.printStackTrace();
 		}
 	}
 	
@@ -266,7 +264,7 @@ public class DaoServerDatabaseH2
 		return getAllLogsSorted(null);
 	}
 	
-	public ArrayList<LogInformation> getAllLogs(int from, int count) throws SQLException 
+	public ArrayList<LogInformation> getAllLogs(final int from, final int count) throws SQLException 
 	{	
 		return getAllLogsSorted(null, from, count);
 
@@ -301,7 +299,7 @@ public class DaoServerDatabaseH2
 
 	}		
 	
-	private ArrayList<LogInformation> getLogsWithWhereClausure(String whereclausure,LinkedList<String> orderby,int from, int count) throws SQLException 
+	private ArrayList<LogInformation> getLogsWithWhereClausure(final String whereclausure,final LinkedList<String> orderby,int from,final int count) throws SQLException 
 	{	
 		checkIfBaseIsOpen();
 		if (isEmpty())return new ArrayList<LogInformation>();
