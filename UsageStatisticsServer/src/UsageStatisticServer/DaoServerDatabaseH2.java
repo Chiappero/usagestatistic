@@ -11,8 +11,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
 
 public class DaoServerDatabaseH2
 {
@@ -186,87 +184,77 @@ public class DaoServerDatabaseH2
 
 		}
 	}
-	
-	public int getLogsAmount() throws SQLException 
-	{	
+
+	public int getLogsAmount() throws SQLException
+	{
 		checkIfBaseIsOpen();
-		String sql="SELECT COUNT(*) FROM Log";
+		String sql = "SELECT COUNT(*) FROM Log";
 		try
 		{
-		ResultSet rs=conn.createStatement().executeQuery(sql);
-		rs.first();
-		return Integer.parseInt(rs.getString(1));
+			ResultSet rs = conn.createStatement().executeQuery(sql);
+			rs.first();
+			return Integer.parseInt(rs.getString(1));
 		}
 		catch (SQLException e)
 		{
 			throw e;
 		}
 	}
-	
 
-	public ArrayList<LogInformation> getAllLogs() throws SQLException 
-	{	
+	public ArrayList<LogInformation> getAllLogs() throws SQLException
+	{
 		checkIfBaseIsOpen();
-		if (isEmpty())return new ArrayList<LogInformation>();
-		String sql="SELECT * FROM Log";
-		
+		if (isEmpty())
+			return new ArrayList<LogInformation>();
+		String sql = "SELECT * FROM Log";
+
 		ResultSet rs = null;
-		try
-		{
-		rs=conn.createStatement().executeQuery(sql);
+		rs = conn.createStatement().executeQuery(sql);
 		return getLogsFromResultSet(rs);
-		}
-		catch (SQLException e)
-		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
 
-				throw e;
-			}	
-			else throw e;
-		}	
 	}
-	
 
-
-	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs) throws SQLException {
-		ArrayList<LogInformation> loglist=new ArrayList<LogInformation>();
-		if (!rs.first())return new ArrayList<LogInformation>();
+	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs) throws SQLException
+	{
+		ArrayList<LogInformation> loglist = new ArrayList<LogInformation>();
+		if (!rs.first())
+			return new ArrayList<LogInformation>();
 		do
 		{
-		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
-		if (LogInformation.validateLog(logInformation))
-			loglist.add(logInformation);
-		rs.next();
-		}
-		while (!rs.isAfterLast());
+			LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"), rs.getString("functionality"), rs.getString("user"), rs.getString("tool"), rs.getString("parameters"));
+			if (LogInformation.validateLog(logInformation))
+				loglist.add(logInformation);
+			rs.next();
+		} while (!rs.isAfterLast());
 		return loglist;
 	}
-	
+
 	public ArrayList<String> getUsers() throws SQLException
 	{
 		return getColumn("user");
 	}
-	
+
 	public ArrayList<String> getTools() throws SQLException
 	{
 		return getColumn("tool");
-	}	
+	}
+
 	public ArrayList<String> getFunctionalities() throws SQLException
 	{
 		return getColumn("functionality");
 	}
-	
-	
+
 	private ArrayList<String> getColumn(String column) throws SQLException
 	{
-		ArrayList<String> values=new ArrayList<String>();
+		ArrayList<String> values = new ArrayList<String>();
 		checkIfBaseIsOpen();
-		if (isEmpty())return values;
-		String sql="SELECT DISTINCT "+column+" FROM Log";
+		if (isEmpty())
+			return values;
+		String sql = "SELECT DISTINCT " + column + " FROM Log";
 		ResultSet rs = null;
-		rs=conn.createStatement().executeQuery(sql);
-		if(!rs.first())return values;
+		rs = conn.createStatement().executeQuery(sql);
+		if (!rs.first())
+			return values;
 		while (!rs.isAfterLast())
 		{
 			values.add(rs.getString(column));
@@ -279,112 +267,120 @@ public class DaoServerDatabaseH2
 
 	public ArrayList<String> getFunctionalities(String tool) throws SQLException
 	{
-		ArrayList<String> values=new ArrayList<String>();
+		ArrayList<String> values = new ArrayList<String>();
 		checkIfBaseIsOpen();
-		if (isEmpty())return values;
-		String sql="SELECT DISTINCT functionality FROM Log WHERE tool=\'"+tool+"\' ORDER BY functionality";
+		if (isEmpty())
+			return values;
+		String sql = "SELECT DISTINCT functionality FROM Log WHERE tool=\'" + tool + "\' ORDER BY functionality";
 		ResultSet rs = null;
 
-		rs=conn.createStatement().executeQuery(sql);
-		if(!rs.first())return values;
-		
+		rs = conn.createStatement().executeQuery(sql);
+		if (!rs.first())
+			return values;
+
 		while (!rs.isAfterLast())
 		{
 			values.add(rs.getString("functionality"));
 			rs.next();
 		}
-		
+
 		return values;
-	
+
 	}
-	
 
 	public ArrayList<String> getUsers(String tool) throws SQLException
 	{
-		ArrayList<String> values=new ArrayList<String>();
+		ArrayList<String> values = new ArrayList<String>();
 		checkIfBaseIsOpen();
-		if (isEmpty())return values;
-		String sql="SELECT DISTINCT user FROM Log WHERE tool=\'"+tool+"\' ORDER BY user";
+		if (isEmpty())
+			return values;
+		String sql = "SELECT DISTINCT user FROM Log WHERE tool=\'" + tool + "\' ORDER BY user";
 		ResultSet rs = null;
-		rs=conn.createStatement().executeQuery(sql);
-		if(!rs.first())return values;
-		
+		rs = conn.createStatement().executeQuery(sql);
+		if (!rs.first())
+			return values;
+
 		while (!rs.isAfterLast())
 		{
 			values.add(rs.getString("user"));
 			rs.next();
 		}
-		
+
 		return values;
 	}
-	
+
 	public ArrayList<StandardFilter> getLogsFromDatabase(ArrayList<String> functionalities, String[] users, String tool, String datefrom, String dateto, boolean param) throws SQLException
 	{
-		ArrayList<StandardFilter> values=new ArrayList<StandardFilter>();
+		ArrayList<StandardFilter> values = new ArrayList<StandardFilter>();
 		checkIfBaseIsOpen();
-		if (isEmpty() || functionalities.size()==0 || users.length==0)return values;
-		
-		
-		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-		java.sql.Timestamp sqlfrom=null,sqlto=null;
-		
-		
-		try {
-			if (datefrom!=null&&!datefrom.isEmpty())
-				sqlfrom =new java.sql.Timestamp(sdf.parse(datefrom).getTime());
-			if (dateto!=null&&!dateto.isEmpty())
-			sqlto =new java.sql.Timestamp(sdf.parse(dateto).getTime()+1000*3600*24);
-		} catch (ParseException e1) {
+		if (isEmpty() || functionalities.size() == 0 || users.length == 0)
+			return values;
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		java.sql.Timestamp sqlfrom = null, sqlto = null;
+
+		try
+		{
+			if (datefrom != null && !datefrom.isEmpty())
+				sqlfrom = new java.sql.Timestamp(sdf.parse(datefrom).getTime());
+			if (dateto != null && !dateto.isEmpty())
+				sqlto = new java.sql.Timestamp(sdf.parse(dateto).getTime() + 1000 * 3600 * 24);
+		}
+		catch (ParseException e1)
+		{
 			return values;
 		}
-		
+
 		String cols = "functionality";
-		if(param){
-			cols+=", parameters";
+		if (param)
+		{
+			cols += ", parameters";
 		}
-		String sql="SELECT DISTINCT " + cols + ", COUNT(*) AS cnt FROM Log WHERE ";
+		String sql = "SELECT DISTINCT " + cols + ", COUNT(*) AS cnt FROM Log WHERE ";
 
-		for(int i=0; i<functionalities.size(); i++){
-			sql+="functionality= '"+functionalities.get(i)+"' ";
-			if(i+1<functionalities.size()){
-				sql+="OR ";
-			}else{ //Koniec funkcjonalnosci
-				sql+="AND ";
+		for (int i = 0; i < functionalities.size(); i++)
+		{
+			sql += "functionality= '" + functionalities.get(i) + "' ";
+			if (i + 1 < functionalities.size())
+			{
+				sql += "OR ";
+			} else
+			{
+				sql += "AND ";
 			}
 		}
 
-		for(int i=0; i<users.length; i++){
-			sql+="user= '"+users[i]+"' ";
-			if(i+1<users.length){
-				sql+="OR ";
-			}else{ //Koniec funkcjonalnosci
-				sql+="AND ";
+		for (int i = 0; i < users.length; i++)
+		{
+			sql += "user= '" + users[i] + "' ";
+			if (i + 1 < users.length)
+			{
+				sql += "OR ";
+			} else
+			{
+				sql += "AND ";
 			}
 		}
-		
-		//WHERE dateFrom & dateTill
-		if (sqlfrom!=null)  sql+=("timestamp>=\'"+sqlfrom+"\' AND ");
-		if (sqlto!=null)	sql+=("timestamp<\'"+sqlto+"\' AND ");
 
-		//WHERE tool=...
-		sql+=("tool=\'"+tool+"\' GROUP BY " + cols + " ORDER BY " + cols + ";");
+		if (sqlfrom != null)
+			sql += ("timestamp>=\'" + sqlfrom + "\' AND ");
+		if (sqlto != null)
+			sql += ("timestamp<\'" + sqlto + "\' AND ");
+
+		sql += ("tool=\'" + tool + "\' GROUP BY " + cols + " ORDER BY " + cols + ";");
 		ResultSet rs = null;
 
-		rs=conn.createStatement().executeQuery(sql);
-		if(!rs.first())return values;		
-		values.add(new StandardFilter(rs.getString("functionality") , rs.getInt("cnt") , (param ? rs.getString("parameters") : null) ));
+		rs = conn.createStatement().executeQuery(sql);
+		if (!rs.first())
+			return values;
+		values.add(new StandardFilter(rs.getString("functionality"), rs.getInt("cnt"), (param ? rs.getString("parameters") : null)));
 		rs.next();
 		while (!rs.isAfterLast())
 		{
-			values.add(new StandardFilter(rs.getString("functionality") , rs.getInt("cnt") , (param ? rs.getString("parameters") : null)));
+			values.add(new StandardFilter(rs.getString("functionality"), rs.getInt("cnt"), (param ? rs.getString("parameters") : null)));
 			rs.next();
 		}
-		
 		return values;
-	
-	}	
-	
-	
-	
+	}
 
 }
