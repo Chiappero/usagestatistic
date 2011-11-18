@@ -309,11 +309,11 @@ public class DaoServerDatabaseH2
 		return values;
 	}
 
-	public ArrayList<StandardFilter> getLogsFromDatabase(ArrayList<String> functionalities, String[] users, String tool, String datefrom, String dateto, boolean param) throws SQLException
+	public ArrayList<StandardFilter> getLogsFromDatabase(String[] functionalities, String[] users, String tool, String datefrom, String dateto, boolean param) throws SQLException
 	{
 		ArrayList<StandardFilter> values = new ArrayList<StandardFilter>();
 		checkIfBaseIsOpen();
-		if (isEmpty() || functionalities.size() == 0 || users.length == 0)
+		if (isEmpty() || functionalities.length == 0 || users.length == 0)
 			return values;
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -338,10 +338,10 @@ public class DaoServerDatabaseH2
 		}
 		String sql = "SELECT DISTINCT " + cols + ", COUNT(*) AS cnt FROM Log WHERE ";
 
-		for (int i = 0; i < functionalities.size(); i++)
+		for (int i = 0; i < functionalities.length; i++)
 		{
-			sql += "functionality= '" + functionalities.get(i) + "' ";
-			if (i + 1 < functionalities.size())
+			sql += "functionality= '" + functionalities[i] + "' ";
+			if (i + 1 < functionalities.length)
 			{
 				sql += "OR ";
 			} else

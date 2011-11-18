@@ -73,23 +73,14 @@ public class LogPresenterController{
 	
 	@RequestMapping(value = "/results", method = RequestMethod.POST)
 	protected ModelAndView wyswietlWyniki(@ModelAttribute("Results")Results results, BindingResult result) {
-		ArrayList<String> functionalities = new ArrayList<String>();
 		ArrayList<String> tool = new ArrayList<String>();
-		ArrayList<String> users = new ArrayList<String>();
-		for (int i = 0; i < results.getFunctionalities().length; i++)
-		{
-			functionalities.add(results.getFunctionalities()[i]);
-		}
+
 		tool.add(results.getTool());
-		for (int i = 0; i < results.getUsers().length; i++)
-		{
-			users.add(results.getUsers()[i]);
-		}
 		
 		ArrayList<StandardFilter> logsFromDatabase;
 		try
 		{
-			logsFromDatabase = dao.getLogsFromDatabase(functionalities, results.getUsers(), tool.get(0), results.getDateFrom(), results.getDateTill(), results.isParam());
+			logsFromDatabase = dao.getLogsFromDatabase(results.getFunctionalities(), results.getUsers(), tool.get(0), results.getDateFrom(), results.getDateTill(), results.isParam());
 		} catch (SQLException e)
 		{
 			return new ModelAndView("ERROR");
