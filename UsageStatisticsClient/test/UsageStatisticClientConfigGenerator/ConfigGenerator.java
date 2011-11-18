@@ -13,7 +13,6 @@ import javax.crypto.NoSuchPaddingException;
 
 import junitx.util.PrivateAccessor;
 
-import UsageStatisticClient.Ciphers;
 
 public class ConfigGenerator
 {

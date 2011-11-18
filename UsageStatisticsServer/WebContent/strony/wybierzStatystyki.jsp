@@ -9,23 +9,25 @@
       <table style="border:2px solid grey; ">
           <tr><td>Stan z dnia: <c:out value="${data}"></c:out></td></tr>
           <tr><td>Narzedzia</td><td>       	  
-          <form:select path="tool" onchange="ajax();" id="tool" name="tool" style="width: 150px;">
+          <form:select path="tool" onchange="getFunsAndUsersWithAjax();" id="tool" name="tool" style="width: 150px;">
 		   	<option value="null">---Select---</option>
 		   	<c:forEach var="ttt" items="${tools}">
 	 		  <option value="${ttt}">${ttt}</option>
 	 		</c:forEach>
 		  </form:select> 
 		  </td></tr>
-          <tr><td>Funkcjonalnosci</td><td>
+          <tr><td>Funkcjonalnosci<br />
+          <input type="button" onclick="selectAllFuns()" value="Zaznacz/odznacz wszystkie"/></td><td>
           <form:select path="functionalities" id="functionalities" name="functionalities" style="width: 150px; height: 200px;">
-		   	<!--<c:forEach var="fun" items="${functionalities}">
-	 		  <option value="${fun}">${fun}</option>
-	 		</c:forEach>-->
-	 	</form:select>
+	 	 </form:select>
 		  </td></tr>
-		  <tr><td>Userzy</td><td><form:checkboxes path="users" items="${users}" /></td></tr> 
+		  <tr><td>Userzy<br/>
+		  <input type="button" onclick="selectAllUsers()" value="Zaznacz/odznacz wszystkich"/></td><td>
+		  <form:select path="users" id="users" name="users" style="width: 150px; height: 200px;"></form:select>
+		  </td></tr> 
       <tr><td>Data od:</td><td><form:input path="dateFrom" id="dateFrom" type="date" /></td></tr>
       <tr><td>Data do:</td><td><form:input path="dateTill" id="dateTill" type="date" /></td></tr>
+      <tr><td>Params:</td><td><form:checkbox path="param" /> show params:</td></tr> 
       </table>
         <input type="submit" value="Pokaz logi"/>
   </form:form>
@@ -34,13 +36,21 @@
 <script language="javascript"><!--
 	var drop1 = document.getElementById("tool");
 	var drop2 = document.getElementById("functionalities");		
-
+	var drop3 = document.getElementById("users");
+	
 	drop1.disabled = false;
 	drop2.disabled = true;
+	drop3.disabled = true;
 	
-	ajax();
+	getFunsAndUsersWithAjax();
+	getUsersWithAjax();
 	
-	function ajax()
+	function getFunsAndUsersWithAjax(){
+		getFunsWithAjax();
+		getUsersWithAjax();
+	}
+	
+	function getUsersWithAjax()
 	{
 		var xmlhttp;
 		if (window.XMLHttpRequest)
@@ -54,18 +64,57 @@
 		xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
-                	updateDropdown(xmlhttp.responseXML);
+                	updateUsersDropdown(xmlhttp.responseXML);
                 }
             }
         };
 		var toolName = document.getElementById("tool").value;
-		xmlhttp.open("GET","ajax?tool="+toolName,true);
+		xmlhttp.open("GET","getusers?tool="+toolName,true);
+		emptyUsers();
 		xmlhttp.send(null);
+		drop3.disabled=true;
+	}
+	
+	function getFunsWithAjax()
+	{
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp=new XMLHttpRequest();
+		  }
+		else
+		  {// code for IE6, IE5
+		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4) {
+                if (xmlhttp.status == 200) {
+                	updateFunsDropdown(xmlhttp.responseXML);
+                }
+            }
+        };
+		var toolName = document.getElementById("tool").value;
+		xmlhttp.open("GET","getfuns?tool="+toolName,true);
 		emptyFuns();
+		xmlhttp.send(null);
 		drop2.disabled=true;
 	}
 	
-	function updateDropdown(funsXML){
+	function updateUsersDropdown(usersXML){
+		var users = usersXML.getElementsByTagName("users")[0];
+		 for (var i = 0 ; i < users.childNodes.length; i++) {
+			 var user = users.childNodes[i];
+			 var name = user.getElementsByTagName("name")[0];
+			 var element = document.createElement("option");
+			 element.text = name.childNodes[0].nodeValue;
+			 element.value = name.childNodes[0].nodeValue;
+			 drop3.options.add(element);
+		 }
+		 drop3.remove(0);
+		 drop3.disabled=false;
+	}
+	
+	function updateFunsDropdown(funsXML){
 		var funs = funsXML.getElementsByTagName("funs")[0];
 		 for (var i = 0 ; i < funs.childNodes.length; i++) {
 			 var fun = funs.childNodes[i];
@@ -88,6 +137,17 @@
 		element.text = "Ładowanie...";
 		element.value = "null";
 		drop2.options.add(element);
+	}
+	
+	function emptyUsers(){
+		for (i=drop3.length-1;i>=0;i--)
+		{
+		drop3.remove(i);
+		}
+		var element = document.createElement("option");
+		element.text = "Ładowanie...";
+		element.value = "null";
+		drop3.options.add(element);
 	}
 	
 	function change1()
@@ -147,4 +207,15 @@
 		dropB.options.add(opt);
 	}
 	
+	function selectAllFuns(){
+		for(i=0; i<drop2.length; i++){
+			drop2.options[i].selected=!drop2.options[i].selected;
+		}
+	}
+	
+	function selectAllUsers(){
+		for(i=0; i<drop3.length; i++){
+			drop3.options[i].selected=!drop3.options[i].selected;
+		}
+	}
 </script>

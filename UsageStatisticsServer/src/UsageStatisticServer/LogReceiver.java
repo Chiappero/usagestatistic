@@ -27,7 +27,10 @@ import org.springframework.web.servlet.ModelAndView;
 	    	if (pair!=null)
 	    	{
 		    	String password = pair.getPassword();
-		    	String user = pair.getLogInformation().getUser();
+		    	LogInformation logInformation = pair.getLogInformation();
+		    	if (logInformation!=null)
+		    	{
+				String user = logInformation.getUser();
 		    	if (user!=null&&password!=null)
 		    	{
 		    			//System.out.println("user nie jest nullem, ani password nie jest nullem");
@@ -42,13 +45,15 @@ import org.springframework.web.servlet.ModelAndView;
 							{
 								modelAndView.addObject("message", "ERROR");
 							}*/
-							modelAndView.addObject("message", dao.saveLog(pair.getLogInformation())?"OK":"ERROR");
+							modelAndView.addObject("message", dao.saveLog(logInformation)?"OK":"ERROR");
 							return modelAndView;
 						}
-		    	}
+		    	
+		    	
 		    	modelAndView.addObject("message", "CANNOT_AUTHENTICATE");
 			    return modelAndView;
-	    		
+		    	}
+		    	}
 	    	}
 	    	modelAndView.addObject("message", "ERROR");
 	    	return modelAndView;

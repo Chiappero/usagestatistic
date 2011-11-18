@@ -4,8 +4,8 @@ import java.util.Date;
 
 
 
-public
-final class LogInformation {
+
+public final class LogInformation {
 private Date dateTime;
 private String functionality;
 private String parameters;
@@ -41,14 +41,8 @@ public String getParameters() {
 public void setParameters(String parameters) {
 	this.parameters = parameters;
 }
-@Override
-public String toString() {
-	return "LogInformation [dateTime=" + dateTime + ", functionality="
-			+ functionality + ", parameters=" + parameters + ", user=" + user
-			+ ", tool=" + tool + "]";
-}
 
-public static boolean validateLog(LogInformation log)
+static boolean validateLog(LogInformation log)
 {
 	Date date = log.getDateTime();
 	String functionality = log.getFunctionality();

@@ -12,7 +12,14 @@ private String[] functionalities;
 private String[] users;
 private String dateFrom;
 private String dateTill;
+private boolean param;
 
+public boolean isParam() {
+	return param;
+}
+public void setParam(boolean param) {
+	this.param = param;
+}
 public String getDateTill() {
 	return dateTill;
 }

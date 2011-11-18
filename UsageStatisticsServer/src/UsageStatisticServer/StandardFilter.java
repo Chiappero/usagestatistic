@@ -3,28 +3,31 @@ package UsageStatisticServer;
 public class StandardFilter 
 {
 	private String functionality;
-	private String date;
+	private String parameters;
 	private int count;
 	
 	
 	public StandardFilter() {}
 	
-	public StandardFilter(String functionality, String date, int count) {
+	public StandardFilter(String functionality, int count, String parameters) {
 		this.functionality = functionality;
-		this.date = date;
 		this.count = count;
+		this.parameters=parameters;
 	}
+	
+	public String getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(String parameters) {
+		this.parameters = parameters;
+	}
+
 	public String getFunctionality() {
 		return functionality;
 	}
 	public void setFunctionality(String functionality) {
 		this.functionality = functionality;
-	}
-	public String getDate() {
-		return date;
-	}
-	public void setDate(String date) {
-		this.date = date;
 	}
 	public int getCount() {
 		return count;
@@ -35,7 +38,7 @@ public class StandardFilter
 	
 	public String toString()
 	{
-		return "["+functionality+", "+date+", "+count+"]";
+		return "["+functionality+", "+count+"]";
 	}
 	
 	

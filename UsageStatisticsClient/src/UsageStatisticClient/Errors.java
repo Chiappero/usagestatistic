@@ -1,6 +1,6 @@
 package UsageStatisticClient;
 
-public final class Errors
+final class Errors
 {
 private Errors()
 	{
