@@ -89,7 +89,7 @@
   </dependencies>
     <build>
 		<sourceDirectory>..\..\UsageStatisticsClient\src</sourceDirectory>
--		<testSourceDirectory>..\..\UsageStatisticsClient\test</testSourceDirectory>
+		<testSourceDirectory>..\..\UsageStatisticsClient\test</testSourceDirectory>
 	</build>
  
   
