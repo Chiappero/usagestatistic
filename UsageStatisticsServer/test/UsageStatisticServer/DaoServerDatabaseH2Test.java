@@ -389,9 +389,10 @@ public class DaoServerDatabaseH2Test {
 	}
 	
 	@Test
-	public void AT82_Proper_cache_of_credentials_on_server() throws SQLException, NoSuchFieldException
+	public void A11_3_Proper_cache_of_credentials_on_server() throws SQLException, NoSuchFieldException
 	{	
 		String u,p;
+		dao.addUserClient("user", EncryptInstance.SHA256("user"));
 		dao.isValidCredential("user", EncryptInstance.SHA256("user"));
 		u=(String) PrivateAccessor.getField(dao, "user");
 		p=(String) PrivateAccessor.getField(dao,"pass");	
