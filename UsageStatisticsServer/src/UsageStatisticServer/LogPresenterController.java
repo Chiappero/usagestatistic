@@ -41,20 +41,11 @@ public class LogPresenterController{
 		mav.addObject("functionalities",dao.getFunctionalities());
 		mav.addObject("users",dao.getUsers());
 		mav.addObject("command",new Results());
-		//Dropdown list
-		ArrayList<String> columns = new ArrayList<String>();
-		columns.add("---Select---");
-		columns.add("tool");
-		columns.add("functionality");
-		columns.add("user");
-		columns.add("timestamp");
-		columns.add("parameters");
-		mav.addObject("columns", columns);
 		return mav;
 	}
 	
-	@RequestMapping(value = "/ajax", method = RequestMethod.GET)
-	protected void ajax(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException{
+	@RequestMapping(value = "/getfuns", method = RequestMethod.GET)
+	protected void getFuns(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException{
 		String selectedTool = httpServletRequest.getParameter("tool");
 		httpServletResponse.setContentType("text/xml");
 		//DAO
@@ -62,6 +53,20 @@ public class LogPresenterController{
 		String funsXML=funs.toXml();		
 		try {
 			httpServletResponse.getWriter().write(funsXML);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@RequestMapping(value = "/getusers", method = RequestMethod.GET)
+	protected void getUsers(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException{
+		String selectedTool = httpServletRequest.getParameter("tool");
+		httpServletResponse.setContentType("text/xml");
+		//DAO
+		UsersXML users=new UsersXML( dao.getUsers(selectedTool) );
+		String usersXML=users.toXml();		
+		try {
+			httpServletResponse.getWriter().write(usersXML);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,40 +87,27 @@ public class LogPresenterController{
 			users.add(results.getUsers()[i]);
 		}
 		
-		ArrayList<LogInformation> logsWithWhereClausure;
-		ArrayList<StandardFilter> logsWithWhereClausure2;
+		ArrayList<StandardFilter> logsFromDatabase;
 		try
 		{
-			LinkedList<String> linked = new LinkedList<String>();
-/*			if (isValidNameColumn(results.getSortChoose1()))
-			{
-			linked.add(results.getSortChoose1());
-			}
-			if (isValidNameColumn(results.getSortChoose2()))
-			{
-			linked.add(results.getSortChoose2());
-			}
-			if (isValidNameColumn(results.getSortChoose3()))
-			{
-			linked.add(results.getSortChoose3());
-			}*/
-			logsWithWhereClausure2 = dao.getFunctionalities(tool.get(0), results.getDateFrom(), results.getDateTill());
-			logsWithWhereClausure = dao.getLogsWithWhereClausure(new LogFilter(null,null,functionalities,users,tool),linked);
+			logsFromDatabase = dao.getLogsFromDatabase(functionalities, results.getUsers(), tool.get(0), results.getDateFrom(), results.getDateTill(), results.isParam());
 		} catch (SQLException e)
 		{
 			return new ModelAndView("ERROR");
 		}
 		String data = (new java.util.Date()).toString();
 		ModelAndView mav = new ModelAndView("statystyki");
+		mav.addObject("showParams", results.isParam());
 		mav.addObject("data", data);
+		mav.addObject("dateFrom", results.getDateFrom());
+		mav.addObject("dateTill", results.getDateTill());
 		mav.addObject("tool", tool.get(0));
-		mav.addObject("logi", logsWithWhereClausure2);
-		
+		mav.addObject("logi", logsFromDatabase);
 		return mav;
 	}
 	
-	private boolean isValidNameColumn(String columnName)
-	{
-		return "user".equals(columnName)||"tool".equals(columnName)||"functionality".equals(columnName)||"parameters".equals(columnName)||"timestamp".equals(columnName);
-	}
+//	private boolean isValidNameColumn(String columnName)
+//	{
+//		return "user".equals(columnName)||"tool".equals(columnName)||"functionality".equals(columnName)||"parameters".equals(columnName)||"timestamp".equals(columnName);
+//	}
 }

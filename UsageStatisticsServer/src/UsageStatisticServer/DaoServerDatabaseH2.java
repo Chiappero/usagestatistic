@@ -753,12 +753,45 @@ public class DaoServerDatabaseH2
 	}
 	
 
+	public ArrayList<String> getUsers(String tool) throws SQLException
+	{
+		ArrayList<String> values=new ArrayList<String>();
+		checkIfBaseIsOpen();
+		if (isEmpty())return values;
+		String sql="SELECT DISTINCT user FROM Log WHERE tool=\'"+tool+"\' ORDER BY user";
+		ResultSet rs = null;
+
+		try
+		{
+		rs=conn.createStatement().executeQuery(sql);
+		if(!rs.first())return values;
+		
+		while (!rs.isAfterLast())
+		{
+			values.add(rs.getString("user"));
+			rs.next();
+		}
+		
+		return values;
+		}
+		catch (SQLException e)
+		{
+			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
+			{
+				//TODO cos bardzo zlego powinno tu byc
+				somethingVeryBad();
+				throw e;
+				
+			}	
+			else throw e;
+		}		
+	}
 	
-	public ArrayList<StandardFilter> getFunctionalities(String tool, String datefrom, String dateto) throws SQLException
+	public ArrayList<StandardFilter> getLogsFromDatabase(ArrayList<String> functionalities, String[] users, String tool, String datefrom, String dateto, boolean param) throws SQLException
 	{
 		ArrayList<StandardFilter> values=new ArrayList<StandardFilter>();
 		checkIfBaseIsOpen();
-		if (isEmpty())return values;
+		if (isEmpty() || functionalities.size()==0 || users.length==0)return values;
 		
 		
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
@@ -774,34 +807,47 @@ public class DaoServerDatabaseH2
 			return values;
 		}
 		
+		String cols = "functionality";
+		if(param){
+			cols+=", parameters";
+		}
+		String sql="SELECT DISTINCT " + cols + ", COUNT(*) AS cnt FROM Log WHERE ";
+
+		for(int i=0; i<functionalities.size(); i++){
+			sql+="functionality= '"+functionalities.get(i)+"' ";
+			if(i+1<functionalities.size()){
+				sql+="OR ";
+			}else{ //Koniec funkcjonalnosci
+				sql+="AND ";
+			}
+		}
+
+		for(int i=0; i<users.length; i++){
+			sql+="user= '"+users[i]+"' ";
+			if(i+1<users.length){
+				sql+="OR ";
+			}else{ //Koniec funkcjonalnosci
+				sql+="AND ";
+			}
+		}
 		
-		String sql="SELECT DISTINCT functionality, timestamp, COUNT(*) AS cnt FROM Log WHERE ";
+		//WHERE dateFrom & dateTill
 		if (sqlfrom!=null)  sql+=("timestamp>=\'"+sqlfrom+"\' AND ");
 		if (sqlto!=null)	sql+=("timestamp<\'"+sqlto+"\' AND ");
-		sql+=("tool=\'"+tool+"\' GROUP BY functionality, timestamp ORDER BY functionality, timestamp");
+
+		//WHERE tool=...
+		sql+=("tool=\'"+tool+"\' GROUP BY " + cols + " ORDER BY " + cols + ";");
 		ResultSet rs = null;
 
 		try
 		{
 		rs=conn.createStatement().executeQuery(sql);
-		if(!rs.first())return values;
-		java.util.Date start=rs.getTimestamp("timestamp");		
-		int i=0;
-		values.add(new StandardFilter(rs.getString("functionality"),sdf.format(start),rs.getInt("cnt")));
+		if(!rs.first())return values;		
+		values.add(new StandardFilter(rs.getString("functionality") , rs.getInt("cnt") , (param ? rs.getString("parameters") : null) ));
 		rs.next();
-
 		while (!rs.isAfterLast())
 		{
-			if(rs.getString("functionality").equals(values.get(i).getFunctionality())&&sdf.format(rs.getTimestamp("timestamp")).equals(values.get(i).getDate()))
-					{
-						values.get(i).setCount(values.get(i).getCount()+1);
-						
-					}
-			else
-			{
-				values.add(new StandardFilter(rs.getString("functionality"),sdf.format(rs.getTimestamp("timestamp")),rs.getInt("cnt")));
-				i++;
-			}
+			values.add(new StandardFilter(rs.getString("functionality") , rs.getInt("cnt") , (param ? rs.getString("parameters") : null)));
 			rs.next();
 		}
 		
