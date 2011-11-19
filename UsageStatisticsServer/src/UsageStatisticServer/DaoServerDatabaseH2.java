@@ -339,14 +339,12 @@ public class DaoServerDatabaseH2
 		String sql = "SELECT DISTINCT " + cols + ", COUNT(*) AS cnt FROM Log WHERE ";
 
 		for (int i = 0; i < functionalities.length; i++)
-		{
-			sql += "functionality= '" + functionalities[i] + "' ";
+			sql+="( functionality= '"+functionalities[i]+"' ";
 			if (i + 1 < functionalities.length)
 			{
 				sql += "OR ";
 			} else
-			{
-				sql += "AND ";
+				sql+=") AND (";
 			}
 		}
 
@@ -357,8 +355,7 @@ public class DaoServerDatabaseH2
 			{
 				sql += "OR ";
 			} else
-			{
-				sql += "AND ";
+				sql+=") AND ";
 			}
 		}
 
