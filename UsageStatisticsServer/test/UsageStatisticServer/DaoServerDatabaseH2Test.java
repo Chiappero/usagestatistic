@@ -170,7 +170,7 @@ public class DaoServerDatabaseH2Test {
 		{
 		log.setDateTime(new GregorianCalendar().getTime());
 		log.setFunctionality("test");
-		log.setParameters("test");
+		log.setParameters("test"+i);
 		log.setTool("test");
 		log.setUser("test");
 		dao.saveLog(log);
@@ -310,78 +310,31 @@ public class DaoServerDatabaseH2Test {
 		saveTemporaryData(25);
 		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SEL2","SELENIUM3","SELENIUM4"));
 		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-60000),"SELA","SEL2","SELA","SEL4"));
-		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SEL3","SEL4"));
+		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SELA","SEL4"));
 
 
 		String[] users=toArray(dao.getUsers());
 		String[] func=toArray(dao.getFunctionalities());
 	
 		ArrayList<StandardFilter> list=dao.getLogsFromDatabase(func,users,"tool",null,null,false);
-	//	Assert.assertEquals(4, list.size());
-		
-		
-//		
-//		groupby=new ArrayList<String>();
-//		groupby.add("parameters");
-//		list2=dao.agregate(groupby);
-//		Assert.assertEquals(3, list2.size());
-//		groupby.add("functionality");
-//		list2=dao.agregate(groupby);
-//		Assert.assertEquals(4, list2.size());
-//		list2=dao.agregate(groupby,3,2);
-//		Assert.assertEquals(2, list2.size());
-//		Assert.assertEquals("SELENIUM", list2.get(0).getLewy().getFunctionality());
-//		Assert.assertEquals("test", list2.get(1).getLewy().getFunctionality());
-//		Assert.assertEquals(null, list2.get(0).getLewy().getUser());
-//		groupby=new ArrayList<String>();
-//		groupby.add("user");
-//		list2=dao.agregateOverTime(groupby, 30000);
-//		Assert.assertEquals(4, list2.size());	
-//		for (int i=1;i<list2.size();i++)
-//		Assert.assertTrue(list2.get(i).getLewy().getDateTime().getTime()-list2.get(i-1).getLewy().getDateTime().getTime()==30000);
-//		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SELENIUM2","SELA","SELENIUM4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"SELA","SEL2","SELA","SEL4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"function","SEL2","SELA","SEL4"));	
-//		ArrayList<String> fun=dao.getFunctionalities("SELA");
-//		Assert.assertEquals(3,fun.size());
-//		Assert.assertEquals("function", fun.get(2));		
-//		fun=dao.getFunctionalities("SELZ");
-//		Assert.assertEquals(0,fun.size());
-//		
-//		
-//		usunWszystkieLogi();
-//		saveTemporaryData(25);
-//		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SEL2","SELENIUM3","SELENIUM4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-60000),"SELA","SEL2","SELA","SEL4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SEL3","SEL4"));
-//		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SELENIUM2","SELA","SELENIUM4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"SELA","SEL2","SELA","SEL4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()),"function","SEL2","SELA","SEL4"));		
-//		ArrayList<String> func=dao.getFunctionalities("SELA");
-//		Assert.assertEquals(3, func.size());
-//		ArrayList<StandardFilter> res=dao.getFunctionalities("SELA", null, null);
-//		Assert.assertEquals(func.size(), res.size());
-//		for (int i=0;i<func.size();i++)
-//			Assert.assertEquals(func.get(i),res.get(i).getFunctionality());
-//		Assert.assertEquals(2,res.get(0).getCount());
-//		Assert.assertEquals(1,res.get(1).getCount());
-//		Assert.assertEquals(1,res.get(2).getCount());
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+1000*3600*24),"SEL1","SEL2","SELA","SEL4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+2*1000*3600*24),"SEL2","SEL2","SELA","SEL4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+3*1000*3600*24),"SEL3","SEL2","SELA","SEL4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-1000*3600*24),"SEL-1","SEL2","SELA","SEL4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-2*1000*3600*24),"SEL-2","SEL2","SELA","SEL4"));
-//		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-3*1000*3600*24),"SEL-3","SEL2","SELA","SEL4"));
-//		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-//		String today=sdf.format(Calendar.getInstance().getTime());
-//		String next=sdf.format(new java.util.Date(Calendar.getInstance().getTimeInMillis()+2*1000*3600*24));
-//		res=dao.getFunctionalities("SELA", today, next);
-//		Assert.assertEquals(5, res.size());		
-//		res=dao.getFunctionalities("SELA", null, next);
-//		Assert.assertEquals(8, res.size());
-//		res=dao.getFunctionalities("SELA", today, null);
-//		Assert.assertEquals(6, res.size());	
-	
+		Assert.assertEquals(0, list.size());
+		list=dao.getLogsFromDatabase(func,users,"SELENIUM3",null,null,false);
+		Assert.assertEquals(1, list.size());
+		list=dao.getLogsFromDatabase(func,users,"SELA",null,null,false);
+		Assert.assertEquals(2, list.size());
+		list=dao.getLogsFromDatabase(func,users,"test",null,null,false);
+		Assert.assertEquals(1, list.size());	
+		Assert.assertEquals(25,list.get(0).getCount());
+		list=dao.getLogsFromDatabase(func,users,"test",null,null,true);
+		Assert.assertEquals(25, list.size());
+		for (int i=0;i<25;i++)
+			Assert.assertEquals(1,list.get(0).getCount());
+		users=new String[0];
+		list=dao.getLogsFromDatabase(func,users,"test",null,null,false);
+		Assert.assertEquals(0, list.size());
+		func=null;
+		list=dao.getLogsFromDatabase(func,users,"test",null,null,false);
+		Assert.assertEquals(0, list.size());		
 	}
 	
 	@Test
