@@ -302,7 +302,7 @@ public class DaoServerDatabaseH2Test {
 		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-60000),"SELA","SEL2","SELA","SEL4"));
 		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SEL3","SEL4"));
 
-	//	ArrayList<StandardFilter> list=dao.getFunctionalities("tool",null,null);
+	//	ArrayList<StandardFilter> list=dao.getLogsFromDatabase("tool",null,null);
 	//	Assert.assertEquals(4, list.size());
 		
 		
