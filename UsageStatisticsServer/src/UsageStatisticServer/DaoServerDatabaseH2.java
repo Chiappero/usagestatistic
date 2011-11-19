@@ -345,11 +345,11 @@ public class DaoServerDatabaseH2
 		String sql="SELECT DISTINCT " + cols + ", COUNT(*) AS cnt FROM Log WHERE ";
 
 		for(int i=0; i<functionalities.size(); i++){
-			sql+="functionality= '"+functionalities.get(i)+"' ";
+			sql+="( functionality= '"+functionalities.get(i)+"' ";
 			if(i+1<functionalities.size()){
 				sql+="OR ";
 			}else{ //Koniec funkcjonalnosci
-				sql+="AND ";
+				sql+=") AND (";
 			}
 		}
 
@@ -358,7 +358,7 @@ public class DaoServerDatabaseH2
 			if(i+1<users.length){
 				sql+="OR ";
 			}else{ //Koniec funkcjonalnosci
-				sql+="AND ";
+				sql+=") AND ";
 			}
 		}
 		
