@@ -292,17 +292,31 @@ public class DaoServerDatabaseH2Test {
 	
 	}
 
+	public String[] toArray(ArrayList<String> list)
+	{
+		String[] array=new String[list.size()];
+		for (int i=0;i<list.size();i++)
+			array[i]=new String(list.get(i));
+		return array;
+	}
+	
+	
 	
 	@Test
 	public void AT82_Proper_show_agregated_data() throws SQLException, NoSuchFieldException
 	{
+		
 		usunWszystkieLogi();
 		saveTemporaryData(25);
 		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SEL2","SELENIUM3","SELENIUM4"));
 		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()-60000),"SELA","SEL2","SELA","SEL4"));
 		dao.saveLog(new LogInformation(new java.util.Date(new GregorianCalendar().getTimeInMillis()+60000),"SELB","SEL2","SEL3","SEL4"));
 
-	//	ArrayList<StandardFilter> list=dao.getLogsFromDatabase("tool",null,null);
+
+		String[] users=toArray(dao.getUsers());
+		String[] func=toArray(dao.getFunctionalities());
+	
+		ArrayList<StandardFilter> list=dao.getLogsFromDatabase(func,users,"tool",null,null,false);
 	//	Assert.assertEquals(4, list.size());
 		
 		
