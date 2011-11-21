@@ -2,19 +2,19 @@ package UsageStatisticServer;
 
 import java.util.ArrayList;
 
-public class UsersXML {
+class UsersXML {
 
 	ArrayList<String> users;
 	
-	public UsersXML(){
+	UsersXML(){
 		
 	}
 	
-	public UsersXML(ArrayList<String> funs){
+	UsersXML(ArrayList<String> funs){
 		this.users=funs;
 	}
 	
-	public String toXml(){
+	String toXml(){
 		String xml="<users>";
 		for(int i=0; i<users.size(); i++){
 			xml+="<user>"; 

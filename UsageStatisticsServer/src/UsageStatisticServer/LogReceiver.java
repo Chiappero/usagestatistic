@@ -15,13 +15,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 	 
 	@Controller
-	public class LogReceiver { //TODO autentykowanie
+	class LogReceiver { //TODO autentykowanie
 
 	@Autowired
 	DaoServerDatabaseH2 dao;
 	
 	    @RequestMapping(value = "/post", method = RequestMethod.POST)
-	    	public ModelAndView addPerson(@RequestBody PairLogInformationAndPassword pair) {
+	    	ModelAndView addPerson(@RequestBody PairLogInformationAndPassword pair) {
 	    	ModelAndView modelAndView = new ModelAndView("wiadomosc");
 	    	//System.out.println("otrzymalem user="+pair.getLogInformation().getUser()+" oraz password="+pair.getPassword());
 	    	if (pair!=null)

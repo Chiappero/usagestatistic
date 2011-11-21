@@ -26,7 +26,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import com.sun.net.httpserver.HttpServer;
 
 @Controller
-public class LogPresenterController{
+class LogPresenterController{
 	
 	@Autowired
 	private DaoServerDatabaseH2 dao;
