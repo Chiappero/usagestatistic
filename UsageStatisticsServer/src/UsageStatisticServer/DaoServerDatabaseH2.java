@@ -12,18 +12,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class DaoServerDatabaseH2
+class DaoServerDatabaseH2
 {
 	private Connection conn = null;
 	private String user = null, pass = null;
 	private final String DEBUGLOG_FILE = "errorlog.txt";
 
-	public DaoServerDatabaseH2()
+	DaoServerDatabaseH2()
 	{
 		openDatabase();
 	}
 
-	public boolean addUserClient(final String username, final String password)
+	boolean addUserClient(final String username, final String password)
 	{
 		checkIfBaseIsOpen();
 		String sql = "INSERT INTO Credentials (username, password) VALUES ('" + username + "', '" + password + "')";
@@ -49,7 +49,7 @@ public class DaoServerDatabaseH2
 		}
 	}
 
-	public boolean isValidCredential(final String user, final String password)
+	boolean isValidCredential(final String user, final String password)
 	{
 		checkIfBaseIsOpen();
 		if (this.user != null && !this.user.isEmpty() && this.user.equals(user) && this.pass != null && !this.pass.isEmpty() && this.pass.equals(user))
@@ -73,7 +73,7 @@ public class DaoServerDatabaseH2
 		}
 	}
 
-	public boolean saveLog(final LogInformation log)
+	boolean saveLog(final LogInformation log)
 	{
 		checkIfBaseIsOpen();
 		if (log != null && LogInformation.validateLog(log) && conn != null)
@@ -95,7 +95,7 @@ public class DaoServerDatabaseH2
 
 	}
 
-	public void openDatabase()
+	private void openDatabase()
 	{
 		try
 		{
@@ -168,7 +168,7 @@ public class DaoServerDatabaseH2
 		}
 	}
 
-	public boolean isEmpty() throws SQLException
+	boolean isEmpty() throws SQLException
 	{
 		checkIfBaseIsOpen();
 		String sql = "SELECT COUNT(*) FROM Log";
@@ -185,7 +185,7 @@ public class DaoServerDatabaseH2
 		}
 	}
 
-	public int getLogsAmount() throws SQLException
+	int getLogsAmount() throws SQLException
 	{
 		checkIfBaseIsOpen();
 		String sql = "SELECT COUNT(*) FROM Log";
@@ -201,7 +201,7 @@ public class DaoServerDatabaseH2
 		}
 	}
 
-	public ArrayList<LogInformation> getAllLogs() throws SQLException
+	ArrayList<LogInformation> getAllLogs() throws SQLException
 	{
 		checkIfBaseIsOpen();
 		if (isEmpty())
@@ -229,17 +229,17 @@ public class DaoServerDatabaseH2
 		return loglist;
 	}
 
-	public ArrayList<String> getUsers() throws SQLException
+	ArrayList<String> getUsers() throws SQLException
 	{
 		return getColumn("user");
 	}
 
-	public ArrayList<String> getTools() throws SQLException
+	ArrayList<String> getTools() throws SQLException
 	{
 		return getColumn("tool");
 	}
 
-	public ArrayList<String> getFunctionalities() throws SQLException
+	ArrayList<String> getFunctionalities() throws SQLException
 	{
 		return getColumn("functionality");
 	}
@@ -265,7 +265,7 @@ public class DaoServerDatabaseH2
 
 	}
 
-	public ArrayList<String> getFunctionalities(String tool) throws SQLException
+	ArrayList<String> getFunctionalities(String tool) throws SQLException
 	{
 		ArrayList<String> values = new ArrayList<String>();
 		checkIfBaseIsOpen();
@@ -288,7 +288,7 @@ public class DaoServerDatabaseH2
 
 	}
 
-	public ArrayList<String> getUsers(String tool) throws SQLException
+	ArrayList<String> getUsers(String tool) throws SQLException
 	{
 		ArrayList<String> values = new ArrayList<String>();
 		checkIfBaseIsOpen();
@@ -309,7 +309,7 @@ public class DaoServerDatabaseH2
 		return values;
 	}
 
-	public ArrayList<StandardFilter> getLogsFromDatabase(String[] functionalities, String[] users, String tool, String datefrom, String dateto, boolean param) throws SQLException
+	ArrayList<StandardFilter> getLogsFromDatabase(ArrayList<String> functionalities, String[] users, String tool, String datefrom, String dateto, boolean param) throws SQLException
 	{
 		ArrayList<StandardFilter> values = new ArrayList<StandardFilter>();
 		checkIfBaseIsOpen();

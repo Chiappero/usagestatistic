@@ -2,19 +2,19 @@ package UsageStatisticServer;
 
 import java.util.ArrayList;
 
-public class FunsXML {
+class FunsXML {
 
 	ArrayList<String> funs;
 	
-	public FunsXML(){
+	FunsXML(){
 		
 	}
 	
-	public FunsXML(final ArrayList<String> funs){
+	FunsXML(final ArrayList<String> funs){
 		this.funs=funs;
 	}
 	
-	public String toXml(){
+	String toXml(){
 		String xml="<funs>";
 		for(int i=0; i<funs.size(); i++){
 			xml+="<fun>"; 

@@ -18,8 +18,7 @@ class LogFilter
 		this.user=user;
 		this.tool=tool;
 	}
-	
-	
+		
 	public java.util.Date getDatefrom() {
 		return datefrom;
 	}
