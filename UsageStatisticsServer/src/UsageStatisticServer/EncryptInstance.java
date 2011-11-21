@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest; 
 import java.security.NoSuchAlgorithmException; 
 
-public class EncryptInstance
+class EncryptInstance
 {		static MessageDigest md;
 		static
 		{
@@ -36,7 +36,7 @@ public class EncryptInstance
 	     * @param text - text do zaszyfrowania
 	     * @return null jezeli nie powiod³o sie szyfrowanie
 	     */
-	    public static String SHA256(final String text) 
+	    static String SHA256(final String text) 
 	    { 
 	    if (text==null||md==null)
 	    {

@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class AddUserClientController
+class AddUserClientController
 {	
 	@Autowired
 	DaoServerDatabaseH2 dao;
 	
 	@RequestMapping(value = "/addUserClient", method = RequestMethod.GET)
-	protected ModelAndView addUserClientForm() 
+	ModelAndView addUserClientForm() 
 	{	
 		ModelAndView modelAndView = new ModelAndView("addUserClient");
 		modelAndView.addObject("command",new UserClient());
@@ -23,7 +23,7 @@ public class AddUserClientController
 	}
 	
 	@RequestMapping(value = "/addUserClient", method = RequestMethod.POST)
-	protected ModelAndView addUserClientPost(@ModelAttribute("UserClient")UserClient userClient, BindingResult result) 
+	ModelAndView addUserClientPost(@ModelAttribute("UserClient")UserClient userClient, BindingResult result) 
 	{	
 		ModelAndView modelAndView = new ModelAndView("wiadomosc");
 		if (userClient!=null)

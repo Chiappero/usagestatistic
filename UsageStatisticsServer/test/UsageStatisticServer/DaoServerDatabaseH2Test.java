@@ -185,7 +185,7 @@ public class DaoServerDatabaseH2Test {
 		usunWszystkieLogi();
 		saveTemporaryData(25);
 		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","SELENIUM2","SELENIUM3","SELENIUM4"));
-		ArrayList<LogInformation> list1=dao.getAllLogs();
+		ArrayList<LogInformation> list1= dao.getAllLogs();
 		Assert.assertEquals(list1.size(), 26);
 		for (int i=0;i<25;i++)
 		{
