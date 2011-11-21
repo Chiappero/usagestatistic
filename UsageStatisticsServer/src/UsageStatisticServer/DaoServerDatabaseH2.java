@@ -313,7 +313,7 @@ class DaoServerDatabaseH2
 	{
 		ArrayList<StandardFilter> values = new ArrayList<StandardFilter>();
 		checkIfBaseIsOpen();
-		if (isEmpty() || functionalities.size() == 0 || users.length == 0)
+		if (isEmpty() || functionalities==null||functionalities.length == 0 || users==null||users.length == 0)
 			return values;
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -336,20 +336,16 @@ class DaoServerDatabaseH2
 		{
 			cols += ", parameters";
 		}
-		String sql = "SELECT DISTINCT " + cols + ", COUNT(*) AS cnt FROM Log WHERE ";
-
-		for (int i = 0; i < functionalities.size(); i++)
+		String sql = "SELECT DISTINCT " + cols + ", COUNT(*) AS cnt FROM Log WHERE (";
+		for (int i = 0; i < functionalities.length; i++)
 		{
-			sql += "functionality= '" + functionalities.get(i) + "' ";
-			if (i + 1 < functionalities.size())
+			sql+="functionality= '"+functionalities[i]+"' ";
+			if (i + 1 < functionalities.length)
 			{
 				sql += "OR ";
 			} else
-			{
-				sql += "AND ";
-			}
+				sql+=") AND (";
 		}
-
 		for (int i = 0; i < users.length; i++)
 		{
 			sql += "user= '" + users[i] + "' ";
@@ -357,9 +353,7 @@ class DaoServerDatabaseH2
 			{
 				sql += "OR ";
 			} else
-			{
-				sql += "AND ";
-			}
+				sql+=") AND ";
 		}
 
 		if (sqlfrom != null)
