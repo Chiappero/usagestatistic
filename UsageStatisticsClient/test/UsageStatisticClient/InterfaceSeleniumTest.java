@@ -184,6 +184,7 @@ public class InterfaceSeleniumTest
 		}
 		while (funkcjonalnosci[0].equals("£adowanie..."));
 		selenium.select("name=functionalities", "Thread"+x);
+		selenium.select("name=users", "user");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");
 		Assert.assertTrue(selenium.isTextPresent("Thread"+x));
