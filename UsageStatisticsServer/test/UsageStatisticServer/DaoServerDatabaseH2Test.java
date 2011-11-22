@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.Random;
 
 import junitx.util.PrivateAccessor;
 
@@ -25,6 +26,8 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertTrue(dao.getTools().isEmpty());
 		Assert.assertTrue(dao.getUsers().isEmpty());
 		Assert.assertTrue(dao.isEmpty());
+		Assert.assertTrue(dao.getUsers("tool").isEmpty());
+		Assert.assertTrue(dao.getFunctionalities("tool").isEmpty());
 	}
 	
 	public static void dropTable(DaoServerDatabaseH2 dao) throws NoSuchFieldException, SQLException
@@ -198,7 +201,15 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertEquals(list1.get(25).getTool(), "SELENIUM3");
 		Assert.assertEquals(list1.get(25).getUser(), "SELENIUM2");
 		Assert.assertEquals(list1.get(25).getParameters(), "SELENIUM4");	
-		
+		ArrayList<String> funcpertool=dao.getFunctionalities("notexist");
+		Assert.assertTrue(funcpertool.isEmpty());
+		dao.saveLog(new LogInformation(new GregorianCalendar().getTime(),"SELENIUM","user3","test","SELENIUM4"));
+		funcpertool=dao.getFunctionalities("test");
+		Assert.assertEquals(2,funcpertool.size());
+		funcpertool=dao.getUsers("notexist");
+		Assert.assertTrue(funcpertool.isEmpty());
+		funcpertool=dao.getUsers("test");
+		Assert.assertEquals(2,funcpertool.size());		
 		
 		
 		
@@ -239,7 +250,8 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertEquals(2, list.get(2).getCount());	
 		list=dao.getLogsFromDatabase(func,users,"SELA",sdf.format(Calendar.getInstance().getTime()),sdf.format(Calendar.getInstance().getTime()),false);
 		Assert.assertEquals(1, list.get(2).getCount());	
-	
+		list=dao.getLogsFromDatabase(func,users,"SELA","bad date",sdf.format(Calendar.getInstance().getTime()),false);
+		Assert.assertEquals(0, list.size());
 	}
 
 	public String[] toArray(ArrayList<String> list)
@@ -288,6 +300,23 @@ public class DaoServerDatabaseH2Test {
 	}
 	
 	@Test
+	public void AT185_Proper_adduser() throws SQLException, NoSuchFieldException
+	{	
+		
+		dao.addUserClient("user", EncryptInstance.SHA256("user"));
+		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.SHA256("user")));
+		dao.addUserClient("user", EncryptInstance.SHA256("password"));
+		Assert.assertFalse(dao.isValidCredential("user", EncryptInstance.SHA256("user")));
+		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.SHA256("password")));
+		dao.addUserClient("user", EncryptInstance.SHA256("user"));
+		Random rand=new Random();
+		int x=rand.nextInt()%1000000;
+		dao.addUserClient("user"+x, EncryptInstance.SHA256("user"));
+		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.SHA256("user")));
+		Assert.assertTrue(dao.isValidCredential("user"+x, EncryptInstance.SHA256("user")));
+	}
+		
+	@Test
 	public void AT82_Proper_cache_of_credentials_on_server() throws SQLException, NoSuchFieldException
 	{	
 		String u,p;
@@ -302,6 +331,7 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertEquals(u,"user");
 		Assert.assertEquals(p,EncryptInstance.SHA256("user"));
 		dao.addUserClient("uuser", EncryptInstance.SHA256("upass"));
+		dao.isValidCredential("uuser", EncryptInstance.SHA256("upass"));
 		dao.isValidCredential("uuser", EncryptInstance.SHA256("upass"));
 		u=(String) PrivateAccessor.getField(dao, "user");
 		p=(String) PrivateAccessor.getField(dao,"pass");

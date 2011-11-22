@@ -27,7 +27,8 @@ public class DaoServerDatabaseH2
 	{
 		checkIfBaseIsOpen();
 		String sql = "INSERT INTO Credentials (username, password) VALUES ('" + username + "', '" + password + "')";
-
+		user=null;
+		pass=null;
 		try
 		{
 			conn.createStatement().execute(sql);
@@ -52,10 +53,9 @@ public class DaoServerDatabaseH2
 	public boolean isValidCredential(final String user, final String password)
 	{
 		checkIfBaseIsOpen();
-		if (this.user != null && !this.user.isEmpty() && this.user.equals(user) && this.pass != null && !this.pass.isEmpty() && this.pass.equals(user))
+		if (this.user != null && !this.user.isEmpty() && this.user.equals(user) && this.pass != null && !this.pass.isEmpty() && this.pass.equals(pass))
 			return true;
 		String sql = "SELECT username, password FROM Credentials WHERE username='" + user + "' AND password='" + password + "'";
-
 		try
 		{
 			ResultSet rs = conn.createStatement().executeQuery(sql);
