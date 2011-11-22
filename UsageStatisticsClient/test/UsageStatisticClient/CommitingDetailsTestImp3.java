@@ -31,10 +31,6 @@ public class CommitingDetailsTestImp3 implements CommitListener
 	{
 	}
 	
-	@Override
-	public void setInfo(String info)
-	{
-	}
 
 	@Override
 	public void setLogsAmount(int amount)
