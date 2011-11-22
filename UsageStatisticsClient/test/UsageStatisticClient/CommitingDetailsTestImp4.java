@@ -26,7 +26,7 @@ public class CommitingDetailsTestImp4 implements CommitListener
 	public void commitingFinishedSuccesful()
 	{
 		licznik++;
-		Assert.assertEquals(10, licznik);
+		Assert.assertEquals(8, licznik);
 		commitingFinishedSuccesful=true;
 	}
 
@@ -39,7 +39,7 @@ public class CommitingDetailsTestImp4 implements CommitListener
 	public void step()
 	{
 		licznik++;
-		Assert.assertTrue(licznik>=4&&licznik<=8);
+		Assert.assertTrue(licznik>=3&&licznik<=7);
 	}
 
 	@Override
