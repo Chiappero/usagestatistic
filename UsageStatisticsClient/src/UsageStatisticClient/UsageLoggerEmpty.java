@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
+/**
+ * @class Empty Implementation of UsageLogger interface
+ * 
+ *
+ */
 public class UsageLoggerEmpty implements UsageLogger
 {
 
