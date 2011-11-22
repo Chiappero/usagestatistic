@@ -246,6 +246,10 @@ public class DaoServerDatabaseH2Test {
 		list=dao.getLogsFromDatabase(func,users,"SELA",sdf.format(Calendar.getInstance().getTime()),null,false);
 		Assert.assertEquals(3, list.size());
 		Assert.assertEquals(3, list.get(2).getCount());
+		Assert.assertEquals("SELC", list.get(2).getFunctionality());
+		Assert.assertEquals(null, list.get(2).getParameters());
+		list=dao.getLogsFromDatabase(func,users,"SELA",sdf.format(Calendar.getInstance().getTime()),null,true);
+		Assert.assertEquals("SEL4", list.get(2).getParameters());
 		list=dao.getLogsFromDatabase(func,users,"SELA",null,sdf.format(Calendar.getInstance().getTime()),false);
 		Assert.assertEquals(2, list.get(2).getCount());	
 		list=dao.getLogsFromDatabase(func,users,"SELA",sdf.format(Calendar.getInstance().getTime()),sdf.format(Calendar.getInstance().getTime()),false);
@@ -339,6 +343,7 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertEquals(p,EncryptInstance.SHA256("upass"));
 		
 	}
+
 
 	public void closeDatabase() throws NoSuchFieldException
 	{
