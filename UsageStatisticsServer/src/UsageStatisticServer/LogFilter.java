@@ -1,7 +1,6 @@
 package UsageStatisticServer;
 
 import java.util.ArrayList;
-
 class LogFilter 
 {
 	java.util.Date datefrom;
