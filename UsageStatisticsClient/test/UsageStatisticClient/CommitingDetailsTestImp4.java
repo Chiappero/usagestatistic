@@ -41,25 +41,6 @@ public class CommitingDetailsTestImp4 implements CommitListener
 		licznik++;
 		Assert.assertTrue(licznik>=4&&licznik<=8);
 	}
-	
-	@Override
-	public void setInfo(String info)
-	{
-		licznik++;
-		
-		if (!temp) 
-		{
-			Assert.assertEquals(info, "Begin commiting");
-			temp=true;
-			Assert.assertEquals(3, licznik);
-		} else
-		{
-			Assert.assertEquals(info, "Commiting finised succesful");
-			Assert.assertEquals(9, licznik);
-		}
-		this.info=info;
-		
-	}
 
 	@Override
 	public void setLogsAmount(int amount)
