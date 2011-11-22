@@ -2,17 +2,21 @@ package UsageStatisticClient;
 
 import java.util.Date;
 import java.util.List;
-
+/**
+ * 
+ * The interface defines the methods to the process of collecting and sending logs
+ *
+ */
 public interface UsageLogger 
 {
 	/**
-	 * Method writes the log to the local database
+	 * Writes the log to the local database
 	 * @param functionality name of used functionality
 	 * @param parameters parameters of used functionality
 	 */
 	 void log(String functionality, String parameters);
 	 /**
-	  * Method returns thread to commit logs into server database. To implement commit progress parameter cl mustn't be null
+	  * Returns thread to commit logs into server database. To implement commit progress parameter cl mustn't be null
 	  * @param cl Object responsible for the implementation of the transfer progress
 	  * @return Thread to commit logs into server database
 	  */
@@ -23,7 +27,7 @@ public interface UsageLogger
 	  */
 	 int getLogsCount();
 	 /**
-	  * Method returns date of first log in local database if it's exist, null in anther case.
+	  * Returns date of first log in local database if it's exist, null in anther case.
 	  * @return Date of first log in local database
 	  */
 	 Date getOldestLogDate();
