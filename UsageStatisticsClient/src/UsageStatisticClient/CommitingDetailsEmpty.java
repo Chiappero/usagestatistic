@@ -19,9 +19,6 @@ final class CommitingDetailsEmpty implements CommitListener
 	public void step() {}
 
 	@Override
-	public void setInfo(final String info) {}
-
-	@Override
 	public void setLogsAmount(final int amount) {}
 
 	@Override

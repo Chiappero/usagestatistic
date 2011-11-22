@@ -28,7 +28,6 @@ public final class UsageStatistic implements UsageLogger{
 	private static UsageLogger instance;
 	private RestTemplate restTemplate;
 	private DaoTemporaryDatabaseInterface dao;
-//	private Thread commitThread;
 	private static boolean debuglog;
 	
 	
@@ -45,6 +44,7 @@ public final class UsageStatistic implements UsageLogger{
 	private static final String DEBUG_PARAMETER  = "debug";
 	private static final String ON = "on";
 	
+	@Override
 	public void log(final String functionality, final String parameters) 
 	{ 
 		LogInformation log = new LogInformation(Calendar.getInstance().getTime(), functionality, user, tool, parameters);
@@ -79,7 +79,10 @@ public final class UsageStatistic implements UsageLogger{
 	{
 		return new CommitRunnable(cl);
 	}
-	
+	/**
+	 * Method returns singleton of UsageStatistic or UsageLoggerEmpty in case of exception
+	 * @return instance of UsageLogger
+	 */
 	public static UsageLogger getInstance()
 	{
 		try 
@@ -162,7 +165,6 @@ public final class UsageStatistic implements UsageLogger{
 			int logsAmount = dao.getLogsAmount();
 			committingDetails.commitingStart();
 			committingDetails.setLogsAmount(logsAmount);
-			committingDetails.setInfo(BEGIN_COMMITING);
 			int i = 0;
 			
 			while (!dao.isEmpty() &&  i < logsAmount)
@@ -173,7 +175,6 @@ public final class UsageStatistic implements UsageLogger{
 				i++;
 				
 			}	
-				committingDetails.setInfo(COMMITING_FINISHED_SUCCESFUL);
 				committingDetails.commitingFinishedSuccesful();
 		} 
 		
