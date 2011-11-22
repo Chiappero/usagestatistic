@@ -18,9 +18,6 @@ public void step() {
 public void setLogsAmount(int amount) {
 }
 
-@Override
-public void setInfo(String info) {
-}
 
 @Override
 public void commitingStart() {
