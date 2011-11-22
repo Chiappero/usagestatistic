@@ -53,7 +53,7 @@ public class DaoServerDatabaseH2
 	public boolean isValidCredential(final String user, final String password)
 	{
 		checkIfBaseIsOpen();
-		if (this.user != null && !this.user.isEmpty() && this.user.equals(user) && this.pass != null && !this.pass.isEmpty() && this.pass.equals(pass))
+		if (this.user != null && !this.user.isEmpty() && this.user.equals(user) && this.pass != null && !this.pass.isEmpty() && this.pass.equals(password))
 			return true;
 		String sql = "SELECT username, password FROM Credentials WHERE username='" + user + "' AND password='" + password + "'";
 		try
