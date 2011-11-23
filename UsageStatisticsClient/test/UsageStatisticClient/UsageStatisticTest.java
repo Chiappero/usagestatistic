@@ -352,7 +352,7 @@ public class UsageStatisticTest {
 		TestUtils.removeAllLogsFromDao(instance);
 		TestUtils.addSomeLogsToDao(instance, 5);
 		TestUtils.CommitAndWait(instance.createCommitRunnable(com));
-		Assert.assertEquals(com.licznik, 10);
+		Assert.assertEquals(com.licznik, 8);
 		Assert.assertEquals(com.amount, 5);
 		Assert.assertTrue(com.commitingFinishedSuccesful);
 		Assert.assertTrue(com.commitingStart);
