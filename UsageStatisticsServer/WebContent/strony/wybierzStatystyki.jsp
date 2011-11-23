@@ -29,13 +29,17 @@
       <tr><td>Data od:</td><td>
       <form:input path="dateFrom" id="dateFrom" type="date" /></td></tr>
       <tr><td>Data do:</td><td><form:input path="dateTill" id="dateTill" type="date" /></td></tr>
-      <tr><td>Params:</td><td><form:checkbox path="param" /> show params:</td></tr> 
+      <tr><td>Parametry:</td><td><form:checkbox path="param" /> pokaż parametry</td></tr> 
       </table>
         <input type="submit" onclick="checkDates(this);return false;" value="Pokaz logi"/>
   </form:form>
 </div>
 
 <script language="javascript">
+	if(document.URL.charAt(document.URL.length-1)=='/'){
+		window.location=document.URL.substring(0, document.URL.length-1);
+	}
+	
 	var drop1 = document.getElementById("tool");
 	var drop2 = document.getElementById("functionalities");		
 	var drop3 = document.getElementById("users");
@@ -244,19 +248,66 @@
 		// regular expression to match required date format
 	    re = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
 
-	    if(startdate.value != '' && !startdate.value.match(re)) {
-	      alert("Poprawny format daty: yyyy-mm-dd");
-	      startdate.focus();
-	      startdate.select();
-	      return false;
+		if(startdate.value != '') {
+			if(regs = startdate.value.match(re)) {
+		        var y=startdate.value.substring(0,4);
+		        var m=startdate.value.substring(5,7);
+		        var d=startdate.value.substring(8,10);
+				if(y < 1902 || y > (new Date()).getFullYear()) {
+		          alert("Dopuszczalne lata: 1902 do " + (new Date()).getFullYear());
+		          startdate.focus();
+		          startdate.select();
+		          return false;
+		        }
+		        if(m < 1 || m > 12) {
+		          alert("Nieprawidłowa wartość w polu miesiąc");
+		          startdate.focus();
+		          startdate.select();
+		          return false;
+		        }
+		        if(d < 1 || d > 31) {
+		          alert("Nieprawidłowa wartość w polu dzień");
+		          startdate.focus();
+		          startdate.select();
+		          return false;
+		        }
+	      } else {
+	        alert("Nieprawidłowy format daty");
+	        startdate.focus();
+	        startdate.select();
+	        return false;
+	      }
 	    }
-	    
-	    if(enddate.value != '' && !enddate.value.match(re)) {
-		      alert("Poprawny format daty: yyyy-mm-dd");
-		      enddate.focus();
-		      enddate.select();
-		      return false;
-		    }
+		if(enddate.value != '') {
+			if(regs = enddate.value.match(re)) {
+				var y=enddate.value.substring(0,4);
+		        var m=enddate.value.substring(5,7);
+		        var d=enddate.value.substring(8,10);
+				if(y < 1902 || y > (new Date()).getFullYear()) {
+		          alert("Dopuszczalne lata: 1902 do " + (new Date()).getFullYear());
+		          enddate.focus();
+		          enddate.select();
+		          return false;
+		        }
+		        if(m < 1 || m > 12) {
+		          alert("Nieprawidłowa wartość w polu miesiąc");
+		          enddate.focus();
+		          enddate.select();
+		          return false;
+		        }
+		        if(d < 1 || d > 31) {
+		          alert("Nieprawidłowa wartość w polu dzień");
+		          enddate.focus();
+		          enddate.select();
+		          return false;
+		        }
+	      } else {
+	        alert("Nieprawidłowy format daty");
+	        enddate.focus();
+	        enddate.select();
+	        return false;
+	      }
+	    }
 	    form.submit();
 	    return false;
 	  }
