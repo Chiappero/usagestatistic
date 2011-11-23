@@ -208,6 +208,8 @@ public class InterfaceSeleniumTest
 	
 	}
 	
+	String msg="Poprawny format daty: yyyy-mm-dd";
+	
 	@Test
 	public void AT184_Validate_date()
 	{
@@ -223,6 +225,42 @@ public class InterfaceSeleniumTest
 		selenium.waitForPageToLoad("3000");
 		selenium.isTextPresent("1999-12-10");
 		selenium.isTextPresent("1999-12-11");
+		selenium.open("/results");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("id=dateFrom", "1999-12-101");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(msg,selenium.getAlert());
+		selenium.type("id=dateFrom", "1999-12a-10");
+		selenium.click("css=input[type=\"submit\"]");
+		Assert.assertEquals(msg,selenium.getAlert());
+		selenium.type("id=dateFrom", "1999-12_10");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(msg,selenium.getAlert());
+		selenium.type("id=dateFrom", "199912a10");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(msg,selenium.getAlert());
+		selenium.type("id=dateFrom", "10-10-1999");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(msg,selenium.getAlert());
+		selenium.type("id=dateFrom", "data");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(msg,selenium.getAlert());
+		selenium.type("id=dateFrom", "1999-0-19");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(msg,selenium.getAlert());		
+		selenium.type("id=dateFrom", "2010-13-19");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(msg,selenium.getAlert());	
+		selenium.type("id=dateFrom", "2010-13-19");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(msg,selenium.getAlert());			
+		selenium.type("id=dateFrom", "2011-02-29");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(msg,selenium.getAlert());
+		selenium.type("id=dateFrom", "2012-02-29");
+		selenium.click("css=input[type=\"submit\"]");	
+		selenium.waitForPageToLoad("3000");
+		selenium.close();
 	}
 	
 	
