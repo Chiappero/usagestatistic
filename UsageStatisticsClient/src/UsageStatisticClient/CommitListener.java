@@ -1,5 +1,10 @@
 package UsageStatisticClient;
 
+/**
+ * 
+ * The interface defines the methods needed to implement the process of sending logs to submit progress
+ *
+ */
 public interface CommitListener 
 {
 /**

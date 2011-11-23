@@ -19,7 +19,11 @@ import java.util.StringTokenizer;
 import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.web.client.RestTemplate;
-
+/**
+ * 
+ * @class Contains the implementation of methods to collect and send logs
+ *
+ */
 public final class UsageStatistic implements UsageLogger{
 	private URI serverURL;
 	private String user;
@@ -72,7 +76,7 @@ public final class UsageStatistic implements UsageLogger{
 		return new CommitRunnable(cl);
 	}
 	/**
-	 * Method returns singleton of UsageStatistic or UsageLoggerEmpty in case of exception
+	 * Returns singleton of UsageLogger
 	 * @return instance of UsageLogger
 	 */
 	public static UsageLogger getInstance()
