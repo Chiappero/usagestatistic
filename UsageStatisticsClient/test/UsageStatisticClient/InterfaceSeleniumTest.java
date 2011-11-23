@@ -190,7 +190,6 @@ public class InterfaceSeleniumTest
 		Assert.assertTrue(selenium.isTextPresent("Thread"+x));
 		Assert.assertTrue(selenium.isTextPresent("500"));
 		Assert.assertTrue(localDao.isEmpty());
-		//Thread t2 = new Thread( instance.createCommitRunnable(new CommitingDetails()));
 		TestUtils.addSomeLogsToDao(instance, 100);
 		t.run();
 		TestUtils.addSomeLogsToDao(instance, 100);
@@ -208,4 +207,23 @@ public class InterfaceSeleniumTest
 
 	
 	}
+	
+	@Test
+	public void AT184_Validate_date()
+	{
+		selenium.open("/results");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("name=j_username","nokia");
+		selenium.type("name=j_password", "nokia");
+		selenium.click("name=submit");
+		selenium.waitForPageToLoad("3000");
+		selenium.type("id=dateFrom", "1999-12-10");
+		selenium.type("id=dateTill", "1999-12-11");
+		selenium.click("css=input[type=\"submit\"]");	
+		selenium.waitForPageToLoad("3000");
+		selenium.isTextPresent("1999-12-10");
+		selenium.isTextPresent("1999-12-11");
+	}
+	
+	
 }
