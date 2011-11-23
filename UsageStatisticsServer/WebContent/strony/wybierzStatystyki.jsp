@@ -246,7 +246,7 @@
 		enddate=document.getElementById("dateTill");
 		
 		// regular expression to match required date format
-	    re = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
+	    re = /^\d{4}\-\d{2}\-\d{2}$/;
 
 		if(startdate.value != '') {
 			if(regs = startdate.value.match(re)) {
@@ -272,7 +272,7 @@
 		          return false;
 		        }
 	      } else {
-	        alert("Nieprawidłowy format daty");
+	        alert("Nieprawidłowy format daty. Proszę poprawić na yyyy-mm-dd");
 	        startdate.focus();
 	        startdate.select();
 	        return false;
@@ -302,7 +302,7 @@
 		          return false;
 		        }
 	      } else {
-	        alert("Nieprawidłowy format daty");
+	        alert("Nieprawidłowy format daty. Proszę poprawić na yyyy-mm-dd");
 	        enddate.focus();
 	        enddate.select();
 	        return false;
