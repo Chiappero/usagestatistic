@@ -31,7 +31,7 @@ class LogPresenterController{
 	@Autowired
 	private DaoServerDatabaseH2 dao;
 	
-	@RequestMapping(value = "/results", method = RequestMethod.GET)
+	@RequestMapping(value = "/logs", method = RequestMethod.GET)
 	protected ModelAndView wyswietlFormatke(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException{
 		 //Map<String, Object> myModel = new HashMap<String, Object>();
 		String data = (new java.util.Date()).toString();
@@ -71,7 +71,7 @@ class LogPresenterController{
 		}
 	}
 	
-	@RequestMapping(value = "/results", method = RequestMethod.POST)
+	@RequestMapping(value = "/logs", method = RequestMethod.POST)
 	protected ModelAndView wyswietlWyniki(@ModelAttribute("Results")Results results, BindingResult result) {
 		ArrayList<String> tool = new ArrayList<String>();
 
