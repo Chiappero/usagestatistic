@@ -5,7 +5,7 @@
 
 <LINK rel="stylesheet" href="style.css">
 <div>
-<form:form method="post" action="results">
+<form:form method="post" action="logs">
       <table style="border:2px solid grey; ">
           <tr><td>Stan z dnia: <c:out value="${data}"></c:out></td></tr>
           <tr><td>Narzedzia</td><td>       	  
@@ -17,12 +17,12 @@
 		  </form:select> 
 		  </td></tr>
           <tr><td>Funkcjonalnosci<br />
-          <input type="button" onclick="selectAllFuns()" value="Zaznacz/odznacz wszystkie"/></td><td>
+          <input type="button" onclick="selectAllFuns()" value="Odwróć zaznaczenie"/></td><td>
           <form:select path="functionalities" id="functionalities" name="functionalities" style="min-width: 150px; height: 200px;">
 	 	 </form:select>
 		  </td></tr>
 		  <tr><td>Userzy<br/>
-		  <input type="button" onclick="selectAllUsers()" value="Zaznacz/odznacz wszystkich"/></td><td>
+		  <input type="button" onclick="selectAllUsers()" value="Odwróć zaznaczenie"/></td><td>
 		  <form:select path="users" id="users" name="users" style="min-width: 150px; height: 200px;"></form:select>
 		  </td></tr> 
       <form:errors path="dateFrom" />
@@ -75,8 +75,8 @@
 		if(url.charAt(url.length-1)=='\\' || url.charAt(url.length-1)=='/'){
 			url=url.substring(0, url.length-1);
 		}
-		if(url.substring(url.length-7, url.length)=="results"){
-			url=url=url.substring(0, url.length-7);
+		if(url.substring(url.length-4, url.length)=="logs"){
+			url=url=url.substring(0, url.length-4);
 		}
 		xmlhttp.open("GET",url+"getusers?tool="+toolName,true);
 		emptyUsers();
@@ -107,8 +107,8 @@
 		if(url.charAt(url.length-1)=='\\' || url.charAt(url.length-1)=='/'){
 			url=url.substring(0, url.length-1);
 		}
-		if(url.substring(url.length-7, url.length)=="results"){
-			url=url=url.substring(0, url.length-7);
+		if(url.substring(url.length-4, url.length)=="logs"){
+			url=url=url.substring(0, url.length-4);
 		}
 		xmlhttp.open("GET",url+"getfuns?tool="+toolName,true);
 		emptyFuns();

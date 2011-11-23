@@ -34,7 +34,7 @@ public class InterfaceSeleniumTest
 	@Test
 	public void AT12_1_Authentication() 
 	{
-		selenium.open("/results");
+		selenium.open("/logs");
 		selenium.waitForPageToLoad("3000");
 		Assert.assertFalse(isLogged());		
 		selenium.type("name=j_username","login");
@@ -79,7 +79,7 @@ public class InterfaceSeleniumTest
 		final int x=r.nextInt()%10000;
 		instance.log("fun"+x, "parameters");
 		TestUtils.CommitAndWait(instance.createCommitRunnable(null));
-		selenium.open("/results");
+		selenium.open("/logs");
 		selenium.waitForPageToLoad("3000");
 		selenium.select("name=tool", "tool");
 		String[] funkcjonalnosci;
@@ -88,7 +88,7 @@ public class InterfaceSeleniumTest
 		Thread.sleep(1000);
 		funkcjonalnosci=selenium.getSelectOptions("name=functionalities");
 		}
-		while (funkcjonalnosci[0].equals("£adowanie..."));
+		while (funkcjonalnosci[0].equals("ï¿½adowanie..."));
 		boolean flag=false;
 		for (int i=0;i<funkcjonalnosci.length&&!flag;i++)
 		{
@@ -168,7 +168,7 @@ public class InterfaceSeleniumTest
 		t.join();
 		t1.join();
 		
-		selenium.open("/results");
+		selenium.open("/logs");
 		selenium.waitForPageToLoad("3000");
 		selenium.type("name=j_username","nokia");
 		selenium.type("name=j_password", "nokia");
@@ -182,7 +182,7 @@ public class InterfaceSeleniumTest
 		Thread.sleep(1000);
 		funkcjonalnosci=selenium.getSelectOptions("name=functionalities");
 		}
-		while (funkcjonalnosci[0].equals("£adowanie..."));
+		while (funkcjonalnosci[0].equals("ï¿½adowanie..."));
 		selenium.select("name=functionalities", "Thread"+x);
 		selenium.select("name=users", "user");
 		selenium.click("css=input[type=\"submit\"]");	
