@@ -25,15 +25,17 @@
 		  <input type="button" onclick="selectAllUsers()" value="Zaznacz/odznacz wszystkich"/></td><td>
 		  <form:select path="users" id="users" name="users" style="width: 150px; height: 200px;"></form:select>
 		  </td></tr> 
-      <tr><td>Data od:</td><td><form:input path="dateFrom" id="dateFrom" type="date" /></td></tr>
+      <form:errors path="dateFrom" />
+      <tr><td>Data od:</td><td>
+      <form:input path="dateFrom" id="dateFrom" type="date" /></td></tr>
       <tr><td>Data do:</td><td><form:input path="dateTill" id="dateTill" type="date" /></td></tr>
       <tr><td>Params:</td><td><form:checkbox path="param" /> show params:</td></tr> 
       </table>
-        <input type="submit" value="Pokaz logi"/>
+        <input type="submit" onclick="checkDates(this);return false;" value="Pokaz logi"/>
   </form:form>
 </div>
 
-<script language="javascript"><!--
+<script language="javascript">
 	var drop1 = document.getElementById("tool");
 	var drop2 = document.getElementById("functionalities");		
 	var drop3 = document.getElementById("users");
@@ -218,4 +220,31 @@
 			drop3.options[i].selected=!drop3.options[i].selected;
 		}
 	}
+	
+	
+	function checkDates(form)
+	  {
+		startdate=document.getElementById("dateFrom");
+		enddate=document.getElementById("dateTill");
+		
+		// regular expression to match required date format
+	    re = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
+
+	    if(startdate.value != '' && !startdate.value.match(re)) {
+	      alert("Poprawny format daty: yyyy-mm-dd");
+	      startdate.focus();
+	      startdate.select();
+	      return false;
+	    }
+	    
+	    if(enddate.value != '' && !enddate.value.match(re)) {
+		      alert("Poprawny format daty: yyyy-mm-dd");
+		      enddate.focus();
+		      enddate.select();
+		      return false;
+		    }
+	    form.submit();
+	    return false;
+	  }
+
 </script>
