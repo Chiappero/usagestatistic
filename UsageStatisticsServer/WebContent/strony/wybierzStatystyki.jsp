@@ -5,11 +5,11 @@
 
 <LINK rel="stylesheet" href="style.css">
 <div>
-<form:form method="post" action="results">
+<form:form method="post" action="logs">
       <table style="border:2px solid grey; ">
           <tr><td>Stan z dnia: <c:out value="${data}"></c:out></td></tr>
           <tr><td>Narzedzia</td><td>       	  
-          <form:select path="tool" onchange="getFunsAndUsersWithAjax();" id="tool" name="tool" style="width: 150px;">
+          <form:select path="tool" onchange="getFunsAndUsersWithAjax();" id="tool" name="tool" style="min-width: 150px;">
 		   	<option value="null">---Select---</option>
 		   	<c:forEach var="ttt" items="${tools}">
 	 		  <option value="${ttt}">${ttt}</option>
@@ -17,25 +17,29 @@
 		  </form:select> 
 		  </td></tr>
           <tr><td>Funkcjonalnosci<br />
-          <input type="button" onclick="selectAllFuns()" value="Zaznacz/odznacz wszystkie"/></td><td>
-          <form:select path="functionalities" id="functionalities" name="functionalities" style="width: 150px; height: 200px;">
+          <input type="button" onclick="selectAllFuns()" value="Odwróć zaznaczenie"/></td><td>
+          <form:select path="functionalities" id="functionalities" name="functionalities" style="min-width: 150px; height: 200px;">
 	 	 </form:select>
 		  </td></tr>
 		  <tr><td>Userzy<br/>
-		  <input type="button" onclick="selectAllUsers()" value="Zaznacz/odznacz wszystkich"/></td><td>
-		  <form:select path="users" id="users" name="users" style="width: 150px; height: 200px;"></form:select>
+		  <input type="button" onclick="selectAllUsers()" value="Odwróć zaznaczenie"/></td><td>
+		  <form:select path="users" id="users" name="users" style="min-width: 150px; height: 200px;"></form:select>
 		  </td></tr> 
       <form:errors path="dateFrom" />
       <tr><td>Data od:</td><td>
       <form:input path="dateFrom" id="dateFrom" type="date" /></td></tr>
       <tr><td>Data do:</td><td><form:input path="dateTill" id="dateTill" type="date" /></td></tr>
-      <tr><td>Params:</td><td><form:checkbox path="param" /> show params:</td></tr> 
+      <tr><td>Parametry:</td><td><form:checkbox path="param" /> pokaż parametry</td></tr> 
       </table>
         <input type="submit" onclick="checkDates(this);return false;" value="Pokaz logi"/>
   </form:form>
 </div>
 
 <script language="javascript">
+	if(document.URL.charAt(document.URL.length-1)=='/'){
+		window.location=document.URL.substring(0, document.URL.length-1);
+	}
+	
 	var drop1 = document.getElementById("tool");
 	var drop2 = document.getElementById("functionalities");		
 	var drop3 = document.getElementById("users");
@@ -71,7 +75,14 @@
             }
         };
 		var toolName = document.getElementById("tool").value;
-		xmlhttp.open("GET","getusers?tool="+toolName,true);
+		var url=document.URL;
+		if(url.charAt(url.length-1)=='\\' || url.charAt(url.length-1)=='/'){
+			url=url.substring(0, url.length-1);
+		}
+		if(url.substring(url.length-4, url.length)=="logs"){
+			url=url=url.substring(0, url.length-4);
+		}
+		xmlhttp.open("GET",url+"getusers?tool="+toolName,true);
 		emptyUsers();
 		xmlhttp.send(null);
 		drop3.disabled=true;
@@ -96,7 +107,14 @@
             }
         };
 		var toolName = document.getElementById("tool").value;
-		xmlhttp.open("GET","getfuns?tool="+toolName,true);
+		var url=document.URL;
+		if(url.charAt(url.length-1)=='\\' || url.charAt(url.length-1)=='/'){
+			url=url.substring(0, url.length-1);
+		}
+		if(url.substring(url.length-4, url.length)=="logs"){
+			url=url=url.substring(0, url.length-4);
+		}
+		xmlhttp.open("GET",url+"getfuns?tool="+toolName,true);
 		emptyFuns();
 		xmlhttp.send(null);
 		drop2.disabled=true;
@@ -230,19 +248,66 @@
 		// regular expression to match required date format
 	    re = /^\d{4}\-\d{1,2}\-\d{1,2}$/;
 
-	    if(startdate.value != '' && !startdate.value.match(re)) {
-	      alert("Poprawny format daty: yyyy-mm-dd");
-	      startdate.focus();
-	      startdate.select();
-	      return false;
+		if(startdate.value != '') {
+			if(regs = startdate.value.match(re)) {
+		        var y=startdate.value.substring(0,4);
+		        var m=startdate.value.substring(5,7);
+		        var d=startdate.value.substring(8,10);
+				if(y < 1902 || y > (new Date()).getFullYear()) {
+		          alert("Dopuszczalne lata: 1902 do " + (new Date()).getFullYear());
+		          startdate.focus();
+		          startdate.select();
+		          return false;
+		        }
+		        if(m < 1 || m > 12) {
+		          alert("Nieprawidłowa wartość w polu miesiąc");
+		          startdate.focus();
+		          startdate.select();
+		          return false;
+		        }
+		        if(d < 1 || d > 31) {
+		          alert("Nieprawidłowa wartość w polu dzień");
+		          startdate.focus();
+		          startdate.select();
+		          return false;
+		        }
+	      } else {
+	        alert("Nieprawidłowy format daty");
+	        startdate.focus();
+	        startdate.select();
+	        return false;
+	      }
 	    }
-	    
-	    if(enddate.value != '' && !enddate.value.match(re)) {
-		      alert("Poprawny format daty: yyyy-mm-dd");
-		      enddate.focus();
-		      enddate.select();
-		      return false;
-		    }
+		if(enddate.value != '') {
+			if(regs = enddate.value.match(re)) {
+				var y=enddate.value.substring(0,4);
+		        var m=enddate.value.substring(5,7);
+		        var d=enddate.value.substring(8,10);
+				if(y < 1902 || y > (new Date()).getFullYear()) {
+		          alert("Dopuszczalne lata: 1902 do " + (new Date()).getFullYear());
+		          enddate.focus();
+		          enddate.select();
+		          return false;
+		        }
+		        if(m < 1 || m > 12) {
+		          alert("Nieprawidłowa wartość w polu miesiąc");
+		          enddate.focus();
+		          enddate.select();
+		          return false;
+		        }
+		        if(d < 1 || d > 31) {
+		          alert("Nieprawidłowa wartość w polu dzień");
+		          enddate.focus();
+		          enddate.select();
+		          return false;
+		        }
+	      } else {
+	        alert("Nieprawidłowy format daty");
+	        enddate.focus();
+	        enddate.select();
+	        return false;
+	      }
+	    }
 	    form.submit();
 	    return false;
 	  }

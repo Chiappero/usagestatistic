@@ -18,5 +18,5 @@
           </c:forEach>
       </table>
       <c:if test="${logi.isEmpty()==true}">Niestety nie znaleziono zadnych wynikow dla zadanego kryterium<br></c:if>
-      <br /><a href="results">Wroc</a>
+      <br /><a href="logs">Wroc</a>
 </div>
