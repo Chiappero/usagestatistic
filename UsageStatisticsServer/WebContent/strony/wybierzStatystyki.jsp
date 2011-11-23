@@ -9,7 +9,7 @@
       <table style="border:2px solid grey; ">
           <tr><td>Stan z dnia: <c:out value="${data}"></c:out></td></tr>
           <tr><td>Narzedzia</td><td>       	  
-          <form:select path="tool" onchange="getFunsAndUsersWithAjax();" id="tool" name="tool" style="width: 150px;">
+          <form:select path="tool" onchange="getFunsAndUsersWithAjax();" id="tool" name="tool" style="min-width: 150px;">
 		   	<option value="null">---Select---</option>
 		   	<c:forEach var="ttt" items="${tools}">
 	 		  <option value="${ttt}">${ttt}</option>
@@ -18,12 +18,12 @@
 		  </td></tr>
           <tr><td>Funkcjonalnosci<br />
           <input type="button" onclick="selectAllFuns()" value="Zaznacz/odznacz wszystkie"/></td><td>
-          <form:select path="functionalities" id="functionalities" name="functionalities" style="width: 150px; height: 200px;">
+          <form:select path="functionalities" id="functionalities" name="functionalities" style="min-width: 150px; height: 200px;">
 	 	 </form:select>
 		  </td></tr>
 		  <tr><td>Userzy<br/>
 		  <input type="button" onclick="selectAllUsers()" value="Zaznacz/odznacz wszystkich"/></td><td>
-		  <form:select path="users" id="users" name="users" style="width: 150px; height: 200px;"></form:select>
+		  <form:select path="users" id="users" name="users" style="min-width: 150px; height: 200px;"></form:select>
 		  </td></tr> 
       <form:errors path="dateFrom" />
       <tr><td>Data od:</td><td>
@@ -71,7 +71,14 @@
             }
         };
 		var toolName = document.getElementById("tool").value;
-		xmlhttp.open("GET","getusers?tool="+toolName,true);
+		var url=document.URL;
+		if(url.charAt(url.length-1)=='\\' || url.charAt(url.length-1)=='/'){
+			url=url.substring(0, url.length-1);
+		}
+		if(url.substring(url.length-7, url.length)=="results"){
+			url=url=url.substring(0, url.length-7);
+		}
+		xmlhttp.open("GET",url+"getusers?tool="+toolName,true);
 		emptyUsers();
 		xmlhttp.send(null);
 		drop3.disabled=true;
@@ -96,7 +103,14 @@
             }
         };
 		var toolName = document.getElementById("tool").value;
-		xmlhttp.open("GET","getfuns?tool="+toolName,true);
+		var url=document.URL;
+		if(url.charAt(url.length-1)=='\\' || url.charAt(url.length-1)=='/'){
+			url=url.substring(0, url.length-1);
+		}
+		if(url.substring(url.length-7, url.length)=="results"){
+			url=url=url.substring(0, url.length-7);
+		}
+		xmlhttp.open("GET",url+"getfuns?tool="+toolName,true);
 		emptyFuns();
 		xmlhttp.send(null);
 		drop2.disabled=true;
