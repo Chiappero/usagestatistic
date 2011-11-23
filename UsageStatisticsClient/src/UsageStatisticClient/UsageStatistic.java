@@ -31,17 +31,9 @@ public final class UsageStatistic implements UsageLogger{
 	private static boolean debuglog;
 	
 	
-	private static final String BEGIN_COMMITING = "Begin commiting";
 	private static final String DEBUGLOG_FILE = "debuglog.txt";
 	private static final String CLIENT_CONFIG_FILE = "client-config.cfg";
-	private static final String COMMITING_FINISHED_SUCCESFUL = "Commiting finised succesful";
 	private static final String POST_PATH = "/post";
-	private static final String EQUALS  = "=";
-	private static final String SERVER_URL_PARAMETER  = "serverURL";
-	private static final String USER_PARAMETER  = "user";
-	private static final String PASSWORD_PARAMETER  = "password";
-	private static final String TOOL_PARAMETER  = "tool";
-	private static final String DEBUG_PARAMETER  = "debug";
 	private static final String ON = "on";
 	
 	@Override

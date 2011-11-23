@@ -1,21 +1,11 @@
 package UsageStatisticClient;
 
-import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.NoSuchPaddingException;
-
 import org.junit.Assert;
 import org.junit.Test;
-
 import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 public class CiphersTest 
@@ -25,19 +15,20 @@ public class CiphersTest
 	public void AT10_1_AND_AT10_2_Proper_create_user_config_AND_Proper_decrypt_user_config() throws Throwable 
 	{
 		Ciphers cipher=new Ciphers();
+		UsageStatisticClientConfigGenerator.Ciphers testcipher=new UsageStatisticClientConfigGenerator.Ciphers();
 		File f=new File("cipher.test");
 		File f2=new File("cipher2.test");
-		cipher.writeCiphered(f, "line1\nline2");
+		testcipher.writeCiphered(f, "line1\nline2");
 		cipher=new Ciphers();
 		String answer=cipher.readCiphered(f);
 		Assert.assertEquals("line1\nline2", answer);
 		f.delete();
 		f=new File("cipher.test");
 		answer=ConfigGenerator.config("localhost:8080/UsageStatisticServer", "user", "password", "tool");
-		cipher.writeCiphered(f, answer);
+		testcipher.writeCiphered(f, answer);
 		String s2=cipher.readCiphered(f);
 		Assert.assertEquals("serverURL = localhost:8080/UsageStatisticServer\nuser = user\npassword = "+Ciphers.sha256("password")+"\ntool = tool\ndebug = on", s2);
-		cipher.writeCiphered(f2, answer);
+		testcipher.writeCiphered(f2, answer);
 		BufferedReader br=new BufferedReader(new FileReader(f));
 		BufferedReader br2=new BufferedReader(new FileReader(f2));
 		while ((s2=br.readLine())!=null)

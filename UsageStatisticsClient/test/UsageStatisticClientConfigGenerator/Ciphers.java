@@ -19,7 +19,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-class Ciphers //public for test only
+public class Ciphers
 {
 	final static private String UTF8 = "UTF8";
 	final static private int FF = 0xff;
@@ -58,7 +58,6 @@ class Ciphers //public for test only
 		return new SecretKeySpec(keyAsBytes, ALGORITHM);
 	}
 
-	//for test only
 	final public void writeCiphered(final File file, final String plainText) throws InvalidKeyException, IOException, InvalidAlgorithmParameterException
 	{
 		cipher.init(Cipher.ENCRYPT_MODE, key, CBC_SALT);
@@ -69,37 +68,7 @@ class Ciphers //public for test only
 		cout.write(plainTextBytes);
 		cout.close();
 	}
-
-	final String readCiphered(final File file) throws InvalidKeyException, IOException, InvalidAlgorithmParameterException
-	{
-		cipher.init(Cipher.DECRYPT_MODE, key, CBC_SALT);
-		final CipherInputStream cin = new CipherInputStream(new FileInputStream(file), cipher);
-		final int messageLengthInBytes = (cin.read() << BYTE8) | cin.read();
-		final byte[] reconstitutedBytes;
-		if (messageLengthInBytes >= 0)
-		{
-			reconstitutedBytes = new byte[messageLengthInBytes];
-		} else
-		{
-			reconstitutedBytes = new byte[0];
-		}
-
-		int bytesReadSoFar = 0;
-		int bytesRemaining = messageLengthInBytes;
-		while (bytesRemaining > 0)
-		{
-			final int bytesThisChunk = cin.read(reconstitutedBytes, bytesReadSoFar, bytesRemaining);
-			if (bytesThisChunk == 0)
-			{
-				throw new IOException(file.toString() + " corrupted.");
-			}
-			bytesReadSoFar += bytesThisChunk;
-			bytesRemaining -= bytesThisChunk;
-		}
-		cin.close();
-		return new String(reconstitutedBytes, CHARSET);
-	}
-
+	
 	private static MessageDigest md;
 	static
 	{
