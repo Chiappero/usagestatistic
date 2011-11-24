@@ -1,4 +1,4 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 final class CommitingDetailsEmpty implements CommitListener 
 {

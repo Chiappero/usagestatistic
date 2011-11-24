@@ -1,4 +1,4 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 class AddUserClientController
 {	
 	@Autowired
-	DaoServerDatabaseH2 dao;
+	private DaoServerDatabaseH2 dao;
 	
 	@RequestMapping(value = "/addUserClient", method = RequestMethod.GET)
 	protected ModelAndView addUserClientForm() 
@@ -39,7 +39,7 @@ class AddUserClientController
 						modelAndView.addObject("message","Nie wypelniono wszystkich pol");
 						return modelAndView;
 					}
-					password = EncryptInstance.SHA256(password);
+					password = EncryptInstance.sha256(password);
 					if (password==null)
 					{
 						modelAndView.addObject("message","Blad przy szyfrowaniu hasla");

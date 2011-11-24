@@ -1,10 +1,10 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 
 import java.util.ArrayList;
 
 class UsersXML {
 
-	ArrayList<String> users;
+	private ArrayList<String> users;
 	
 	UsersXML(){
 		

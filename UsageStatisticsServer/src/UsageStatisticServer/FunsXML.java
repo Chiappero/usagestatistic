@@ -1,10 +1,10 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 
 import java.util.ArrayList;
 
 class FunsXML {
 
-	ArrayList<String> funs;
+	private ArrayList<String> funs;
 	
 	FunsXML(){
 		

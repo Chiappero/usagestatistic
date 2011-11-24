@@ -1,4 +1,4 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -178,27 +178,27 @@ public final class UsageStatistic implements UsageLogger{
 		catch (org.springframework.web.client.HttpClientErrorException e)
 		{
 			committingDetails
-			.commitingFailureWithError(Errors.SERVER_TURNED_OFF);
+			.commitingFailureWithError(UsageStatisticException.SERVER_TURNED_OFF);
 		} 
 		
 		
 		catch (org.springframework.web.client.ResourceAccessException e)
 		{
 			committingDetails
-			.commitingFailureWithError(Errors.ERROR_WITH_CONNECTION_TO_SERVER);
+			.commitingFailureWithError(UsageStatisticException.ERROR_WITH_CONNECTION_TO_SERVER);
 				
 		} 
 		catch (SQLException e)
 		{	
 			dao.resetDatabase();
 			committingDetails
-			.commitingFailureWithError(Errors.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
+			.commitingFailureWithError(UsageStatisticException.ERROR_WITH_CONNECTION_TO_LOCAL_DATABASE);
 		} 
 		
 		catch (org.springframework.web.client.RestClientException e)
 		{
 			committingDetails
-			.commitingFailureWithError(Errors.CANNOT_EXTRACT_RESPONSE);
+			.commitingFailureWithError(UsageStatisticException.CANNOT_EXTRACT_RESPONSE);
 		}
 	}
 	
@@ -215,25 +215,25 @@ public final class UsageStatistic implements UsageLogger{
 			}
 			else if ("ERROR".equals(postForObject))
 			{
-				committingDetails.stepInvalid(Errors.CANNOT_SAVE_LOG);
+				committingDetails.stepInvalid(UsageStatisticException.CANNOT_SAVE_LOG);
 			} 
 			else if ("CANNOT_AUTHENTICATE".equals(postForObject))
 			{
 				committingDetails
-				.commitingFailureWithError(Errors.CANNOT_AUTHENTICATE);
+				.commitingFailureWithError(UsageStatisticException.CANNOT_AUTHENTICATE);
 				return;
 			}
 			else
 			{
 				committingDetails
-				.commitingFailureWithError(Errors.SERVER_DOESNT_RECEIVE_DATA);
+				.commitingFailureWithError(UsageStatisticException.SERVER_DOESNT_RECEIVE_DATA);
 				return;
 			}
 			
 		}
 		else
 		{
-			committingDetails.stepInvalid(Errors.LOG_WAS_NULL);
+			committingDetails.stepInvalid(UsageStatisticException.LOG_WAS_NULL);
 		}
 		
 	}
@@ -261,9 +261,13 @@ public final class UsageStatistic implements UsageLogger{
 		public CommitRunnable(CommitListener listener)
 		{
 			if (listener == null)
+			{
 				this.listener = new CommitingDetailsEmpty();
+			}
 			else
+			{
 				this.listener = listener;
+			}
 		}
 
 

@@ -1,4 +1,4 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 public class Pair<Lewy,Prawy>
 {

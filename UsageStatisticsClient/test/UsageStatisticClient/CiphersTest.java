@@ -1,4 +1,4 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 
 import java.io.BufferedReader;
@@ -6,7 +6,11 @@ import java.io.File;
 import java.io.FileReader;
 import org.junit.Assert;
 import org.junit.Test;
-import UsageStatisticClientConfigGenerator.ConfigGenerator;
+
+import usagestatisticsclient.Ciphers;
+import usagestatisticsclient.UsageLogger;
+import usagestatisticsclient.UsageStatistic;
+import usagestatisticsclientconfiggenerator.ConfigGenerator;
 
 public class CiphersTest 
 {
@@ -15,7 +19,7 @@ public class CiphersTest
 	public void AT10_1_AND_AT10_2_Proper_create_user_config_AND_Proper_decrypt_user_config() throws Throwable 
 	{
 		Ciphers cipher=new Ciphers();
-		UsageStatisticClientConfigGenerator.Ciphers testcipher=new UsageStatisticClientConfigGenerator.Ciphers();
+		usagestatisticsclientconfiggenerator.Ciphers testcipher=new usagestatisticsclientconfiggenerator.Ciphers();
 		File f=new File("cipher.test");
 		File f2=new File("cipher2.test");
 		testcipher.writeCiphered(f, "line1\nline2");

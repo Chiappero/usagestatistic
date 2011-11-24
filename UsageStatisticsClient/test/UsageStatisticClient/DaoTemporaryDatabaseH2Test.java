@@ -1,4 +1,4 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,6 +12,10 @@ import org.h2.tools.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import usagestatisticsclient.DaoTemporaryDatabaseH2;
+import usagestatisticsclient.DaoTemporaryDatabaseInterface;
+import usagestatisticsclient.LogInformation;
 
 public class DaoTemporaryDatabaseH2Test
 {

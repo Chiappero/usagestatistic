@@ -1,4 +1,4 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,7 +35,7 @@ public class UsageLoggerEmpty implements UsageLogger
 	}
 
 	@Override
-	public Runnable createCommitRunnable(final CommitListener cl)
+	public final Runnable createCommitRunnable(final CommitListener cl)
 	{
 		return new Runnable()
 		{

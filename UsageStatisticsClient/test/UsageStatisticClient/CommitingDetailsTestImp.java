@@ -1,5 +1,6 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
+import usagestatisticsclient.CommitListener;
 import junit.framework.Assert;
 
 public class CommitingDetailsTestImp implements CommitListener

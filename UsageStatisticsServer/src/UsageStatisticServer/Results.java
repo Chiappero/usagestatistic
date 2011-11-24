@@ -1,7 +1,5 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 
-import java.util.ArrayList;
-import java.util.Date;
 
 
 public class Results
@@ -13,45 +11,45 @@ private String dateFrom;
 private String dateTill;
 private boolean param;
 
-public boolean isParam() {
+public final boolean isParam() {
 	return param;
 }
-public void setParam(boolean param) {
+public final void setParam(boolean param) {
 	this.param = param;
 }
-public String getDateTill() {
+public final String getDateTill() {
 	return dateTill;
 }
-public void setDateTill(String dateTill) {
+public final void setDateTill(String dateTill) {
 	this.dateTill = dateTill;
 }
-public String getDateFrom() {
+public final String getDateFrom() {
 	return dateFrom;
 }
-public void setDateFrom(String dateFrom) {
+public final void setDateFrom(String dateFrom) {
 	this.dateFrom = dateFrom;
 }
-public String getTool()
+public final String getTool()
 {
 	return tool;
 }
-public void setTool(String tool)
+public final void setTool(String tool)
 {
 	this.tool = tool;
 }
-public String[] getFunctionalities()
+public final String[] getFunctionalities()
 {
 	return functionalities;
 }
-public void setFunctionalities(String[] functionalities)
+public final void setFunctionalities(String[] functionalities)
 {
 	this.functionalities = functionalities;
 }
-public String[] getUsers()
+public final String[] getUsers()
 {
 	return users;
 }
-public void setUsers(String[] users)
+public final void setUsers(String[] users)
 {
 	this.users = users;
 }

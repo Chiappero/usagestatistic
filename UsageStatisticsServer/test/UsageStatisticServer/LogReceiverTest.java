@@ -1,4 +1,4 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -8,6 +8,9 @@ import junit.framework.Assert;
 import junitx.util.PrivateAccessor;
 
 import org.junit.Test;
+
+import usagestatisticsserver.DaoServerDatabaseH2;
+import usagestatisticsserver.LogInformation;
 
 
 public class LogReceiverTest {

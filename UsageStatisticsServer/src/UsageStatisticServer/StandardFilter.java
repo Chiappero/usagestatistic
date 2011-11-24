@@ -1,4 +1,4 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 //Musi zosta public - Pawel Nieradka
 public class StandardFilter 
 {
@@ -15,28 +15,28 @@ public class StandardFilter
 		this.parameters=parameters;
 	}
 	
-	public String getParameters() {
+	public final String getParameters() {
 		return parameters;
 	}
 
-	public void setParameters(String parameters) {
+	public final void setParameters(String parameters) {
 		this.parameters = parameters;
 	}
 
-	public String getFunctionality() {
+	public final String getFunctionality() {
 		return functionality;
 	}
-	public void setFunctionality(String functionality) {
+	public final void setFunctionality(String functionality) {
 		this.functionality = functionality;
 	}
-	public int getCount() {
+	public final int getCount() {
 		return count;
 	}
-	public void setCount(int count) {
+	public final void setCount(int count) {
 		this.count = count;
 	}
 	
-	public String toString()
+	public final String toString()
 	{
 		return "["+functionality+", "+count+"]";
 	}

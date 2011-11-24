@@ -1,4 +1,4 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -14,7 +14,7 @@ public class PairLogInformationAndPassword
 private LogInformation logInformation;
 private String password;
 /**
- * returns informations abaout log to sent
+ * returns informations about log to sent
  * @return Object LogInformation
  */
 public final LogInformation getLogInformation()
@@ -38,7 +38,7 @@ public final void setPassword(String password)
 	this.password = password;
 }
 /**
- * 
+ * Returns  password defined in object
  * @return  password defined in object
  */
 public final String getPassword()

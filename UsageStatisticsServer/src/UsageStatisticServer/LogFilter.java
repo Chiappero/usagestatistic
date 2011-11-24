@@ -1,13 +1,13 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 
 import java.util.ArrayList;
 class LogFilter 
 {
-	java.util.Date datefrom;
-	java.util.Date datebefore;
-	ArrayList<String> functionality;
-	ArrayList<String> user;
-	ArrayList<String> tool;
+	private java.util.Date datefrom;
+	private java.util.Date datebefore;
+	private ArrayList<String> functionality;
+	private ArrayList<String> user;
+	private ArrayList<String> tool;
 	
 	LogFilter(final java.util.Date datefrom,final java.util.Date datebefore,final ArrayList<String> functionality,final ArrayList<String> user,final ArrayList<String> tool)
 	{
