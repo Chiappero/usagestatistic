@@ -26,13 +26,6 @@ public final String getPassword()
 {
 	return password;
 }
-public PairLogInformationAndPassword(LogInformation logInformation,
-		String password)
-{
-	super();
-	this.logInformation = logInformation;
-	this.password = password;
-}
 public PairLogInformationAndPassword() //musi byc aby commitowanie zadzialalo!!
 {
 }

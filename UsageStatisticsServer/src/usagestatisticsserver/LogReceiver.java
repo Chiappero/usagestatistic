@@ -14,14 +14,20 @@ import org.springframework.web.servlet.ModelAndView;
 
 	 
 	@Controller
-	class LogReceiver { //TODO autentykowanie
+	class LogReceiver {
 
+		private static final String MESSAGE = "message";
+		private static final String CANNOT_AUTHENTICATE = "CANNOT_AUTHENTICATE";
+		private static final String OK = "OK";
+		private static final String ERROR = "ERROR";
+		private static final String POST_SLASH = "/post";
+		
 	@Autowired
 	private DaoServerDatabaseH2 dao;
 	
-	    @RequestMapping(value = "/post", method = RequestMethod.POST)
+	    @RequestMapping(value = POST_SLASH, method = RequestMethod.POST)
 	    	ModelAndView addPerson(@RequestBody PairLogInformationAndPassword pair) {
-	    	ModelAndView modelAndView = new ModelAndView("wiadomosc");
+	    	ModelAndView modelAndView = new ModelAndView(MESSAGE);
 	    	//System.out.println("otrzymalem user="+pair.getLogInformation().getUser()+" oraz password="+pair.getPassword());
 	    	if (pair!=null)
 	    	{
@@ -44,17 +50,17 @@ import org.springframework.web.servlet.ModelAndView;
 							{
 								modelAndView.addObject("message", "ERROR");
 							}*/
-							modelAndView.addObject("message", dao.saveLog(logInformation)?"OK":"ERROR");
+							modelAndView.addObject(MESSAGE, dao.saveLog(logInformation)?OK:ERROR);
 							return modelAndView;
 						}
 		    	
 		    	
-		    	modelAndView.addObject("message", "CANNOT_AUTHENTICATE");
+		    	modelAndView.addObject(MESSAGE, CANNOT_AUTHENTICATE);
 			    return modelAndView;
 		    	}
 		    	}
 	    	}
-	    	modelAndView.addObject("message", "ERROR");
+	    	modelAndView.addObject(MESSAGE, ERROR);
 	    	return modelAndView;
 	    	
 	    	
