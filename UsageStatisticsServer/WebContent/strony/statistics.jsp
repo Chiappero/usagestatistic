@@ -13,10 +13,10 @@
           <tr><td><br />Tool:</td><td><br /><c:out value="${tool}"></c:out></td></tr>
           <tr><td><br />Logi:<br /></td></tr>
           <tr><td>FUNKCJONALNOSC</td><c:if test="${showParams}"><td>PARAMETRY</td></c:if><td>ILOŚĆ</td>
-          <c:forEach var="log" items="${logi}">
+          <c:forEach var="log" items="${logs}">
           <tr><td>${log.functionality}</td><c:if test="${showParams}"><td>${log.parameters}</td></c:if><td>${log.count}</td></tr>
           </c:forEach>
       </table>
-      <c:if test="${logi.isEmpty()==true}">Niestety nie znaleziono zadnych wynikow dla zadanego kryterium<br></c:if>
+      <c:if test="${logs.isEmpty()==true}">Niestety nie znaleziono zadnych wynikow dla zadanego kryterium<br></c:if>
       <br /><a href="logs">Wroc</a>
 </div>
