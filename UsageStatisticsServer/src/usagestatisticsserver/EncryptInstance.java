@@ -55,6 +55,7 @@ class EncryptInstance
 				md.update(text.getBytes("UTF8"), 0, text.length());
 			} catch (UnsupportedEncodingException e)
 			{
+				return null;
 			}
 	    return convertToHex(md.digest());
 	    } 

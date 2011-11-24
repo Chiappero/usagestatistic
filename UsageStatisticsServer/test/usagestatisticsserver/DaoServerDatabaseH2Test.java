@@ -323,6 +323,8 @@ public class DaoServerDatabaseH2Test {
 		dao.addUserClient("user"+x, EncryptInstance.sha256("user"));
 		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.sha256("user")));
 		Assert.assertTrue(dao.isValidCredential("user"+x, EncryptInstance.sha256("user")));
+		
+		Assert.assertNull(EncryptInstance.sha256(null));
 	}
 		
 	@Test
