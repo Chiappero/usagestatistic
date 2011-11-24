@@ -216,7 +216,7 @@ public class InterfaceSeleniumTest
 	@Test
 	public void AT184_Validate_date()
 	{
-		selenium.open("/results");
+		selenium.open("/logs");
 		selenium.waitForPageToLoad("3000");
 		selenium.type("name=j_username","nokia");
 		selenium.type("name=j_password", "nokia");
@@ -228,7 +228,7 @@ public class InterfaceSeleniumTest
 		selenium.waitForPageToLoad("3000");
 		selenium.isTextPresent("1999-12-10");
 		selenium.isTextPresent("1999-12-11");
-		selenium.open("/results");
+		selenium.open("/logs");
 		selenium.waitForPageToLoad("3000");
 		selenium.type("id=dateFrom", "1999-12-101");
 		selenium.click("css=input[type=\"submit\"]");	
