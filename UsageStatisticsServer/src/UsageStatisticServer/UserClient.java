@@ -1,22 +1,22 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 
 public class UserClient
 {
-String user;
-String password;
-public String getUser()
+private String user;
+private String password;
+public final String getUser()
 {
 	return user;
 }
-public void setUser(String user)
+public final void setUser(String user)
 {
 	this.user = user;
 }
-public String getPassword()
+public final String getPassword()
 {
 	return password;
 }
-public void setPassword(String password) 
+public final void setPassword(String password) 
 {
 	this.password = password;
 }

@@ -1,4 +1,4 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,6 +13,11 @@ import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import usagestatisticsserver.DaoServerDatabaseH2;
+import usagestatisticsserver.EncryptInstance;
+import usagestatisticsserver.LogInformation;
+import usagestatisticsserver.StandardFilter;
 
 public class DaoServerDatabaseH2Test {
 
@@ -307,40 +312,40 @@ public class DaoServerDatabaseH2Test {
 	public void AT185_Proper_adduser() throws SQLException, NoSuchFieldException
 	{	
 		
-		dao.addUserClient("user", EncryptInstance.SHA256("user"));
-		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.SHA256("user")));
-		dao.addUserClient("user", EncryptInstance.SHA256("password"));
-		Assert.assertFalse(dao.isValidCredential("user", EncryptInstance.SHA256("user")));
-		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.SHA256("password")));
-		dao.addUserClient("user", EncryptInstance.SHA256("user"));
+		dao.addUserClient("user", EncryptInstance.sha256("user"));
+		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.sha256("user")));
+		dao.addUserClient("user", EncryptInstance.sha256("password"));
+		Assert.assertFalse(dao.isValidCredential("user", EncryptInstance.sha256("user")));
+		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.sha256("password")));
+		dao.addUserClient("user", EncryptInstance.sha256("user"));
 		Random rand=new Random();
 		int x=rand.nextInt()%1000000;
-		dao.addUserClient("user"+x, EncryptInstance.SHA256("user"));
-		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.SHA256("user")));
-		Assert.assertTrue(dao.isValidCredential("user"+x, EncryptInstance.SHA256("user")));
+		dao.addUserClient("user"+x, EncryptInstance.sha256("user"));
+		Assert.assertTrue(dao.isValidCredential("user", EncryptInstance.sha256("user")));
+		Assert.assertTrue(dao.isValidCredential("user"+x, EncryptInstance.sha256("user")));
 	}
 		
 	@Test
 	public void AT82_Proper_cache_of_credentials_on_server() throws SQLException, NoSuchFieldException
 	{	
 		String u,p;
-		dao.isValidCredential("user", EncryptInstance.SHA256("user"));
+		dao.isValidCredential("user", EncryptInstance.sha256("user"));
 		u=(String) PrivateAccessor.getField(dao, "user");
 		p=(String) PrivateAccessor.getField(dao,"pass");	
 		Assert.assertEquals(u,"user");
-		Assert.assertEquals(p,EncryptInstance.SHA256("user"));
-		dao.isValidCredential("user", EncryptInstance.SHA256("fakepass"));
+		Assert.assertEquals(p,EncryptInstance.sha256("user"));
+		dao.isValidCredential("user", EncryptInstance.sha256("fakepass"));
 		u=(String) PrivateAccessor.getField(dao, "user");
 		p=(String) PrivateAccessor.getField(dao,"pass");
 		Assert.assertEquals(u,"user");
-		Assert.assertEquals(p,EncryptInstance.SHA256("user"));
-		dao.addUserClient("uuser", EncryptInstance.SHA256("upass"));
-		dao.isValidCredential("uuser", EncryptInstance.SHA256("upass"));
-		dao.isValidCredential("uuser", EncryptInstance.SHA256("upass"));
+		Assert.assertEquals(p,EncryptInstance.sha256("user"));
+		dao.addUserClient("uuser", EncryptInstance.sha256("upass"));
+		dao.isValidCredential("uuser", EncryptInstance.sha256("upass"));
+		dao.isValidCredential("uuser", EncryptInstance.sha256("upass"));
 		u=(String) PrivateAccessor.getField(dao, "user");
 		p=(String) PrivateAccessor.getField(dao,"pass");
 		Assert.assertEquals(u,"uuser");
-		Assert.assertEquals(p,EncryptInstance.SHA256("upass"));
+		Assert.assertEquals(p,EncryptInstance.sha256("upass"));
 		
 	}
 

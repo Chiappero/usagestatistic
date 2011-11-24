@@ -1,4 +1,4 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

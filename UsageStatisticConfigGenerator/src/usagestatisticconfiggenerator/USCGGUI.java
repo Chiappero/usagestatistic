@@ -33,7 +33,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class USCGGUI extends javax.swing.JFrame {
 
-    CipherAES cipher;
+    private CipherAES cipher;
     /** Creates new form USCGGUI */
     public USCGGUI() {
         initComponents();
@@ -72,8 +72,8 @@ public class USCGGUI extends javax.swing.JFrame {
         setTitle("Usage Statistic - Config File Generator");
         setResizable(false);
 
-        jLabel1.setFont(new java.awt.Font("Showcard Gothic", 0, 36));
-        jLabel1.setText("USAGE STATISTIC");
+        jLabel1.setFont(new java.awt.Font("Showcard Gothic", 0, 36)); // NOI18N
+        jLabel1.setText("USAGE STATISTICS");
 
         jLabel2.setFont(new java.awt.Font("Tempus Sans ITC", 0, 24));
         jLabel2.setText("Config File Generator");
@@ -127,10 +127,10 @@ public class USCGGUI extends javax.swing.JFrame {
                                         .addComponent(jLabel6))
                                     .addGap(10, 10, 10)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(user, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
-                                        .addComponent(serverURL, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
-                                        .addComponent(password, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
-                                        .addComponent(tool, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)))
+                                        .addComponent(user, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                                        .addComponent(serverURL, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                                        .addComponent(password, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+                                        .addComponent(tool, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)))
                                 .addComponent(debug, javax.swing.GroupLayout.Alignment.LEADING)))))
                 .addGap(27, 27, 27))
         );
@@ -199,7 +199,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     }
     
     private String getConfig(){
-        return "serverURL= "+serverURL.getText()+"\nuser=  "+user.getText()+"\npassword= "+CipherAES.SHA256(password.getText())+"\ntool= "+tool.getText()+"\ndebug= "+(debug.isSelected()?"on":"off");
+        return "serverURL= "+serverURL.getText()+"\nuser=  "+user.getText()+"\npassword= "+CipherAES.sha256(password.getText())+"\ntool= "+tool.getText()+"\ndebug= "+(debug.isSelected()?"on":"off");
     }
     
     private void saveFile() throws IOException{
@@ -240,10 +240,12 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     
     private File fileDialog(boolean save){
         JFileChooser fileChooser = new JFileChooser();
-        if(save)
+        if(save){
             fileChooser.setDialogTitle("Zapisz plik konfiguracyjny");
-        else
+        }
+        else{
             fileChooser.setDialogTitle("Otwórz plik konfiguracyjny");
+        }
         fileChooser.setFileFilter(new FileNameExtensionFilter("Usage Statistic Config Files (cfg)", "cfg"));
         fileChooser.setSelectedFile(new File("client-config"));
 

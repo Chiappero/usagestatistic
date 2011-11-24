@@ -1,8 +1,11 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+
+import usagestatisticsclient.DaoTemporaryDatabaseInterface;
+import usagestatisticsclient.LogInformation;
 
 public class DaoTemporaryDatabaseH2TestImp2 implements DaoTemporaryDatabaseInterface
 {	

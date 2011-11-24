@@ -1,4 +1,4 @@
-package UsageStatisticClientConfigGenerator;
+package usagestatisticsclientconfiggenerator;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,4 +1,6 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
+
+import usagestatisticsclient.CommitListener;
 
 
 public class CommitingDetailsTestImp2 implements CommitListener

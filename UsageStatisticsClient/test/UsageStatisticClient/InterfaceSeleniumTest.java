@@ -1,4 +1,4 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -12,6 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriverCommandProcessor;
 import org.openqa.selenium.firefox.FirefoxDriver;
+
+import usagestatisticsclient.DaoTemporaryDatabaseH2;
+import usagestatisticsclient.UsageStatistic;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 

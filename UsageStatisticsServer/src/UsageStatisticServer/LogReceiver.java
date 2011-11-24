@@ -1,6 +1,5 @@
-package UsageStatisticServer;
+package usagestatisticsserver;
  
-import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 	class LogReceiver { //TODO autentykowanie
 
 	@Autowired
-	DaoServerDatabaseH2 dao;
+	private DaoServerDatabaseH2 dao;
 	
 	    @RequestMapping(value = "/post", method = RequestMethod.POST)
 	    	ModelAndView addPerson(@RequestBody PairLogInformationAndPassword pair) {

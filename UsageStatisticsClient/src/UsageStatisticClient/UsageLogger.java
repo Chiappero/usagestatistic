@@ -1,4 +1,4 @@
-package UsageStatisticClient;
+package usagestatisticsclient;
 
 import java.util.Date;
 import java.util.List;
@@ -22,7 +22,7 @@ public interface UsageLogger
 	  */
 	 Runnable createCommitRunnable(final CommitListener cl);
 	 /**
-	  * 
+	  * Returns Amount of logs in local database
 	  * @return Amount of logs in local database
 	  */
 	 int getLogsCount();
@@ -32,7 +32,7 @@ public interface UsageLogger
 	  */
 	 Date getOldestLogDate();
 	 /**
-	  * 
+	  * Returns list of logs presented as objects of class LogInformation
 	  * @return List of logs presented as objects of class LogInformation
 	  */
 	 List<LogInformation> getAllLogs();

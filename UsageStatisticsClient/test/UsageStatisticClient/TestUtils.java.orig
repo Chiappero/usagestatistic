@@ -1,7 +1,8 @@
-package usagestatisticsclient;
+package UsageStatisticClient;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -13,11 +14,7 @@ import java.util.GregorianCalendar;
 
 import javax.crypto.NoSuchPaddingException;
 
-import usagestatisticsclient.Ciphers;
-import usagestatisticsclient.DaoTemporaryDatabaseH2;
-import usagestatisticsclient.LogInformation;
-import usagestatisticsclient.UsageStatistic;
-import usagestatisticsclientconfiggenerator.ConfigGenerator;
+import UsageStatisticClientConfigGenerator.ConfigGenerator;
 
 import junitx.util.PrivateAccessor;
 
@@ -64,7 +61,7 @@ public static void corruptFile(UsageStatistic instance) throws NoSuchFieldExcept
 
 public static LogInformation getExampleLog()
 {
-	return new LogInformation(new GregorianCalendar().getTime(), "test", "user", "test", "test");
+	return new LogInformation(new GregorianCalendar().getTime(), "test", "test", "test", "test");
 }
 
 public static void dropTable(DaoTemporaryDatabaseH2 dao) throws NoSuchFieldException, SQLException
@@ -76,20 +73,28 @@ public static void dropTable(DaoTemporaryDatabaseH2 dao) throws NoSuchFieldExcep
 	dao.closeDatabase();
 }
 
-public static void makeConnectionNull(DaoTemporaryDatabaseH2 dao) throws NoSuchFieldException
+public static void makeConnectionNull(DaoTemporaryDatabaseH2 dao)
 {
-	PrivateAccessor.setField(dao, "conn", null);
+	dao.conn=null;
 }
 
 public static void createExampleConfigFile() throws IOException
 {
 	//ConfigGenerator.createConfigFile("client-config.cfg", "http://localhost:8080/UsageStatisticsServer","matuszek","password", "tool");
 	try {
-		new usagestatisticsclientconfiggenerator.Ciphers().writeCiphered(new File("client-config.cfg"), "serverURL= http://localhost:8080/UsageStatisticsServer user= user password= "+Ciphers.sha256("user")+" tool= tool debug= on");
+		new CipherAES().writeCiphered(new File("client-config.cfg"), "serverURL= http://localhost:8080/UsageStatisticsServer user= matuszek password= password tool= tool debug= on");
 	} catch (InvalidKeyException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	} catch (InvalidAlgorithmParameterException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	} catch (NoSuchAlgorithmException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	} catch (NoSuchPaddingException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	}
 }
 
@@ -113,13 +118,7 @@ public static String readLineFromDebugLog() throws IOException
 	String line=br.readLine();
 	br.close();
 	return line;
-}
-
-public static void CommitAndWait(Runnable runnable) throws InterruptedException
-{
-	Thread t = new Thread(runnable);
-	t.run();
-	t.join();
+	
 }
 
 }
