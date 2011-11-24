@@ -201,6 +201,7 @@ public class InterfaceSeleniumTest
 		t.join();
 		t1.join();
 		Assert.assertTrue(localDao.isEmpty());
+		selenium.close();
 	}
 	
 	private boolean isLogged()
