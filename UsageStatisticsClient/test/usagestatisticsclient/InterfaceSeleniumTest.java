@@ -92,7 +92,7 @@ public class InterfaceSeleniumTest
 		Thread.sleep(1000);
 		funkcjonalnosci=selenium.getSelectOptions("name=functionalities");
 		}
-		while (funkcjonalnosci[0].equals("ï¿½adowanie..."));
+		while (funkcjonalnosci[0].equals("£adowanie..."));
 		boolean flag=false;
 		for (int i=0;i<funkcjonalnosci.length&&!flag;i++)
 		{
