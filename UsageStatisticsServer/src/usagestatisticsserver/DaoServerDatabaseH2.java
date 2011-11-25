@@ -330,6 +330,25 @@ public class DaoServerDatabaseH2
 		return values;
 	}
 
+	private String andAndOrStatement(String name, String[] values)
+	{
+		String statement="";
+		for (int i = 0; i < values.length; i++)
+		{
+			statement+=name+"= '"+values[i]+"' ";
+			if (i + 1 < values.length)
+			{
+				statement += "OR ";
+			} else{
+				statement+=") AND ";
+			}
+		}
+		return statement;
+	}
+	
+	
+	
+	
 	public final ArrayList<StandardFilter> getLogsFromDatabase(String[] functionalities, String[] users, String tool, String datefrom, String dateto, boolean param) throws SQLException
 	{
 		ArrayList<StandardFilter> values = new ArrayList<StandardFilter>();
@@ -364,27 +383,8 @@ public class DaoServerDatabaseH2
 			cols += ", parameters";
 		}
 		String sql = "SELECT DISTINCT " + cols + ", COUNT(*) AS cnt FROM Log WHERE (";
-		for (int i = 0; i < functionalities.length; i++)
-		{
-			sql+="functionality= '"+functionalities[i]+"' ";
-			if (i + 1 < functionalities.length)
-			{
-				sql += "OR ";
-			} else{
-				sql+=") AND (";
-			}
-		}
-		for (int i = 0; i < users.length; i++)
-		{
-			sql += "user= '" + users[i] + "' ";
-			if (i + 1 < users.length)
-			{
-				sql += "OR ";
-			} else{
-				sql+=") AND ";
-			}
-		}
-
+		sql+=(andAndOrStatement("functionality",functionalities)+"(");
+		sql+=(andAndOrStatement("user",users));
 		if (sqlfrom != null){
 			sql += ("timestamp>=\'" + sqlfrom + "\' AND ");
 		}
