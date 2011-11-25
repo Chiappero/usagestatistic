@@ -2,6 +2,7 @@ package usagestatisticsclient;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Random;
 
 import junitx.util.PrivateAccessor;
@@ -185,8 +186,14 @@ public class InterfaceSeleniumTest
 		Thread.sleep(1000);
 		funkcjonalnosci=selenium.getSelectOptions("name=functionalities");
 		}
-		while (funkcjonalnosci[0].equals("ï¿½adowanie..."));
+		while (funkcjonalnosci[0].equals("£adowanie..."));
 		selenium.select("name=functionalities", "Thread"+x);
+		do
+		{
+		Thread.sleep(1000);
+		funkcjonalnosci=selenium.getSelectOptions("name=users");
+		}
+		while (funkcjonalnosci[0].equals("£adowanie..."));
 		selenium.select("name=users", "user");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");
@@ -212,7 +219,10 @@ public class InterfaceSeleniumTest
 	
 	}
 	
-	String msg="Poprawny format daty: yyyy-mm-dd";
+	String msg="Nieprawid³owy format daty. Proszê poprawiæ na yyyy-mm-dd";
+	String mmsg="Nieprawid³owa wartoœæ w polu miesi¹c";
+	String dmsg="Nieprawid³owa wartoœæ w polu dzieñ";
+	String ymsg="Dopuszczalne lata: 1902 do "+Calendar.getInstance().get(Calendar.YEAR);
 	
 	@Test
 	public void AT184_Validate_date()
@@ -254,13 +264,13 @@ public class InterfaceSeleniumTest
 		Assert.assertEquals(msg,selenium.getAlert());		
 		selenium.type("id=dateFrom", "2010-13-19");
 		selenium.click("css=input[type=\"submit\"]");	
-		Assert.assertEquals(msg,selenium.getAlert());	
-		selenium.type("id=dateFrom", "2010-13-19");
+		Assert.assertEquals(mmsg,selenium.getAlert());	
+		selenium.type("id=dateFrom", "2020-11-19");
 		selenium.click("css=input[type=\"submit\"]");	
-		Assert.assertEquals(msg,selenium.getAlert());			
-		selenium.type("id=dateFrom", "2011-02-29");
+		Assert.assertEquals(ymsg,selenium.getAlert());			
+		selenium.type("id=dateFrom", "2011-02-29");//nie obsluguje lat przestepnych!
 		selenium.click("css=input[type=\"submit\"]");	
-		Assert.assertEquals(msg,selenium.getAlert());
+		Assert.assertEquals(dmsg,selenium.getAlert());
 		selenium.type("id=dateFrom", "2012-02-29");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");
