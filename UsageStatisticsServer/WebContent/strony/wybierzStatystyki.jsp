@@ -239,6 +239,9 @@
 		}
 	}
 	
+	function liczbaDniLuty (year){
+	    return (((year % 4 == 0) && ( (!(year % 100 == 0)) || (year % 400 == 0))) ? 29 : 28 );
+	}
 	
 	function checkDates(form)
 	  {
@@ -271,6 +274,24 @@
 		          startdate.select();
 		          return false;
 		        }
+		      //luty
+		        if(m==2) {
+			          if(d>liczbaDniLuty(y)){
+			        	  alert("Nieprawidłowa wartość w polu dzień");
+			        	  startdate.focus();
+			        	  startdate.select();
+				          return false;
+			          }
+			    }		        
+		        //miesiace 30 dniowe
+		        if((m==4|| m==6 || m==9 || m==11) && d > 30) {
+			          if(d>30){
+			        	  alert("Nieprawidłowa wartość w polu dzień");
+			        	  startdate.focus();
+			        	  startdate.select();
+				          return false;
+			          }
+			    }
 	      } else {
 	        alert("Nieprawidłowy format daty. Proszę poprawić na yyyy-mm-dd");
 	        startdate.focus();
@@ -301,6 +322,24 @@
 		          enddate.select();
 		          return false;
 		        }
+		        //luty
+		        if(m==2) {
+			          if(d>liczbaDniLuty(y)){
+			        	  alert("Nieprawidłowa wartość w polu dzień");
+				          enddate.focus();
+				          enddate.select();
+				          return false;
+			          }
+			    }		        
+		        //miesiace 30 dniowe
+		        if((m==4|| m==6 || m==9 || m==11) && d > 30) {
+			          if(d>30){
+			        	  alert("Nieprawidłowa wartość w polu dzień");
+				          enddate.focus();
+				          enddate.select();
+				          return false;
+			          }
+			    }
 	      } else {
 	        alert("Nieprawidłowy format daty. Proszę poprawić na yyyy-mm-dd");
 	        enddate.focus();
