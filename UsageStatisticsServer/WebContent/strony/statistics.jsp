@@ -7,16 +7,16 @@
 <div>
 <a href="j_spring_security_logout">Logout</a><br /><br />
       <table style="border:2px solid grey; ">
-          <tr><td>Stan z dnia:</td><td><c:out value="${data}"></c:out></td></tr>
-          <tr><td><br />Logi od:</td><td><br /><c:out value="${dateFrom}"></c:out></td></tr>
-          <tr><td>Logi do:</td><td><c:out value="${dateTill}"></c:out></td></tr>
+          <tr><td> </td><td><c:out value="${data}"></c:out></td></tr>
+          <tr><td><br />Logs from:</td><td><br /><c:out value="${dateFrom}"></c:out></td></tr>
+          <tr><td>Logs till:</td><td><c:out value="${dateTill}"></c:out></td></tr>
           <tr><td><br />Tool:</td><td><br /><c:out value="${tool}"></c:out></td></tr>
-          <tr><td><br />Logi:<br /></td></tr>
-          <tr><td>FUNKCJONALNOSC</td><c:if test="${showParams}"><td>PARAMETRY</td></c:if><td>ILOŚĆ</td>
+          <tr><td><br />Logs:<br /></td></tr>
+          <tr><td>FUNCTIONALITY</td><c:if test="${showParams}"><td>PARAMETERS</td></c:if><td>AMMOUNT</td>
           <c:forEach var="log" items="${logs}">
           <tr><td>${log.functionality}</td><c:if test="${showParams}"><td>${log.parameters}</td></c:if><td>${log.count}</td></tr>
           </c:forEach>
       </table>
-      <c:if test="${logs.isEmpty()==true}">Niestety nie znaleziono zadnych wynikow dla zadanego kryterium<br></c:if>
-      <br /><a href="logs">Wroc</a>
+      <c:if test="${logs.isEmpty()==true}">No logs for specified filter<br></c:if>
+      <br /><a href="logs">Back</a>
 </div>
