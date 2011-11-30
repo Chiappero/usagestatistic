@@ -266,19 +266,19 @@
 		        var m=startdate.value.substring(5,7);
 		        var d=startdate.value.substring(8,10);
 				if(y < 1902 || y > (new Date()).getFullYear()) {
-		          alert("Dopuszczalne lata: 1902 do " + (new Date()).getFullYear());
+		          alert("Acceptable dates from 1902 to " + (new Date()).getFullYear());
 		          startdate.focus();
 		          startdate.select();
 		          return false;
 		        }
 		        if(m < 1 || m > 12) {
-		          alert("Nieprawidłowa wartość w polu miesiąc");
+		          alert("Incorrect month value");
 		          startdate.focus();
 		          startdate.select();
 		          return false;
 		        }
 		        if(d < 1 || d > 31) {
-		          alert("Nieprawidłowa wartość w polu dzień");
+		          alert("Incorrect day value");
 		          startdate.focus();
 		          startdate.select();
 		          return false;
@@ -286,7 +286,7 @@
 		      //luty
 		        if(m=="02") {
 			          if(d>liczbaDniLuty(y)){
-			        	  alert("Nieprawidłowa wartość w polu dzień");
+			        	  alert("Incorrect day value");
 			        	  startdate.focus();
 			        	  startdate.select();
 				          return false;
@@ -295,14 +295,14 @@
 		        //miesiace 30 dniowe
 		        if((m=="04"|| m=="06" || m=="09" || m=="11") && d > 30) {
 			          if(d>30){
-			        	  alert("Nieprawidłowa wartość w polu dzień");
+			        	  alert("Incorrect day value");
 			        	  startdate.focus();
 			        	  startdate.select();
 				          return false;
 			          }
 			    }
 	      } else {
-	        alert("Nieprawidłowy format daty. Proszę poprawić na yyyy-mm-dd");
+	        alert("Incorrect date format. please enter date format yyyy-mm-dd format");
 	        startdate.focus();
 	        startdate.select();
 	        return false;
@@ -314,19 +314,19 @@
 		        var m=enddate.value.substring(5,7);
 		        var d=enddate.value.substring(8,10);
 				if(y < 1902 || y > (new Date()).getFullYear()) {
-		          alert("Dopuszczalne lata: 1902 do " + (new Date()).getFullYear());
+		          alert("Acceptable dates from 1902 to " + (new Date()).getFullYear());
 		          enddate.focus();
 		          enddate.select();
 		          return false;
 		        }
 		        if(m < 1 || m > 12) {
-		          alert("Nieprawidłowa wartość w polu miesiąc");
+		          alert("Incorrect month value");
 		          enddate.focus();
 		          enddate.select();
 		          return false;
 		        }
 		        if(d < 1 || d > 31) {
-		          alert("Nieprawidłowa wartość w polu dzień");
+		          alert("Incorrect day value");
 		          enddate.focus();
 		          enddate.select();
 		          return false;
@@ -334,7 +334,7 @@
 		        //luty
 		        if(m=="02") {
 			          if(d>liczbaDniLuty(y)){
-			        	  alert("Nieprawidłowa wartość w polu dzień");
+			        	  alert("Incorrect day value");
 				          enddate.focus();
 				          enddate.select();
 				          return false;
@@ -343,14 +343,14 @@
 		        //miesiace 30 dniowe
 		        if((m=="04"|| m=="06" || m=="09" || m=="11") && d > 30) {
 			          if(d>30){
-			        	  alert("Nieprawidłowa wartość w polu dzień");
+			        	  alert("Incorrect day value");
 				          enddate.focus();
 				          enddate.select();
 				          return false;
 			          }
 			    }
 	      } else {
-	        alert("Nieprawidłowy format daty. Proszę poprawić na yyyy-mm-dd");
+	        alert("Incorrect date format. please enter date format yyyy-mm-dd format");
 	        enddate.focus();
 	        enddate.select();
 	        return false;

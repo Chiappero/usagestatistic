@@ -115,24 +115,24 @@ public class InterfaceSeleniumTest
 		selenium.type("name=password","password");
 		selenium.click("css=input[type=\"submit\"]");
 		selenium.waitForPageToLoad("3000");
-		Assert.assertTrue(selenium.isTextPresent("Udalo sie dodac uzytkownika"));
+		Assert.assertTrue(selenium.isTextPresent("User added"));
 		selenium.open("/addUserClient");
 		selenium.waitForPageToLoad("3000");
 		selenium.type("name=user","newuser2");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");		
-		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszystkich pol"));
+		Assert.assertTrue(selenium.isTextPresent("All fields should be filled"));
 		selenium.open("/addUserClient");
 		selenium.waitForPageToLoad("3000");
 		selenium.type("name=password","newuser2");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");	
-		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszystkich pol"));
+		Assert.assertTrue(selenium.isTextPresent("All fields should be filled"));
 		selenium.open("/addUserClient");
 		selenium.waitForPageToLoad("3000");
 		selenium.click("css=input[type=\"submit\"]");	
 		selenium.waitForPageToLoad("3000");	
-		Assert.assertTrue(selenium.isTextPresent("Nie wypelniono wszystkich pol"));
+		Assert.assertTrue(selenium.isTextPresent("All fields should be filled"));
 		selenium.close();
 	}
 	
@@ -214,25 +214,33 @@ public class InterfaceSeleniumTest
 	private boolean isLogged()
 	{
 
-		return selenium.isTextPresent("Stan z dnia");
+		return selenium.isTextPresent("Tool");
 
 	
 	}
-	
-	String msg="Nieprawid³owy format daty. Proszê poprawiæ na yyyy-mm-dd";
-	String mmsg="Nieprawid³owa wartoœæ w polu miesi¹c";
-	String dmsg="Nieprawid³owa wartoœæ w polu dzieñ";
-	String ymsg="Dopuszczalne lata: 1902 do "+Calendar.getInstance().get(Calendar.YEAR);
+	String tmsg="Tool not specified";
+	String msg="Incorrect date format. please enter date format yyyy-mm-dd format";
+	String mmsg="Incorrect month value";
+	String dmsg="Incorrect day value";
+	String ymsg="Acceptable dates from 1902 to "+Calendar.getInstance().get(Calendar.YEAR);
 	
 	@Test
-	public void AT184_Validate_date()
+	public void AT184_Validate_date() throws NoSuchFieldException, SQLException
 	{
+		UsageStatistic instance = (UsageStatistic) UsageStatistic.getInstance();
+		TestUtils.removeAllLogsFromDao(instance);
+		TestUtils.addSomeLogsToDao(instance, 20);
 		selenium.open("/logs");
 		selenium.waitForPageToLoad("3000");
 		selenium.type("name=j_username","nokia");
 		selenium.type("name=j_password", "nokia");
 		selenium.click("name=submit");
 		selenium.waitForPageToLoad("3000");
+		selenium.click("css=input[type=\"submit\"]");	
+		Assert.assertEquals(tmsg,selenium.getAlert());	
+		selenium.open("/logs"); //temporary
+		selenium.waitForPageToLoad("3000");
+		selenium.select("name=tool", "tool");		
 		selenium.type("id=dateFrom", "1999-12-10");
 		selenium.type("id=dateTill", "1999-12-11");
 		selenium.click("css=input[type=\"submit\"]");	

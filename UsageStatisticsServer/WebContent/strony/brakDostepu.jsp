@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Brak dostępu</title>
+<title>Authorization error</title>
 </head>
 <body>
-Przepraszamy, ale nie masz dostępu do tej strony.
+Sorry, you don't have access to this page.
 </body>
 </html>
