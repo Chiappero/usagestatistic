@@ -222,9 +222,9 @@ public class DaoServerDatabaseH2
 	private ArrayList<LogInformation> getLogsFromResultSet(ResultSet rs) throws SQLException
 	{
 		ArrayList<LogInformation> loglist = new ArrayList<LogInformation>();
-		if (!rs.first())
+		if(!rs.first())
 		{
-			return new ArrayList<LogInformation>();
+			return loglist;
 		}
 		do
 		{
