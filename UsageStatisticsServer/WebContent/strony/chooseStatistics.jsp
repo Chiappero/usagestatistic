@@ -9,7 +9,7 @@
       <table style="border:2px solid grey; ">
           <tr><td> <c:out value="${data}"></c:out></td></tr>
           <tr><td>Tool</td><td>       	  
-          <form:select path="tool" onchange="getFunsAndUsersWithAjax();" id="tool" name="tool" style="min-width: 150px;">
+          <form:select path="tool" onchange="checkTool();getFunsAndUsersWithAjax();" id="tool" name="tool" style="min-width: 150px;">
 		   	<option value="null">---Select---</option>
 		   	<c:forEach var="ttt" items="${tools}">
 	 		  <option value="${ttt}">${ttt}</option>
@@ -31,7 +31,7 @@
       <tr><td>Date till:</td><td><form:input path="dateTill" id="dateTill" type="date" /></td></tr>
       <tr><td>Parameters:</td><td><form:checkbox path="param" /> show parameters</td></tr> 
       </table>
-        <input type="submit" onclick="checkTool();checkDates(this);return false;" value="Show logs"/>
+        <input id="submit" type="submit" onclick="checkDates(this);return false;" value="Show logs"/>
   </form:form>
 </div>
 
@@ -50,14 +50,15 @@
 	
 	getFunsAndUsersWithAjax();
 	getUsersWithAjax();
+	checkTool();
 	
 	function checkTool(){
 		if(drop1.value=="null"){
-			alert("Tool not specified");
-			drop1.focus();
-			return false;
+			document.getElementById("submit").disabled=true;
 		}
-		return true;
+		else{
+			document.getElementById("submit").disabled=false;
+		}
 	}
 	
 	function getFunsAndUsersWithAjax(){
