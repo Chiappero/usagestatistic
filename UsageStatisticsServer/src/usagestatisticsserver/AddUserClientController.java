@@ -11,11 +11,11 @@ import org.springframework.web.servlet.ModelAndView;
 class AddUserClientController
 {
 	private static final String MESSAGE = "message";
-	private static final String SOME_FIELDS_EMPTY = "Nie wypelniono wszystkich pol";
-	private static final String PASSWORD_ENCRYPTION_ERROR = "Blad przy szyfrowaniu hasla";
-	private static final String PROPER_ADD_USER = "Udalo sie dodac uzytkownika";
-	private static final String ERROR_WITH_CONNECTION_TO_DATABASE = "Blad z polaczeniem do bazy danych";
-	private static final String INVALID_READOUT_PARAMETERS ="Zle odczytano parametry";
+	private static final String SOME_FIELDS_EMPTY = "All fields should be filled";
+	private static final String PASSWORD_ENCRYPTION_ERROR = "Ciphering error";
+	private static final String PROPER_ADD_USER = "User added";
+	private static final String ERROR_WITH_CONNECTION_TO_DATABASE = "Error with connection to database";
+	private static final String INVALID_READOUT_PARAMETERS ="Invalid redout of parameters";
 	
 	private static final String ADD_USER_CLIENT_SLASH ="/addUserClient";
 	private static final String ADD_USER_CLIENT = "addUserClient";

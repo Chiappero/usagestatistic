@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Brak podanej strony</title>
+<title>Page not found</title>
 </head>
 <body>
-Przepraszamy, ale podana strona nie istnieje.
+Sorry, but page you're trying to open is currently unavailable or do not exist.
 </body>
 </html>

@@ -9,7 +9,7 @@
 <form:form method="post" action="addUserClient">
 User:<form:input path="user" /> 
 Password:<form:input path="password" />
-  <input type="submit" value="Dodaj uzytkownika"/>
+  <input type="submit" value="Add user"/>
   </form:form>
 </div>
 
