@@ -6,9 +6,6 @@ class FunsXML {
 
 	private ArrayList<String> funs;
 	
-	FunsXML(){
-		
-	}
 	
 	FunsXML(final ArrayList<String> funs){
 		this.funs=funs;
