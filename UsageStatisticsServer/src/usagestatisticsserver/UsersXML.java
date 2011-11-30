@@ -6,9 +6,6 @@ class UsersXML {
 
 	private ArrayList<String> users;
 	
-	UsersXML(){
-		
-	}
 	
 	UsersXML(ArrayList<String> funs){
 		this.users=funs;

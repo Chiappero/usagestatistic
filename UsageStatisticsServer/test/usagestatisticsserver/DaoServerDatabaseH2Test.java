@@ -1,5 +1,8 @@
 package usagestatisticsserver;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -8,6 +11,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import junitx.util.PrivateAccessor;
 
@@ -33,6 +37,7 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertTrue(dao.isEmpty());
 		Assert.assertTrue(dao.getUsers("tool").isEmpty());
 		Assert.assertTrue(dao.getFunctionalities("tool").isEmpty());
+		Assert.assertTrue(dao.getAllLogs().isEmpty());
 	}
 	
 	public static void dropTable(DaoServerDatabaseH2 dao) throws NoSuchFieldException, SQLException
@@ -309,7 +314,7 @@ public class DaoServerDatabaseH2Test {
 	}
 	
 	@Test
-	public void AT185_Proper_adduser() throws SQLException, NoSuchFieldException
+	public void AT185_Proper_adduser() throws Throwable
 	{	
 		
 		dao.addUserClient("user", EncryptInstance.sha256("user"));
@@ -325,6 +330,8 @@ public class DaoServerDatabaseH2Test {
 		Assert.assertTrue(dao.isValidCredential("user"+x, EncryptInstance.sha256("user")));
 		
 		Assert.assertNull(EncryptInstance.sha256(null));
+		
+		
 	}
 		
 	@Test
@@ -348,6 +355,26 @@ public class DaoServerDatabaseH2Test {
 		p=(String) PrivateAccessor.getField(dao,"pass");
 		Assert.assertEquals(u,"uuser");
 		Assert.assertEquals(p,EncryptInstance.sha256("upass"));
+		
+	}
+	
+	@Test
+	public void ATX_Proper_logerror() throws Throwable{
+		Class[] types = {SQLException.class};
+		Object[] arg = {new SQLException("blad testowy")};
+		
+		File yourFile = new File("errorlog.txt");
+		yourFile.delete();
+		File yourNewFile = new File("errorlog.txt");
+		yourNewFile.createNewFile();
+		
+		
+		PrivateAccessor.invoke(dao, "logerror", types, arg);
+		
+		BufferedReader bf = new BufferedReader(new FileReader("errorlog.txt"));
+		StringTokenizer st = new StringTokenizer(bf.readLine());
+		st.nextToken(); st.nextToken(); st.nextToken(); st.nextToken(); st.nextToken(); st.nextToken();
+		Assert.assertEquals("blad", st.nextToken());
 		
 	}
 

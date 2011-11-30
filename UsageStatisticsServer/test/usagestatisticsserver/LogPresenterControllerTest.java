@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -71,7 +72,7 @@ public class LogPresenterControllerTest
 	}
 
 	@Test
-	public void testGetFuns() throws SQLException, UnsupportedEncodingException
+	public void testGetFuns() throws SQLException, UnsupportedEncodingException, NoSuchFieldException
 	{
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setParameter("tool", "narzedzie");
@@ -79,10 +80,16 @@ public class LogPresenterControllerTest
 		
 		logPresenterController.getFuns(request, response); //jezeli bedzie blad pobrania to test nie przejdzie przez SQLException, niepotrzebny Assert
 		
+		DaoServerDatabaseH2 dao = (DaoServerDatabaseH2) PrivateAccessor.getField(logPresenterController, "dao");
+		LogInformation log = new LogInformation(Calendar.getInstance().getTime(),"funkcjonalnoscPewna", "userPewny", "toolPewny", "parametr1Pewny parametr2 Pewny");
+		dao.saveLog(log);
+		request.setParameter("tool", "toolPewny");
+		logPresenterController.getFuns(request, response);
+		
 	}
 
 	@Test
-	public void testGetUsers() throws SQLException
+	public void testGetUsers() throws SQLException, NoSuchFieldException
 	{
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -90,6 +97,12 @@ public class LogPresenterControllerTest
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		
 		logPresenterController.getUsers(request, response); //jezeli bedzie blad pobrania to test nie przejdzie przez SQLException, niepotrzebny Assert
+		
+		DaoServerDatabaseH2 dao = (DaoServerDatabaseH2) PrivateAccessor.getField(logPresenterController, "dao");
+		LogInformation log = new LogInformation(Calendar.getInstance().getTime(),"funkcjonalnoscPewna", "userPewny", "toolPewny", "parametr1Pewny parametr2 Pewny");
+		dao.saveLog(log);
+		request.setParameter("tool", "toolPewny");
+		logPresenterController.getUsers(request, response);
 	}
 
 	@Test
