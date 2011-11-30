@@ -7,8 +7,8 @@
 <div>
 <form:form method="post" action="logs">
       <table style="border:2px solid grey; ">
-          <tr><td>Stan z dnia: <c:out value="${data}"></c:out></td></tr>
-          <tr><td>Narzedzia</td><td>       	  
+          <tr><td> <c:out value="${data}"></c:out></td></tr>
+          <tr><td>Tool</td><td>       	  
           <form:select path="tool" onchange="getFunsAndUsersWithAjax();" id="tool" name="tool" style="min-width: 150px;">
 		   	<option value="null">---Select---</option>
 		   	<c:forEach var="ttt" items="${tools}">
@@ -16,22 +16,22 @@
 	 		</c:forEach>
 		  </form:select> 
 		  </td></tr>
-          <tr><td>Funkcjonalnosci<br />
-          <input type="button" onclick="selectAllFuns()" value="Odwróć zaznaczenie"/></td><td>
+          <tr><td>Functionalities<br />
+          <input type="button" onclick="selectAllFuns()" value="Invert selection"/></td><td>
           <form:select path="functionalities" id="functionalities" name="functionalities" style="min-width: 150px; height: 200px;">
 	 	 </form:select>
 		  </td></tr>
-		  <tr><td>Userzy<br/>
-		  <input type="button" onclick="selectAllUsers()" value="Odwróć zaznaczenie"/></td><td>
+		  <tr><td>Users<br/>
+		  <input type="button" onclick="selectAllUsers()" value="Invert selection"/></td><td>
 		  <form:select path="users" id="users" name="users" style="min-width: 150px; height: 200px;"></form:select>
 		  </td></tr> 
       <form:errors path="dateFrom" />
-      <tr><td>Data od:</td><td>
+      <tr><td>Date from:</td><td>
       <form:input path="dateFrom" id="dateFrom" type="date" /></td></tr>
-      <tr><td>Data do:</td><td><form:input path="dateTill" id="dateTill" type="date" /></td></tr>
-      <tr><td>Parametry:</td><td><form:checkbox path="param" /> pokaż parametry</td></tr> 
+      <tr><td>Date till:</td><td><form:input path="dateTill" id="dateTill" type="date" /></td></tr>
+      <tr><td>Parameters:</td><td><form:checkbox path="param" /> show parameters</td></tr> 
       </table>
-        <input type="submit" onclick="checkDates(this);return false;" value="Pokaz logi"/>
+        <input type="submit" onclick="checkTool();checkDates(this);return false;" value="Show logs"/>
   </form:form>
 </div>
 
@@ -50,6 +50,15 @@
 	
 	getFunsAndUsersWithAjax();
 	getUsersWithAjax();
+	
+	function checkTool(){
+		if(drop1.value=="null"){
+			alert("Tool not specified");
+			drop1.focus();
+			return false;
+		}
+		return true;
+	}
 	
 	function getFunsAndUsersWithAjax(){
 		getFunsWithAjax();
