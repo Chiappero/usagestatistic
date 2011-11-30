@@ -245,6 +245,7 @@ public class InterfaceSeleniumTest
 		selenium.isTextPresent("1999-12-11");
 		selenium.open("/logs");
 		selenium.waitForPageToLoad("3000");
+		selenium.select("name=tool", "tool");	
 		selenium.type("id=dateFrom", "1999-12-101");
 		selenium.click("css=input[type=\"submit\"]");	
 		Assert.assertEquals(msg,selenium.getAlert());
