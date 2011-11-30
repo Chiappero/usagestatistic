@@ -268,7 +268,7 @@ public class InterfaceSeleniumTest
 		selenium.type("id=dateFrom", "2020-11-19");
 		selenium.click("css=input[type=\"submit\"]");	
 		Assert.assertEquals(ymsg,selenium.getAlert());			
-		selenium.type("id=dateFrom", "2011-02-29");//nie obsluguje lat przestepnych!
+		selenium.type("id=dateFrom", "2011-02-29");
 		selenium.click("css=input[type=\"submit\"]");	
 		Assert.assertEquals(dmsg,selenium.getAlert());
 		selenium.type("id=dateFrom", "2012-02-29");

@@ -36,7 +36,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		
 		if (log.getParameters()==null)
 		{
-			log.setParameters(""); //Baza H2 zapisuje nulla jako String "null"
+			log.setParameters("");
 		}
 		if (!LogInformation.validateLog(log))
 		{
@@ -95,20 +95,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		}
 		String sql="SELECT TOP 1 * FROM Log";
 		ResultSet rs = null;
-		try
-		{
 		rs=conn.createStatement().executeQuery(sql);
-		}
-		catch (SQLException e)
-		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
-				createTables();
-			
-				//return null; //dopiero co utworzono tabele, loga nie ma
-			}
-			return null;
-		}
 		rs.first();
 		LogInformation logInformation = new LogInformation(rs.getTimestamp("timestamp"),rs.getString("functionality"),rs.getString("user"),rs.getString("tool"),rs.getString("parameters"));
 		if (!LogInformation.validateLog(logInformation)){
@@ -129,27 +116,11 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 				return false;
 			}
 			String sql="SELECT COUNT(*) FROM Log";
-			try
-			{
 			ResultSet rs=conn.createStatement().executeQuery(sql);
 			rs.first();
 	
 			return rs.getString(1).equals("0");
-			}
-			catch (SQLException e)
-			{
-				if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-				{
-					createTables();
 	
-					return true;
-				}
-				else{
-			
-					throw e;
-				}
-				
-			}			
 	}
 
 	@Override
@@ -157,27 +128,10 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	{	
 		checkIfBaseIsOpen();
 		String sql="SELECT COUNT(*) FROM Log";
-		try
-		{
 		ResultSet rs=conn.createStatement().executeQuery(sql);
 		rs.first();
 
 		return Integer.parseInt(rs.getString(1));
-		}
-		catch (SQLException e)
-		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
-				createTables();
-
-				return 0; //utworzono tabele, liczba logow = 0				
-			}
-			else{
-
-				throw e;
-			}
-			
-		}
 	}
 	
 	@Override
@@ -334,7 +288,7 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 	public Date getOldestLogDate()
 	{
 		checkIfBaseIsOpen();
-		String sql="SELECT TOP 1 timestamp FROM Log"; //TODO test trzeba napisac czy napewno zwraca najstarszy rekord a nie tylko 'pierwszy'
+		String sql="SELECT TOP 1 timestamp FROM Log";
 		try
 		{
 		ResultSet rs=conn.createStatement().executeQuery(sql);
@@ -346,12 +300,6 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		}
 		catch (SQLException e)
 		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
-				createTables();
-					
-			}
-			
 			return null;			
 		}
 		
@@ -380,10 +328,6 @@ final class DaoTemporaryDatabaseH2 implements DaoTemporaryDatabaseInterface
 		}
 		catch (SQLException e)
 		{
-			if (e.getMessage().contains("Tablela \"LOG\" nie istnieje"))
-			{
-				createTables();
-			}	
 			return new ArrayList<LogInformation>();
 		}		
 	}
