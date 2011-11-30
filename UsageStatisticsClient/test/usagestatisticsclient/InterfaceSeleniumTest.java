@@ -218,7 +218,6 @@ public class InterfaceSeleniumTest
 
 	
 	}
-	String tmsg="Tool not specified";
 	String msg="Incorrect date format. please enter date format yyyy-mm-dd format";
 	String mmsg="Incorrect month value";
 	String dmsg="Incorrect day value";
@@ -236,9 +235,6 @@ public class InterfaceSeleniumTest
 		selenium.type("name=j_password", "nokia");
 		selenium.click("name=submit");
 		selenium.waitForPageToLoad("3000");
-		selenium.click("css=input[type=\"submit\"]");	
-		Assert.assertEquals(tmsg,selenium.getAlert());	
-		selenium.open("/logs"); //temporary
 		selenium.waitForPageToLoad("3000");
 		selenium.select("name=tool", "tool");		
 		selenium.type("id=dateFrom", "1999-12-10");
