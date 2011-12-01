@@ -10,8 +10,8 @@
  */
 package UsageStatisticApplicationTest;
 
-import UsageStatisticClient.UsageLogger;
-import UsageStatisticClient.UsageStatistic;
+import usagestatisticsclient.UsageLogger;
+import usagestatisticsclient.UsageStatistic;
 
 /**
  *
@@ -214,12 +214,12 @@ private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_jButton5ActionPerformed
 
 private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-    new Thread(us.createCommitRunnable(new CommitingDetails())).run();
+    new Thread(us.createCommitRunnable(new CommitingDetails())).start();
 
 }//GEN-LAST:event_jButton7ActionPerformed
 
 private void jPanel1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseMoved
-    us.log("Funkcja6", "Panel1");
+    us.log("Ruch myszka", "Panel1");
 }//GEN-LAST:event_jPanel1MouseMoved
 
     /**

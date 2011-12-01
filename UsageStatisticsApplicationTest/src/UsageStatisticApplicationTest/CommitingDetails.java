@@ -1,6 +1,6 @@
 package UsageStatisticApplicationTest;
 
-import UsageStatisticClient.CommitListener;
+import usagestatisticsclient.CommitListener;
 
 public class CommitingDetails implements CommitListener
 {
@@ -26,13 +26,6 @@ public class CommitingDetails implements CommitListener
 	public void commitingStart() {
 		System.out.println("commitingStart...");
 		current=0;
-		
-	}
-
-	@Override
-	public void setInfo(String arg0) 
-	{
-		System.out.println("Info: "+arg0);
 		
 	}
 
