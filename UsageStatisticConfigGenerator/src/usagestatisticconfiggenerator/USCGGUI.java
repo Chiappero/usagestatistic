@@ -199,7 +199,9 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     }
     
     private String getConfig(){
-        return "serverURL= "+serverURL.getText()+"\nuser=  "+user.getText()+"\npassword= "+CipherAES.sha256(password.getText())+"\ntool= "+tool.getText()+"\ndebug= "+(debug.isSelected()?"on":"off");
+        String url = serverURL.getText();
+        url=url.contains("http://")?url:"http://"+url;
+        return "serverURL= "+url+"\nuser=  "+user.getText()+"\npassword= "+CipherAES.sha256(password.getText())+"\ntool= "+tool.getText()+"\ndebug= "+(debug.isSelected()?"on":"off");
     }
     
     private void saveFile() throws IOException{
