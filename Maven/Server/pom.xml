@@ -4,14 +4,18 @@
   <groupId>UsageStatisticsGroupId.UsageStatistics</groupId>
   <artifactId>Server</artifactId>
   <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0 Final Release</version>
   <name>UsageStatisticsServer</name>
-  <url>http://maven.apache.org</url>
+ <url>http://pwr.wroc.pl</url>
+  
+  
+  <description>UsageStatisticsServer gather all statistics sent by clients. It provides functionality to show web view on gathered data</description>
+  
   
   <parent>
 		<groupId>UsageStatisticsGroupId</groupId>
 		<artifactId>UsageStatistics</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0 Final Release</version>
   </parent>
   
   <dependencies>
@@ -126,12 +130,53 @@
 		<scope>runtime</scope>
 	</dependency>
 	
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-test</artifactId>
+		<version>3.0.5.RELEASE</version>
+		<scope>test</scope>
+	</dependency>
+
+	
   </dependencies>
   <build>
     <finalName>UsageStatisticsServer</finalName>
 	<sourceDirectory>..\..\UsageStatisticsServer\src</sourceDirectory>
 	<testSourceDirectory>..\..\UsageStatisticsServer\test</testSourceDirectory>
 	<plugins>
+	
+	 <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-site-plugin</artifactId>
+	      <version>3.0-beta-3</version>
+	      <configuration>
+	        <reportPlugins>
+			  <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.4</version>
+				<reports>
+				<report>index</report>
+				<report>dependencies</report>
+				<report>plugin-management</report>
+				<report>summary</report>
+			</reports>
+			</plugin>
+	          <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-javadoc-plugin</artifactId>
+	            <version>2.7</version>
+	          </plugin>
+	          <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-jxr-plugin</artifactId>
+	            <version>2.1</version>
+	          </plugin>
+	        </reportPlugins>
+	      </configuration>
+	    </plugin>
+	
+	
 	  <plugin>
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
@@ -183,6 +228,20 @@
           </archive>
         </configuration>
       </plugin>
+	  <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.5.1</version>
+		
+		 <configuration>
+		 <outputDirectory>..\target\staging\UsageStatistics\Server\Cobertura</outputDirectory>
+                        <formats>
+                            <format>html</format>
+                        </formats>
+         </configuration>
+      </plugin>
+	  
+	  
 	 </plugins>
   </build>
   
