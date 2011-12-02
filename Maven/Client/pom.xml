@@ -4,14 +4,26 @@
   <groupId>UsageStatisticsGroupId.UsageStatistics</groupId>
   <artifactId>Client</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0 Final Release</version>
   <name>UsageStatisticsClient</name>
-  <url>http://maven.apache.org</url>
+  <url>http://pwr.wroc.pl</url>
+ 
+  
+   
+
+<description>UsageStatisticsClient cache logs used by application, and commit it to server. It acts in transitive way, gathering statistics.</description>
+   
+
+
+   
+  
+  
+  
   
   <parent>
 		<groupId>UsageStatisticsGroupId</groupId>
 		<artifactId>UsageStatistics</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0 Final Release</version>
   </parent>
   
   <dependencies>
@@ -73,11 +85,13 @@
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-java</artifactId>
         <version>2.11.0</version>
+			<scope>test</scope>
     </dependency> 
 	 <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-firefox-driver</artifactId>
         <version>2.11.0</version>
+			<scope>test</scope>
     </dependency>  
 
 	
@@ -88,6 +102,106 @@
 	
   </dependencies>
     <build>
+	 <plugins>
+	
+		 <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-site-plugin</artifactId>
+	      <version>3.0-beta-3</version>
+	      <configuration>
+	        <reportPlugins>
+			  <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.4</version>
+				<reports>
+				<report>index</report>
+				<report>dependencies</report>
+				<report>plugin-management</report>
+				<report>summary</report>
+			</reports>
+			</plugin>
+	          <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-javadoc-plugin</artifactId>
+	            <version>2.7</version>
+	          </plugin>
+	          <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-jxr-plugin</artifactId>
+	            <version>2.1</version>
+	          </plugin>
+	        </reportPlugins>
+	      </configuration>
+	    </plugin>
+	  	 
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.5.1</version>
+		 <configuration>
+		  <outputDirectory>..\target\staging\UsageStatistics\Client\Cobertura</outputDirectory>
+                        <formats>
+                            <format>html</format>
+                        </formats>
+         </configuration>
+      </plugin>
+	  
+	  	<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+			<minimizeJar>false</minimizeJar>
+					<finalName>uber-${artifactId}-${version}</finalName>
+				</configuration>
+	</plugin>
+	
+		<plugin>
+  <groupId>org.apache.maven.doxia</groupId>
+  <artifactId>doxia-maven-plugin</artifactId>
+  <version>1.1.4</version>
+  <executions>
+    <execution>
+      <phase>package</phase>
+      <goals>
+        <goal>render-books</goal>
+      </goals>
+    </execution>
+  </executions>
+  <configuration>
+  <generatedDocs>..\target\generated-site</generatedDocs>
+    <books>
+      <book>
+        <directory>src/book/manual</directory>
+        <descriptor>src/book/manual.xml</descriptor>
+        <formats>
+          <format>
+            <id>pdf</id>
+          </format>
+          <format>
+            <id>rtf</id>
+          </format>
+		   <format>
+            <id>xhtml</id>
+          </format>
+        </formats>
+      </book>
+    </books>
+  </configuration>
+</plugin>
+	  
+	  
+	  
+    </plugins>
+	
 		<sourceDirectory>..\..\UsageStatisticsClient\src</sourceDirectory>
 		<testSourceDirectory>..\..\UsageStatisticsClient\test</testSourceDirectory>
 	</build>
