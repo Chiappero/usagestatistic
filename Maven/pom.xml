@@ -4,13 +4,191 @@
   <groupId>UsageStatisticsGroupId</groupId>
   <artifactId>UsageStatistics</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0 Final Release</version>
   <name>UsageStatistics</name>
-  <url>http://maven.apache.org</url>
+   <url>http://pwr.wroc.pl</url>
+   
+    <ciManagement>
+    <system>jenkins</system>
+    <url>http://127.0.0.1:80/jenkins</url>
+  </ciManagement>
+   
+   
+   <issueManagement>
+    <system>Team Web Access</system>
+    <url>https://tfsserver.ii.pwr.wroc.pl:8088/tfs/web/</url>
+  </issueManagement>
+  
+  <organization>
+    <name>Wroclaw University of Technology</name>
+    <url>http://www.pwr.wroc.pl</url>
+  </organization>
+   
+   
+   <contributors>
+    <contributor>
+      <name>Lech Madeyski</name>
+      <email>Lech.Madeyski@pwr.wroc.pl</email>
+      <url>http://www.madeyski.com/</url>
+      <organization>Wroclaw University of Technology</organization>
+      <organizationUrl>http://www.pwr.wroc.pl</organizationUrl>
+      <roles>
+        <role>Coach</role>
+      </roles>
+      <timezone>+1</timezone>
+      </contributor>
+	    <contributor>
+      <name>Daniel Niewieczerzal</name>
+      <email>Daniel.Niewieczerzal@nsn.com</email>
+      <url>www.nokiasiemensnetworks.com</url>
+      <organization>Nokia Siemens Network</organization>
+      <organizationUrl>www.nokiasiemensnetworks.com</organizationUrl>
+      <roles>
+        <role>Customer</role>
+      </roles>
+      <timezone>+1</timezone>
+      </contributor>
+  </contributors>
+   
+   <developers>
+      <developer>
+         <name>Krzysztof Matuszek</name>
+         <email>Krzysztof.P.Matuszek@gmail.com</email>
+         <roles>
+            <role>Project Leader</role>
+			<role>Main Developer</role>
+			<role>Security Architect</role>
+         </roles>
+         <organization>Wroclaw University of Technology</organization>
+		<organizationUrl>http://www.pwr.wroc.pl</organizationUrl>
+         <timezone>+1</timezone>
+       </developer>    
+		<developer>
+         <name>Jakub Kubiak</name>
+         <email>jk.jakub.kubiak@gmail.com</email>
+         <roles>
+            <role>Developer</role>
+			<role>Scrum Master</role>
+			<role>Database Architect</role>
+         </roles>
+         <organization>Wroclaw University of Technology</organization>
+      <organizationUrl>http://www.pwr.wroc.pl</organizationUrl>
+         <timezone>+1</timezone>
+       </developer>     
+		<developer>
+         <name>Krzysztof Biereznoj</name>
+         <email>biereznoj@gmail.com</email>
+         <roles>
+            <role>Developer</role>
+			<role>Config Engineer</role>
+         </roles>
+         <organization>Wroclaw University of Technology</organization>
+      <organizationUrl>http://www.pwr.wroc.pl</organizationUrl>
+         <timezone>+1</timezone>
+       </developer> 
+	<developer>
+         <name>Pawel Nieradka</name>
+         <email>pawelnieradka@gmail.com</email>
+         <roles>
+            <role>Web Developer</role>
+         </roles>
+         <organization>Wroclaw University of Technology</organization>
+      <organizationUrl>http://www.pwr.wroc.pl</organizationUrl>
+         <timezone>+1</timezone>
+       </developer>      	  	   
+   </developers>   
+   
+ 
+   
+    <scm>
+        <connection>scm:hg:https://code.google.com/p/usagestatistic/</connection>
+		<tag>HEAD</tag>
+		<url>http://code.google.com/p/usagestatistic/</url>
+    </scm>
+   
+  
+  
+  <description>Have You ever wonder about transient and simple gathering statistics of using your application and storing them on remote server? Now it's possible with UsageStatistics! From now Your efforts will be focused on tasks considering customer's behaviour!  </description>
+  
   <modules>
 	<module>Server</module>
 	<module>Client</module>
 	<module>ConfigGenerator</module>
   </modules>
+  <build>
+        <pluginManagement>
+            <plugins>
+			 <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-site-plugin</artifactId>
+	      <version>3.0-beta-3</version>
+	      <configuration>
+	        <reportPlugins>
+			  <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.4</version>
+				 <configuration>
+         		 <customBundle>${project.basedir}\project-info-report.properties</customBundle>
+				</configuration>
+				<reports>
+				<report>index</report>
+				<report>project-team</report>
+				<report>dependency-convergence</report>
+				<report>plugin-management</report>
+				<report>scm</report>
+				<report>summary</report>
+				<report>cim</report>
+				<report>issue-tracking</report>
+				
+			</reports>
+			</plugin>
+	          <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-javadoc-plugin</artifactId>
+	            <version>2.7</version>
+	          </plugin>
+	          <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-jxr-plugin</artifactId>
+	            <version>2.1</version>
+	            <configuration>
+	              <aggregate>true</aggregate>
+	            </configuration>
+	          </plugin>
+			  
+			  
+			  
+	        </reportPlugins>
+	      </configuration>
+	    </plugin>
+			
+			
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <version>2.5.1</version>
+                    <configuration>
+                        <formats>
+                            <format>html</format>
+                        </formats>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>cobertura</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+				
+				
+			
+				
+              </plugins>
+        </pluginManagement>
+    </build>
+
   
 </project>
