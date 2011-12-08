@@ -12,7 +12,7 @@
           <tr><td>Logs till:</td><td><c:out value="${dateTill}"></c:out></td></tr>
           <tr><td><br />Tool:</td><td><br /><c:out value="${tool}"></c:out></td></tr>
           <tr><td><br />Logs:<br /></td></tr>
-          <tr><td>FUNCTIONALITY</td><c:if test="${showParams}"><td>PARAMETERS</td></c:if><td>AMMOUNT</td>
+          <tr><td>FUNCTIONALITY</td><c:if test="${showParams}"><td>PARAMETERS</td></c:if><td>AMOUNT</td>
           <c:forEach var="log" items="${logs}">
           <tr><td>${log.functionality}</td><c:if test="${showParams}"><td>${log.parameters}</td></c:if><td>${log.count}</td></tr>
           </c:forEach>
