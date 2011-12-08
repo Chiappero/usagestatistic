@@ -2,10 +2,12 @@ package usagestatisticsclient;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
+import junitx.util.PrivateAccessor;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.tools.Server;
@@ -351,6 +353,7 @@ public class DaoTemporaryDatabaseH2Test
 		}       
 		
 	}
+	
 	
 
 }
